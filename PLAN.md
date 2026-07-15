@@ -18,7 +18,7 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 2. **Skill duration calculator** — compute exact training time for any skill→level transition given an effective attribute allocation (base + implants), using SDE-derived skill data (baseTime, primaryAttribute + modifier, secondaryAttribute + modifier).
 3. **Multi-epoch optimizer** — simulate all target skills training in parallel under each epoch's allocation; find the allocation per epoch that minimizes when the last skill finishes. Skills carry progress forward across epochs with no rollback. Target skills come from ESI `/skillqueue` directly.
 4. **Data layer** — parse SDE JSON dump once into a compact `skills.json`; query ESI for live character state (attributes, implant IDs, skill levels, queue).
-5. **CLI interface** — minimal args: `eve-remap optimize --remaps N --last-remap-date D [--character-id ID]`.
+5. **CLI interface** — minimal args: `eve-remap optimize [--character-id ID]`. Remap config uses defaults (1 bonus remap now, next timed at 365 days).
 
 ### Out of Scope (for now)
 
@@ -45,9 +45,7 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 ┌───────────────────────────────────────┐
 │              CLI (clap)               │
 │    login                              │
-│    optimize --remaps N                │
-│             --last-remap-date D       │
-│             [--character-id ID]       │
+│    optimize [--character-id ID]       │
 │    logout                             │
 │    accounts list                      │
 └──────────────┬────────────────────────┘
@@ -115,8 +113,8 @@ eve-remap/
 - **Timed remap**: available every 365 days after last use. Consumed first if both timed and bonus are available.
 - **Bonus remaps**: purchased separately, usable anytime alongside the timed cooldown.
 - **No SP rollback**: actively training skills keep their accumulated SP and immediately switch to the new rate. Only future SP generation is affected.
-- User provides: number of bonus remaps available + date of last remap (to compute when next timed one unlocks).
-- ESI does NOT expose the neural interface cooldown or bonus remap count — these come from CLI args.
+- **Default assumption**: 1 bonus remap available now; next timed remap at 365 days from today. No CLI args needed for remap configuration.
+- ESI does NOT expose the neural interface cooldown or bonus remap count — defaults apply unless user customizes later.
 
 ### Skill Duration Formula
 
@@ -150,18 +148,15 @@ SDE needs to also store implant→attribute bonus mapping. This means `skills.js
 Because skills keep their SP across remaps, the optimizer simulates all target skills training continuously through sequential epochs:
 
 ```
-Epoch 0 (now → epoch boundary):   allocation A0 (= current attrs, fixed)
-Epoch 1 (boundary → next):        allocation A1
-...
-Epoch N (last remap → end):       allocation AN
+Epoch 0 (now → 365 days):        allocation A0 (= current attrs, fixed)
+Epoch 1 (365 days → end):         allocation A1
 ```
 
 Each skill tracks remaining time toward its target level. At each remap boundary, rates switch but progress carries forward. The score is **wall-clock time until the last unfinished skill completes**.
 
 **Greedy strategy:**
 1. Epoch 0 uses current attributes — no reason to waste a remap immediately.
-2. For each subsequent epoch, simulate forward under every candidate allocation; pick the one that minimizes projected finish time of the slowest remaining skill.
-3. After picking an allocation, advance simulation to the epoch boundary, then repeat for the next epoch.
+2. For epoch 1, simulate forward under every candidate allocation; pick the one that minimizes projected finish time of the slowest remaining skill.
 
 This avoids exhaustive search over `allocations^epochs` by greedily optimizing each step. With ~4 max epochs and ~560-12K allocations per greedy pass, it runs in milliseconds.
 
@@ -206,10 +201,10 @@ Token store maps character ID → credentials. When multiple characters are logg
 
 ## Input Parameters (CLI)
 
+No CLI args needed for remap configuration — defaults apply: 1 bonus remap now, next timed at 365 days from today.
+
 | Parameter | Source | Description |
 |-----------|--------|-------------|
-| `--remaps` | CLI (required) | Number of **bonus** remaps available (timed ones computed from date) |
-| `--last-remap-date` | CLI (required) | Date of last remap (`YYYY-MM-DD`); used to compute when next timed remap unlocks (+365 days) |
 | `--character-id` | CLI (optional) | Override auto-selection; must match a previously authorized character |
 
 No `--targets` flag — the optimizer reads the current skill queue directly from ESI `/characters/{id}/skillqueue/`. If users want skills beyond their queue accounted for, they add them in-game first and re-run.
@@ -235,10 +230,10 @@ No `--targets` flag — the optimizer reads the current skill queue directly fro
    - `/characters/{id}/implants/` → active implant IDs → resolve to effective attributes
 
 4. **Optimization Pipeline**
-   - Compute epoch boundaries from `--last-remap-date` + 365-day intervals + bonus count
+   - Compute epoch boundaries from today + 365-day interval
    - Resolve effective attributes = base + implants
    - Epoch 0 fixed to current effective attrs; simulate all queue skills forward
-   - For each subsequent epoch: greedy best-response allocation minimizing projected finish of bottleneck skill
+   - For epoch 1: greedy best-response allocation minimizing projected finish of bottleneck skill
    - Output phased plan with allocations, per-skill completion dates, and total duration
 
 ## Implementation Plan
@@ -256,7 +251,6 @@ No `--targets` flag — the optimizer reads the current skill queue directly fro
 - Character state snapshot combining ESI data + assets lookups (effective attributes)
 
 ### Phase 3 — Multi-Epoch Optimizer
-- Remap date computation from user input
 - Simulation engine: advance all skills through epochs at varying rates
 - Greedy allocation search per epoch (minimize last-skill finish time)
 - Output phased plan
@@ -274,7 +268,7 @@ No `--targets` flag — the optimizer reads the current skill queue directly fro
 
 3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
 
-4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count. User provides `--remaps` (bonus count) and `--last-remap-date`; timed remaps are computed as +365 day intervals.
+4. **Remap info via defaults**: Default assumption of 1 bonus remap now + next timed at 365 days from today. No CLI args needed for remap configuration unless user wants to customize.
 
 5. **SSO login via PKCE**: No client secret to manage locally. Registered app on developers.eveonline.com with `http://127.0.0.1/callback` redirect URI. Local HTTP server catches the callback; tokens stored persistently with auto-refresh.
 

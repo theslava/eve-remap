@@ -1,0 +1,3579 @@
+[
+  {
+    "id": 2403,
+    "name": "Advanced Planetology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 2406,
+    "name": "Planetology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 2495,
+    "name": "Interplanetary Consolidation",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 2505,
+    "name": "Command Center Upgrades",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3184,
+    "name": "ORE Hauler",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3300,
+    "name": "Gunnery",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3301,
+    "name": "Small Hybrid Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3302,
+    "name": "Small Projectile Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3303,
+    "name": "Small Energy Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3304,
+    "name": "Medium Hybrid Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3305,
+    "name": "Medium Projectile Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3306,
+    "name": "Medium Energy Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3307,
+    "name": "Large Hybrid Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3308,
+    "name": "Large Projectile Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3309,
+    "name": "Large Energy Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3310,
+    "name": "Rapid Firing",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3311,
+    "name": "Sharpshooter",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3312,
+    "name": "Motion Prediction",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3315,
+    "name": "Surgical Strike",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3316,
+    "name": "Controlled Bursts",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3317,
+    "name": "Trajectory Analysis",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3318,
+    "name": "Weapon Upgrades",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3319,
+    "name": "Missile Launcher Operation",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3320,
+    "name": "Rockets",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3321,
+    "name": "Light Missiles",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3322,
+    "name": "Auto-Targeting Missiles",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3323,
+    "name": "Defender Missiles",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3324,
+    "name": "Heavy Missiles",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3325,
+    "name": "Torpedoes",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3326,
+    "name": "Cruise Missiles",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3327,
+    "name": "Spaceship Command",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3328,
+    "name": "Gallente Frigate",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3329,
+    "name": "Minmatar Frigate",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3330,
+    "name": "Caldari Frigate",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3331,
+    "name": "Amarr Frigate",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3332,
+    "name": "Gallente Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3333,
+    "name": "Minmatar Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3334,
+    "name": "Caldari Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3335,
+    "name": "Amarr Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3336,
+    "name": "Gallente Battleship",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 3337,
+    "name": "Minmatar Battleship",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 3338,
+    "name": "Caldari Battleship",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 3339,
+    "name": "Amarr Battleship",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 3340,
+    "name": "Gallente Hauler",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3341,
+    "name": "Minmatar Hauler",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3342,
+    "name": "Caldari Hauler",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3343,
+    "name": "Amarr Hauler",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3344,
+    "name": "Gallente Titan",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 16.0
+  },
+  {
+    "id": 3345,
+    "name": "Minmatar Titan",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 16.0
+  },
+  {
+    "id": 3346,
+    "name": "Caldari Titan",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 16.0
+  },
+  {
+    "id": 3347,
+    "name": "Amarr Titan",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 16.0
+  },
+  {
+    "id": 3348,
+    "name": "Leadership",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3349,
+    "name": "Skirmish Command",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3350,
+    "name": "Shield Command",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3351,
+    "name": "Shield Command Specialist",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3352,
+    "name": "Information Command Specialist",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3354,
+    "name": "Command Burst Specialist",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 3355,
+    "name": "Social",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3356,
+    "name": "Negotiation",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3357,
+    "name": "Diplomacy",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3358,
+    "name": "Fast Talk",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3359,
+    "name": "Connections",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3361,
+    "name": "Criminal Connections",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3363,
+    "name": "Corporation Management",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3368,
+    "name": "Diplomatic Relations",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3373,
+    "name": "Starbase Defense Management",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 3380,
+    "name": "Industry",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3385,
+    "name": "Reprocessing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3386,
+    "name": "Mining",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3387,
+    "name": "Mass Production",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3388,
+    "name": "Advanced Industry",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3389,
+    "name": "Reprocessing Efficiency",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3392,
+    "name": "Mechanics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3393,
+    "name": "Repair Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3394,
+    "name": "Hull Upgrades",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3395,
+    "name": "Advanced Small Ship Construction",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3396,
+    "name": "Advanced Industrial Ship Construction",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3397,
+    "name": "Advanced Medium Ship Construction",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3398,
+    "name": "Advanced Large Ship Construction",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 3400,
+    "name": "Outpost Construction",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 16.0
+  },
+  {
+    "id": 3402,
+    "name": "Science",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3403,
+    "name": "Research",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3405,
+    "name": "Biology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3406,
+    "name": "Laboratory Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3408,
+    "name": "Sleeper Encryption Methods",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3409,
+    "name": "Metallurgy",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3410,
+    "name": "Astrogeology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3411,
+    "name": "Cybernetics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3412,
+    "name": "Astrometrics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3413,
+    "name": "Power Grid Management",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3416,
+    "name": "Shield Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3417,
+    "name": "Capacitor Systems Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3418,
+    "name": "Capacitor Management",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3419,
+    "name": "Shield Management",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3420,
+    "name": "Tactical Shield Manipulation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3421,
+    "name": "Energy Pulse Weapons",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3422,
+    "name": "Shield Emission Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3423,
+    "name": "Capacitor Emission Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3424,
+    "name": "Energy Grid Upgrades",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3425,
+    "name": "Shield Upgrades",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3426,
+    "name": "CPU Management",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3427,
+    "name": "Electronic Warfare",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3428,
+    "name": "Long Range Targeting",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3429,
+    "name": "Target Management",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3430,
+    "name": "Advanced Target Management",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3431,
+    "name": "Signature Analysis",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3432,
+    "name": "Electronics Upgrades",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3433,
+    "name": "Sensor Linking",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3434,
+    "name": "Weapon Disruption",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3435,
+    "name": "Propulsion Jamming",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3436,
+    "name": "Drones",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3437,
+    "name": "Drone Avionics",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3438,
+    "name": "Mining Drone Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3439,
+    "name": "Repair Drone Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3440,
+    "name": "Salvage Drone Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3441,
+    "name": "Heavy Drone Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3442,
+    "name": "Drone Interfacing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3443,
+    "name": "Trade",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3444,
+    "name": "Retail",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3446,
+    "name": "Broker Relations",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3447,
+    "name": "Visibility",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3449,
+    "name": "Navigation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3450,
+    "name": "Afterburner",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3451,
+    "name": "Fuel Conservation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3452,
+    "name": "Acceleration Control",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 3453,
+    "name": "Evasive Maneuvering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3454,
+    "name": "High Speed Maneuvering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3455,
+    "name": "Warp Drive Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3456,
+    "name": "Jump Drive Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3551,
+    "name": "Survey",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 3731,
+    "name": "Megacorp Management",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 3732,
+    "name": "Empire Control",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 3893,
+    "name": "Mining Connections",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3894,
+    "name": "Distribution Connections",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 3895,
+    "name": "Security Connections",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 4385,
+    "name": "Micro Jump Drive Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 4411,
+    "name": "Signature Masking",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11082,
+    "name": "Small Railgun Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 11083,
+    "name": "Small Beam Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 11084,
+    "name": "Small Autocannon Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 11207,
+    "name": "Advanced Weapon Upgrades",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 11395,
+    "name": "Deep Core Mining",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 11433,
+    "name": "High Energy Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11441,
+    "name": "Plasma Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11442,
+    "name": "Nanite Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11443,
+    "name": "Hydromagnetic Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11444,
+    "name": "Amarr Starship Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11445,
+    "name": "Minmatar Starship Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11446,
+    "name": "Graviton Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11447,
+    "name": "Laser Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11448,
+    "name": "Electromagnetic Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11449,
+    "name": "Rocket Science",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11450,
+    "name": "Gallente Starship Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11451,
+    "name": "Nuclear Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11452,
+    "name": "Mechanical Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11453,
+    "name": "Electronic Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11454,
+    "name": "Caldari Starship Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11455,
+    "name": "Quantum Physics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11487,
+    "name": "Astronautic Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11529,
+    "name": "Molecular Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11566,
+    "name": "Thermal Shield Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 11569,
+    "name": "Armored Command Specialist",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11572,
+    "name": "Skirmish Command Specialist",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 11574,
+    "name": "Wing Command",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 11579,
+    "name": "Cloaking",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 11584,
+    "name": "Anchoring",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 12092,
+    "name": "Interceptors",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 12093,
+    "name": "Covert Ops",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 12095,
+    "name": "Assault Frigates",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 12096,
+    "name": "Logistics Cruisers",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 12098,
+    "name": "Interdictors",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12179,
+    "name": "Research Project Management",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12189,
+    "name": "Mercoxit Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12196,
+    "name": "Scrapmetal Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12201,
+    "name": "Small Artillery Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 12202,
+    "name": "Medium Artillery Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12203,
+    "name": "Large Artillery Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12204,
+    "name": "Medium Beam Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12205,
+    "name": "Large Beam Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12206,
+    "name": "Medium Railgun Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12207,
+    "name": "Large Railgun Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12208,
+    "name": "Medium Autocannon Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12209,
+    "name": "Large Autocannon Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12210,
+    "name": "Small Blaster Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 12211,
+    "name": "Medium Blaster Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12212,
+    "name": "Large Blaster Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12213,
+    "name": "Small Pulse Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 12214,
+    "name": "Medium Pulse Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12215,
+    "name": "Large Pulse Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12241,
+    "name": "Sovereignty",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 12305,
+    "name": "Drone Navigation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 12365,
+    "name": "EM Shield Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 12366,
+    "name": "Kinetic Shield Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 12367,
+    "name": "Explosive Shield Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 12441,
+    "name": "Missile Bombardment",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 12442,
+    "name": "Missile Projection",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 12484,
+    "name": "Amarr Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12485,
+    "name": "Minmatar Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12486,
+    "name": "Gallente Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 12487,
+    "name": "Caldari Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 13278,
+    "name": "Archaeology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 13279,
+    "name": "Remote Sensing",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 16069,
+    "name": "Remote Armor Repair Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 16281,
+    "name": "Ice Harvesting",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 16591,
+    "name": "Heavy Assault Cruisers",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 16594,
+    "name": "Procurement",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 16595,
+    "name": "Daytrading",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 16596,
+    "name": "Wholesale",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 16597,
+    "name": "Advanced Broker Relations",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 16598,
+    "name": "Marketing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 16622,
+    "name": "Accounting",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 17940,
+    "name": "Mining Barge",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 18025,
+    "name": "Ice Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 18580,
+    "name": "Tycoon",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 19719,
+    "name": "Transport Ships",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 19759,
+    "name": "Long Distance Jamming",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 19760,
+    "name": "Frequency Modulation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 19761,
+    "name": "Signal Dispersion",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 19766,
+    "name": "Signal Suppression",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 19767,
+    "name": "Weapon Destabilization",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 19921,
+    "name": "Target Painting",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 19922,
+    "name": "Signature Focusing",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 20209,
+    "name": "Rocket Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 20210,
+    "name": "Light Missile Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 20211,
+    "name": "Heavy Missile Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 20212,
+    "name": "Cruise Missile Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 20213,
+    "name": "Torpedo Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 20312,
+    "name": "Guided Missile Precision",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 20314,
+    "name": "Target Navigation Prediction",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 20315,
+    "name": "Warhead Upgrades",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 20327,
+    "name": "Capital Energy Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 20342,
+    "name": "Advanced Spaceship Command",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 20433,
+    "name": "Talocan Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 20494,
+    "name": "Armored Command",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 20495,
+    "name": "Information Command",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 20524,
+    "name": "Amarr Freighter",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 20525,
+    "name": "Amarr Dreadnought",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 20526,
+    "name": "Caldari Freighter",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 20527,
+    "name": "Gallente Freighter",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 20528,
+    "name": "Minmatar Freighter",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 20530,
+    "name": "Caldari Dreadnought",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 20531,
+    "name": "Gallente Dreadnought",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 20532,
+    "name": "Minmatar Dreadnought",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 20533,
+    "name": "Capital Ships",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 21059,
+    "name": "Shield Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 21071,
+    "name": "Rapid Launch",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 21603,
+    "name": "Cynosural Field Theory",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 21610,
+    "name": "Jump Fuel Conservation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 21611,
+    "name": "Jump Drive Calibration",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 9.0
+  },
+  {
+    "id": 21666,
+    "name": "Capital Hybrid Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 21667,
+    "name": "Capital Projectile Turret",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 21668,
+    "name": "XL Torpedoes",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 21718,
+    "name": "Hacking",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 21789,
+    "name": "Sleeper Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 21790,
+    "name": "Caldari Encryption Methods",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 21791,
+    "name": "Minmatar Encryption Methods",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 21802,
+    "name": "Capital Shield Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 21803,
+    "name": "Capital Repair Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 22043,
+    "name": "Tactical Weapon Reconfiguration",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 22242,
+    "name": "Capital Ship Construction",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 22536,
+    "name": "Mining Foreman",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 22541,
+    "name": "Mining Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 22551,
+    "name": "Exhumers",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 22552,
+    "name": "Mining Director",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 22578,
+    "name": "Mining Upgrades",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 22761,
+    "name": "Recon Ships",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 22806,
+    "name": "EM Armor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 22807,
+    "name": "Explosive Armor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 22808,
+    "name": "Kinetic Armor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 22809,
+    "name": "Thermal Armor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 23069,
+    "name": "Fighters",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 23087,
+    "name": "Amarr Encryption Methods",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 23121,
+    "name": "Gallente Encryption Methods",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 23123,
+    "name": "Takmahl Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 23124,
+    "name": "Yan Jung Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 23566,
+    "name": "Advanced Drone Avionics",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 23594,
+    "name": "Sentry Drone Interfacing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 23606,
+    "name": "Drone Sharpshooting",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 23618,
+    "name": "Drone Durability",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 23950,
+    "name": "Command Ships",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 24241,
+    "name": "Light Drone Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 24242,
+    "name": "Infomorph Psychology",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 24268,
+    "name": "Supply Chain Management",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 24270,
+    "name": "Scientific Networking",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 24311,
+    "name": "Amarr Carrier",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 24312,
+    "name": "Caldari Carrier",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 24313,
+    "name": "Gallente Carrier",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 24314,
+    "name": "Minmatar Carrier",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 24562,
+    "name": "Jump Portal Generation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 24563,
+    "name": "Doomsday Operation",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 24568,
+    "name": "Capital Remote Armor Repair Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 24571,
+    "name": "Capital Shield Emission Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 24572,
+    "name": "Capital Capacitor Emission Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 24606,
+    "name": "Cloning Facility Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 24613,
+    "name": "Fighter Hangar Management",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 24624,
+    "name": "Advanced Laboratory Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 24625,
+    "name": "Advanced Mass Production",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 24764,
+    "name": "Fleet Command",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 25233,
+    "name": "Corporation Contracting",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 25235,
+    "name": "Contracting",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 25530,
+    "name": "Neurotoxin Recovery",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 25538,
+    "name": "Neurotoxin Control",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 25544,
+    "name": "Gas Cloud Harvesting",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 25718,
+    "name": "Heavy Assault Missile Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 25719,
+    "name": "Heavy Assault Missiles",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 25739,
+    "name": "Astrometric Rangefinding",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 25810,
+    "name": "Astrometric Pinpointing",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 25811,
+    "name": "Astrometric Acquisition",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 25863,
+    "name": "Salvaging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26224,
+    "name": "Drug Manufacturing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 26252,
+    "name": "Jury Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 26253,
+    "name": "Armor Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26254,
+    "name": "Astronautics Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26255,
+    "name": "Drones Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26256,
+    "name": "Electronic Superiority Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26257,
+    "name": "Projectile Weapon Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26258,
+    "name": "Energy Weapon Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26259,
+    "name": "Hybrid Weapon Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26260,
+    "name": "Launcher Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 26261,
+    "name": "Shield Rigging",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 27902,
+    "name": "Remote Hull Repair Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 27906,
+    "name": "Tactical Logistics Reconfiguration",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 27911,
+    "name": "Burst Projector Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 27936,
+    "name": "Capital Remote Hull Repair Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 28073,
+    "name": "Bomb Deployment",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 28164,
+    "name": "Thermodynamics",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 28374,
+    "name": "Capital Industrial Ships",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 28585,
+    "name": "Capital Industrial Reconfiguration",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 28609,
+    "name": "Heavy Interdiction Cruisers",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 28615,
+    "name": "Electronic Attack Ships",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 28656,
+    "name": "Black Ops",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 28667,
+    "name": "Marauders",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 28879,
+    "name": "Nanite Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 28880,
+    "name": "Nanite Interfacing",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 29029,
+    "name": "Jump Freighters",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 29637,
+    "name": "Industrial Command Ships",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 30324,
+    "name": "Defensive Subsystem Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 30325,
+    "name": "Core Subsystem Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 30327,
+    "name": "Offensive Subsystem Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 30532,
+    "name": "Amarr Defensive Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30537,
+    "name": "Amarr Offensive Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30538,
+    "name": "Amarr Propulsion Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30539,
+    "name": "Amarr Core Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30540,
+    "name": "Gallente Defensive Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30544,
+    "name": "Caldari Defensive Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30545,
+    "name": "Minmatar Defensive Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30546,
+    "name": "Gallente Core Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30547,
+    "name": "Minmatar Core Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30548,
+    "name": "Caldari Core Systems",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30549,
+    "name": "Caldari Offensive Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30550,
+    "name": "Gallente Offensive Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30551,
+    "name": "Minmatar Offensive Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30552,
+    "name": "Caldari Propulsion Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30553,
+    "name": "Gallente Propulsion Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30554,
+    "name": "Minmatar Propulsion Systems",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 30650,
+    "name": "Amarr Strategic Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 30651,
+    "name": "Caldari Strategic Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 30652,
+    "name": "Gallente Strategic Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 30653,
+    "name": "Minmatar Strategic Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 30788,
+    "name": "Propulsion Subsystem Technology",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 32339,
+    "name": "Heavy Fighters",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 32435,
+    "name": "XL Cruise Missiles",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 32797,
+    "name": "Resistance Phasing",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 32918,
+    "name": "Mining Frigate",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 32999,
+    "name": "Magnetometric Sensor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33000,
+    "name": "Gravimetric Sensor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33001,
+    "name": "Ladar Sensor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33002,
+    "name": "Radar Sensor Compensation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33078,
+    "name": "Armor Layering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 33091,
+    "name": "Amarr Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33092,
+    "name": "Caldari Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33093,
+    "name": "Gallente Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33094,
+    "name": "Minmatar Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33095,
+    "name": "Amarr Battlecruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 33096,
+    "name": "Caldari Battlecruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 33097,
+    "name": "Gallente Battlecruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 33098,
+    "name": "Minmatar Battlecruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 33399,
+    "name": "Infomorph Synchronizing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33407,
+    "name": "Advanced Infomorph Psychology",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 33467,
+    "name": "Customs Code Expertise",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33699,
+    "name": "Medium Drone Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 33856,
+    "name": "Expedition Frigates",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 34327,
+    "name": "ORE Freighter",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 9.0
+  },
+  {
+    "id": 34390,
+    "name": "Amarr Tactical Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 34533,
+    "name": "Minmatar Tactical Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 35680,
+    "name": "Caldari Tactical Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 35685,
+    "name": "Gallente Tactical Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 37615,
+    "name": "Command Destroyers",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 37796,
+    "name": "Structure Missile Systems",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 37797,
+    "name": "Structure Doomsday Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 37798,
+    "name": "Structure Electronic Systems",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 37799,
+    "name": "Structure Engineering Systems",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 40328,
+    "name": "Logistics Frigates",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 40572,
+    "name": "Light Fighters",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 40573,
+    "name": "Support Fighters",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 41403,
+    "name": "Capital Autocannon Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41404,
+    "name": "Capital Artillery Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41405,
+    "name": "Capital Blaster Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41406,
+    "name": "Capital Railgun Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41407,
+    "name": "Capital Pulse Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41408,
+    "name": "Capital Beam Laser Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41409,
+    "name": "XL Torpedo Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41410,
+    "name": "XL Cruise Missile Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 41537,
+    "name": "Doomsday Rapid Firing",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 43702,
+    "name": "Ice Harvesting Drone Operation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 43703,
+    "name": "Ice Harvesting Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 43728,
+    "name": "Spatial Phenomena Generation",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 44067,
+    "name": "Invulnerability Core Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 45746,
+    "name": "Reactions",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 45748,
+    "name": "Mass Reactions",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 45749,
+    "name": "Advanced Mass Reactions",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 45750,
+    "name": "Remote Reactions",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 46152,
+    "name": "Ubiquitous Moon Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 46153,
+    "name": "Common Moon Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 46154,
+    "name": "Uncommon Moon Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 46155,
+    "name": "Rare Moon Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 46156,
+    "name": "Exceptional Moon Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 47445,
+    "name": "Flag Cruisers",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 47867,
+    "name": "Precursor Frigate",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 47868,
+    "name": "Precursor Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 47869,
+    "name": "Precursor Battleship",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 47870,
+    "name": "Small Precursor Weapon",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 47871,
+    "name": "Medium Precursor Weapon",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 47872,
+    "name": "Large Precursor Weapon",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 47873,
+    "name": "Small Disintegrator Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 47874,
+    "name": "Medium Disintegrator Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 47875,
+    "name": "Large Disintegrator Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 49742,
+    "name": "Precursor Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 49743,
+    "name": "Precursor Battlecruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 52307,
+    "name": "Triglavian Quantum Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 52308,
+    "name": "Triglavian Encryption Methods",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 52997,
+    "name": "Precursor Dreadnought",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 52998,
+    "name": "Capital Precursor Weapon",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 54794,
+    "name": "EDENCOM Battleship",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 54826,
+    "name": "Large Vorton Projector",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 54827,
+    "name": "Small Vorton Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 54828,
+    "name": "Medium Vorton Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 54829,
+    "name": "Large Vorton Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 54840,
+    "name": "Vorton Power Amplification",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 54841,
+    "name": "Vorton Arc Guidance",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 55025,
+    "name": "Upwell Encryption Methods",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 55031,
+    "name": "EDENCOM Frigate",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 55032,
+    "name": "EDENCOM Cruiser",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 55033,
+    "name": "Vorton Projector Operation",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 55034,
+    "name": "Small Vorton Projector",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 55035,
+    "name": "Medium Vorton Projector",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 55511,
+    "name": "Vorton Arc Extension",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 57164,
+    "name": "Salvage Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 57317,
+    "name": "Fleet Formations",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 57318,
+    "name": "Fleet Coordination",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 58956,
+    "name": "Industrial Reconfiguration",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 60377,
+    "name": "Simple Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 60378,
+    "name": "Coherent Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 60379,
+    "name": "Variegated Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 9.0
+  },
+  {
+    "id": 60380,
+    "name": "Complex Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 11.0
+  },
+  {
+    "id": 60381,
+    "name": "Abyssal Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 60515,
+    "name": "Mutated Drone Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 62450,
+    "name": "Shipboard Compression Technology",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 62451,
+    "name": "Capital Shipboard Compression Technology",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 62452,
+    "name": "Gas Decompression Efficiency",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 62453,
+    "name": "Fleet Compression Logistics",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 73910,
+    "name": "Elite Infomorph Psychology",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  },
+  {
+    "id": 73912,
+    "name": "Advanced Contracting",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 77725,
+    "name": "Advanced Capital Ship Construction",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 16.0
+  },
+  {
+    "id": 77738,
+    "name": "Lancer Dreadnoughts",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 16.0
+  },
+  {
+    "id": 77739,
+    "name": "Disruptive Lance Operation",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 81032,
+    "name": "Upwell Hauler",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 81044,
+    "name": "Upwell Freighter",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 81050,
+    "name": "Upwell Starship Engineering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 81364,
+    "name": "Mass Sequencing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 81365,
+    "name": "Industrial Sequencing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 9.0
+  },
+  {
+    "id": 81366,
+    "name": "Parallel Sequencing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 81367,
+    "name": "Multi-thread Sequencing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 81368,
+    "name": "Hub Promotion",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 81369,
+    "name": "Hub Algorithm Optimization",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 81370,
+    "name": "Studio Management",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 81371,
+    "name": "Advanced Studio Management",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 81372,
+    "name": "Induction Efficiency",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 81373,
+    "name": "Advanced Induction Efficiency",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 81374,
+    "name": "Peak Induction Acceleration",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 81375,
+    "name": "Batch Sequencing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 81377,
+    "name": "Basic Induction",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 1.0
+  },
+  {
+    "id": 81896,
+    "name": "Mutagenic Stabilization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 83094,
+    "name": "Capital Jump Portal Generation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 83464,
+    "name": "Capital Micro Jump Drive Operation",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 84217,
+    "name": "Paragon Relations",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 84218,
+    "name": "Paragon Partnership",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 4.0
+  },
+  {
+    "id": 84220,
+    "name": "Executive Paragon Partnership",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 85233,
+    "name": "Mercenary Den Management",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 86260,
+    "name": "Breacher Pod Launcher Operation",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 3.0
+  },
+  {
+    "id": 86261,
+    "name": "Breacher Pod Clone Efficacity",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 86262,
+    "name": "Breacher Pod Clone Longevity",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 7.0
+  },
+  {
+    "id": 86263,
+    "name": "Breacher Pod Projection",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 86264,
+    "name": "Breacher Pod Rapid Firing",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "charisma",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 88377,
+    "name": "Advanced Doomsday Operation",
+    "primaryAttribute": "willpower",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 89241,
+    "name": "Mining Destroyer",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 89609,
+    "name": "Expedition Command Ships",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 8.0
+  },
+  {
+    "id": 89610,
+    "name": "Expedition Command Specialist",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 89611,
+    "name": "Expedition Command",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 89689,
+    "name": "Advanced Armor Layering",
+    "primaryAttribute": "intelligence",
+    "secondaryAttribute": "memory",
+    "skillTimeConstant": 5.0
+  },
+  {
+    "id": 90040,
+    "name": "Erratic Ore Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 11.0
+  },
+  {
+    "id": 90398,
+    "name": "Unrefined Minerals Processing",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 11.0
+  },
+  {
+    "id": 90727,
+    "name": "Mining Precision",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 90728,
+    "name": "Mining Exploitation",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "intelligence",
+    "skillTimeConstant": 6.0
+  },
+  {
+    "id": 91017,
+    "name": "Freelancing",
+    "primaryAttribute": "charisma",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 2.0
+  },
+  {
+    "id": 92397,
+    "name": "Amarr Fighter Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 92398,
+    "name": "Gallente Fighter Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 92399,
+    "name": "Minmatar Fighter Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 92400,
+    "name": "Caldari Fighter Specialization",
+    "primaryAttribute": "memory",
+    "secondaryAttribute": "perception",
+    "skillTimeConstant": 14.0
+  },
+  {
+    "id": 92541,
+    "name": "Capital Disintegrator Specialization",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 10.0
+  },
+  {
+    "id": 93983,
+    "name": "Command Carriers",
+    "primaryAttribute": "perception",
+    "secondaryAttribute": "willpower",
+    "skillTimeConstant": 12.0
+  }
+]

@@ -1,0 +1,1969 @@
+[
+  {
+    "typeId": 2082,
+    "name": "Genolution Core Augmentation CA-1",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 2589,
+    "name": "Genolution Core Augmentation CA-2",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 19534,
+    "name": "High-grade Talisman Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 19535,
+    "name": "High-grade Talisman Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 19536,
+    "name": "High-grade Talisman Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 19537,
+    "name": "High-grade Talisman Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 19538,
+    "name": "High-grade Talisman Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 19540,
+    "name": "High-grade Snake Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 19551,
+    "name": "High-grade Snake Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 19553,
+    "name": "High-grade Snake Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 19554,
+    "name": "High-grade Snake Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 19555,
+    "name": "High-grade Snake Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 20121,
+    "name": "High-grade Crystal Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 20157,
+    "name": "High-grade Crystal Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 20158,
+    "name": "High-grade Crystal Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 20159,
+    "name": "High-grade Crystal Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 20160,
+    "name": "High-grade Crystal Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 20498,
+    "name": "High-grade Halo Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 20499,
+    "name": "High-grade Amulet Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 20500,
+    "name": "High-grade Halo Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 20501,
+    "name": "High-grade Amulet Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 20502,
+    "name": "High-grade Halo Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 20503,
+    "name": "High-grade Amulet Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 20504,
+    "name": "High-grade Halo Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 20505,
+    "name": "High-grade Amulet Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 20506,
+    "name": "High-grade Halo Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 20507,
+    "name": "High-grade Amulet Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 22107,
+    "name": "Mid-grade Crystal Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 22108,
+    "name": "Mid-grade Crystal Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 22109,
+    "name": "Mid-grade Crystal Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 22110,
+    "name": "Mid-grade Crystal Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 22111,
+    "name": "Mid-grade Crystal Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 22113,
+    "name": "Mid-grade Halo Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 22114,
+    "name": "Mid-grade Halo Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 22115,
+    "name": "Mid-grade Halo Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 22116,
+    "name": "Mid-grade Halo Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 22117,
+    "name": "Mid-grade Halo Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 22119,
+    "name": "Mid-grade Amulet Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 22120,
+    "name": "Mid-grade Amulet Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 22121,
+    "name": "Mid-grade Amulet Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 22122,
+    "name": "Mid-grade Amulet Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 22123,
+    "name": "Mid-grade Amulet Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 22125,
+    "name": "Mid-grade Snake Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 22126,
+    "name": "Mid-grade Snake Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 22127,
+    "name": "Mid-grade Snake Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 22128,
+    "name": "Mid-grade Snake Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 22129,
+    "name": "Mid-grade Snake Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 22131,
+    "name": "Mid-grade Talisman Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 22133,
+    "name": "Mid-grade Talisman Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 22134,
+    "name": "Mid-grade Talisman Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 22135,
+    "name": "Mid-grade Talisman Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 22136,
+    "name": "Mid-grade Talisman Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 28790,
+    "name": "Mid-grade Centurion Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 28791,
+    "name": "Mid-grade Centurion Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 28792,
+    "name": "Mid-grade Centurion Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 28793,
+    "name": "Mid-grade Centurion Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 28794,
+    "name": "Mid-grade Centurion Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 28796,
+    "name": "Mid-grade Nomad Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 28797,
+    "name": "Mid-grade Nomad Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 28798,
+    "name": "Mid-grade Nomad Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 28799,
+    "name": "Mid-grade Nomad Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 28800,
+    "name": "Mid-grade Nomad Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 28802,
+    "name": "Mid-grade Harvest Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 28803,
+    "name": "Mid-grade Harvest Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 28804,
+    "name": "Mid-grade Harvest Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 28805,
+    "name": "Mid-grade Harvest Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 28806,
+    "name": "Mid-grade Harvest Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 28808,
+    "name": "Mid-grade Virtue Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 28809,
+    "name": "Mid-grade Virtue Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 28810,
+    "name": "Mid-grade Virtue Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 28811,
+    "name": "Mid-grade Virtue Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 28812,
+    "name": "Mid-grade Virtue Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 28814,
+    "name": "Mid-grade Edge Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 28815,
+    "name": "Mid-grade Edge Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 28816,
+    "name": "Mid-grade Edge Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 28817,
+    "name": "Mid-grade Edge Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 28818,
+    "name": "Mid-grade Edge Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 31954,
+    "name": "High-grade Grail Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 31955,
+    "name": "High-grade Grail Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 31956,
+    "name": "High-grade Grail Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 31957,
+    "name": "High-grade Grail Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 31958,
+    "name": "High-grade Grail Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 31962,
+    "name": "High-grade Talon Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 31963,
+    "name": "High-grade Talon Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 31964,
+    "name": "High-grade Talon Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 31965,
+    "name": "High-grade Talon Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 31966,
+    "name": "High-grade Talon Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 31968,
+    "name": "High-grade Spur Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 31969,
+    "name": "High-grade Spur Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 31970,
+    "name": "High-grade Spur Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 31971,
+    "name": "High-grade Spur Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 31972,
+    "name": "High-grade Spur Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 31974,
+    "name": "High-grade Jackal Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 31975,
+    "name": "High-grade Jackal Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 31976,
+    "name": "High-grade Jackal Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 31977,
+    "name": "High-grade Jackal Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 31978,
+    "name": "High-grade Jackal Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 32101,
+    "name": "Low-grade Grail Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 32102,
+    "name": "Low-grade Grail Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 32103,
+    "name": "Low-grade Grail Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 32104,
+    "name": "Low-grade Grail Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 32105,
+    "name": "Low-grade Grail Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 32107,
+    "name": "Low-grade Spur Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 32108,
+    "name": "Low-grade Spur Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 32109,
+    "name": "Low-grade Spur Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 32110,
+    "name": "Low-grade Spur Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 32111,
+    "name": "Low-grade Spur Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 32112,
+    "name": "Low-grade Talon Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 32113,
+    "name": "Low-grade Talon Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 32114,
+    "name": "Low-grade Talon Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 32115,
+    "name": "Low-grade Talon Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 32116,
+    "name": "Low-grade Talon Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 32117,
+    "name": "Low-grade Jackal Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 32118,
+    "name": "Low-grade Jackal Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 32119,
+    "name": "Low-grade Jackal Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 32120,
+    "name": "Low-grade Jackal Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 32121,
+    "name": "Low-grade Jackal Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33393,
+    "name": "Genolution Core Augmentation CA-3",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 33394,
+    "name": "Genolution Core Augmentation CA-4",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 33516,
+    "name": "High-grade Ascendancy Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 33525,
+    "name": "High-grade Ascendancy Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 33526,
+    "name": "High-grade Ascendancy Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 33527,
+    "name": "High-grade Ascendancy Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 33528,
+    "name": "High-grade Ascendancy Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 33555,
+    "name": "Mid-grade Ascendancy Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 33557,
+    "name": "Mid-grade Ascendancy Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 33559,
+    "name": "Mid-grade Ascendancy Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 33561,
+    "name": "Mid-grade Ascendancy Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 33563,
+    "name": "Mid-grade Ascendancy Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 33807,
+    "name": "Cybernetic 'Source' Subprocessor",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 33808,
+    "name": "Neural 'Source' Boost",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 33917,
+    "name": "Low-grade Centurion Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33918,
+    "name": "Low-grade Centurion Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33919,
+    "name": "Low-grade Centurion Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33920,
+    "name": "Low-grade Centurion Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33921,
+    "name": "Low-grade Centurion Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33923,
+    "name": "Low-grade Crystal Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33924,
+    "name": "Low-grade Crystal Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33925,
+    "name": "Low-grade Crystal Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33926,
+    "name": "Low-grade Crystal Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33927,
+    "name": "Low-grade Crystal Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33929,
+    "name": "Low-grade Edge Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33930,
+    "name": "Low-grade Edge Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33931,
+    "name": "Low-grade Edge Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33932,
+    "name": "Low-grade Edge Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33933,
+    "name": "Low-grade Edge Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33935,
+    "name": "Low-grade Halo Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33936,
+    "name": "Low-grade Halo Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33937,
+    "name": "Low-grade Halo Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33938,
+    "name": "Low-grade Halo Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33939,
+    "name": "Low-grade Halo Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33941,
+    "name": "Low-grade Harvest Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33942,
+    "name": "Low-grade Harvest Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33943,
+    "name": "Low-grade Harvest Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33944,
+    "name": "Low-grade Harvest Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33945,
+    "name": "Low-grade Harvest Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33947,
+    "name": "Low-grade Nomad Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33948,
+    "name": "Low-grade Nomad Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33949,
+    "name": "Low-grade Nomad Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33950,
+    "name": "Low-grade Nomad Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33951,
+    "name": "Low-grade Nomad Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33953,
+    "name": "Low-grade Amulet Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33954,
+    "name": "Low-grade Amulet Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33955,
+    "name": "Low-grade Amulet Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33956,
+    "name": "Low-grade Amulet Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33957,
+    "name": "Low-grade Amulet Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33959,
+    "name": "Low-grade Snake Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33960,
+    "name": "Low-grade Snake Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33961,
+    "name": "Low-grade Snake Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33962,
+    "name": "Low-grade Snake Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33963,
+    "name": "Low-grade Snake Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33965,
+    "name": "Low-grade Talisman Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33966,
+    "name": "Low-grade Talisman Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33967,
+    "name": "Low-grade Talisman Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33968,
+    "name": "Low-grade Talisman Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33969,
+    "name": "Low-grade Talisman Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 33971,
+    "name": "Low-grade Virtue Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 33972,
+    "name": "Low-grade Virtue Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 33973,
+    "name": "Low-grade Virtue Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 33974,
+    "name": "Low-grade Virtue Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 33975,
+    "name": "Low-grade Virtue Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 42145,
+    "name": "Low-grade Asklepian Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 42146,
+    "name": "Low-grade Asklepian Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 42200,
+    "name": "Low-grade Asklepian Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 42201,
+    "name": "Low-grade Asklepian Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 42202,
+    "name": "Low-grade Asklepian Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 42204,
+    "name": "Mid-grade Asklepian Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 42205,
+    "name": "Mid-grade Asklepian Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 42206,
+    "name": "Mid-grade Asklepian Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 42207,
+    "name": "Mid-grade Asklepian Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 42208,
+    "name": "Mid-grade Asklepian Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 42210,
+    "name": "High-grade Asklepian Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 42211,
+    "name": "High-grade Asklepian Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 42212,
+    "name": "High-grade Asklepian Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 42213,
+    "name": "High-grade Asklepian Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 42214,
+    "name": "High-grade Asklepian Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 52674,
+    "name": "Low-grade Mimesis Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 52679,
+    "name": "Low-grade Mimesis Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 52680,
+    "name": "Low-grade Mimesis Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 52681,
+    "name": "Low-grade Mimesis Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 52682,
+    "name": "Low-grade Mimesis Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 52785,
+    "name": "Mid-grade Mimesis Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 52786,
+    "name": "Mid-grade Mimesis Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 52787,
+    "name": "Mid-grade Mimesis Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 52788,
+    "name": "Mid-grade Mimesis Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 52789,
+    "name": "Mid-grade Mimesis Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 52917,
+    "name": "High-grade Mimesis Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 52918,
+    "name": "High-grade Mimesis Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 52919,
+    "name": "High-grade Mimesis Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 52920,
+    "name": "High-grade Mimesis Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 52921,
+    "name": "High-grade Mimesis Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 53704,
+    "name": "Mid-grade Nirvana Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 53705,
+    "name": "Mid-grade Nirvana Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 53706,
+    "name": "Mid-grade Nirvana Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 53707,
+    "name": "Mid-grade Nirvana Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 53708,
+    "name": "Mid-grade Nirvana Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 53710,
+    "name": "High-grade Nirvana Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 53711,
+    "name": "High-grade Nirvana Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 53712,
+    "name": "High-grade Nirvana Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 53713,
+    "name": "High-grade Nirvana Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 53715,
+    "name": "High-grade Nirvana Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 53853,
+    "name": "Low-grade Nirvana Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 53854,
+    "name": "Low-grade Nirvana Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 53855,
+    "name": "Low-grade Nirvana Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 53856,
+    "name": "Low-grade Nirvana Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 53857,
+    "name": "Low-grade Nirvana Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 53890,
+    "name": "High-grade Savior Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 53891,
+    "name": "High-grade Savior Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 53892,
+    "name": "High-grade Savior Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 53893,
+    "name": "High-grade Savior Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 53894,
+    "name": "High-grade Savior Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 53896,
+    "name": "Mid-grade Savior Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 53897,
+    "name": "Mid-grade Savior Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 53898,
+    "name": "Mid-grade Savior Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 53899,
+    "name": "Mid-grade Savior Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 53900,
+    "name": "Mid-grade Savior Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 53902,
+    "name": "Low-grade Savior Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 53903,
+    "name": "Low-grade Savior Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 53904,
+    "name": "Low-grade Savior Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 53905,
+    "name": "Low-grade Savior Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 53906,
+    "name": "Low-grade Savior Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 54392,
+    "name": "High-grade Hydra Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 54393,
+    "name": "High-grade Hydra Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 54394,
+    "name": "High-grade Hydra Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 54395,
+    "name": "High-grade Hydra Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 54396,
+    "name": "High-grade Hydra Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 54398,
+    "name": "Mid-grade Hydra Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 54399,
+    "name": "Mid-grade Hydra Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 54400,
+    "name": "Mid-grade Hydra Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 54401,
+    "name": "Mid-grade Hydra Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 54402,
+    "name": "Mid-grade Hydra Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 54404,
+    "name": "Low-grade Hydra Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 54405,
+    "name": "Low-grade Hydra Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 54406,
+    "name": "Low-grade Hydra Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 54407,
+    "name": "Low-grade Hydra Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 54408,
+    "name": "Low-grade Hydra Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 57110,
+    "name": "Low-grade Rapture Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 57111,
+    "name": "Low-grade Rapture Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 57112,
+    "name": "Low-grade Rapture Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 57113,
+    "name": "Low-grade Rapture Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 57114,
+    "name": "Low-grade Rapture Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 57117,
+    "name": "Mid-grade Rapture Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 57118,
+    "name": "Mid-grade Rapture Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 57119,
+    "name": "Mid-grade Rapture Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 57120,
+    "name": "Mid-grade Rapture Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 57121,
+    "name": "Mid-grade Rapture Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 57123,
+    "name": "High-grade Rapture Alpha",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 57124,
+    "name": "High-grade Rapture Beta",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 57125,
+    "name": "High-grade Rapture Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 57126,
+    "name": "High-grade Rapture Delta",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 57127,
+    "name": "High-grade Rapture Epsilon",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 88119,
+    "name": "Low-grade Wedge Alpha",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 88120,
+    "name": "Low-grade Wedge Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 88121,
+    "name": "Low-grade Wedge Gamma",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 88122,
+    "name": "Low-grade Wedge Delta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 88123,
+    "name": "Low-grade Wedge Epsilon",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 88125,
+    "name": "Mid-grade Wedge Alpha",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 88126,
+    "name": "Mid-grade Wedge Beta",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 88127,
+    "name": "Mid-grade Wedge Gamma",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 88128,
+    "name": "Mid-grade Wedge Delta",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 88129,
+    "name": "Mid-grade Wedge Epsilon",
+    "bonuses": {
+      "charisma": 3
+    }
+  }
+]
