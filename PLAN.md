@@ -105,7 +105,7 @@ eve-remap/
 From EVE mechanics:
 
 ```
-duration(level) = baseTime × levelMultiplier[level] / (attributeValue ^ attributeModifier)
+duration(skill, level) = baseTime × levelMultiplier[level] / (attrValue ^ modifier)
 
 levelMultiplier = [1, 4, 20, 80, 360]  // for levels 1-5
 ```
@@ -113,8 +113,28 @@ levelMultiplier = [1, 4, 20, 80, 360]  // for levels 1-5
 Where:
 - `baseTime` — dogma attribute of the skill type (in seconds)
 - `attributeValue` — character's value in the governing attribute (1..25)
-- `attributeModifier` — dogma attribute of the skill type (typically 0.2 to 1.0)
-- The governing attribute ID is also a dogma attribute on the skill type
+- `modifier` — dogma attribute of the skill type (varies per skill)
+- Each skill has exactly one governing attribute ID (also from dogma)
+
+### Bucketed Scoring (avoids per-allocation re-scan)
+
+Instead of iterating every target skill for every candidate allocation, precompute **once**:
+
+```
+For each target skill transition (currentLevel → desiredLevel):
+    rawSP = baseTime × sum(levelMultiplier[currentLevel..desiredLevel-1])
+    governingAttr = skill's governing attribute
+    modifier     = skill's training modifier
+    bucket[governingAttr][modifier] += rawSP
+```
+
+Then scoring any allocation `(a1, a2, a3, a4, a5)` is just:
+
+```
+totalDuration = Σ_attr Σ_modifier bucket[attr][mod] / (alloc[attr] ^ mod)
+```
+
+This reduces the inner loop from `O(numSkills)` to `O(distinctModifiers × 5)` — typically ~25 divisions instead of hundreds of multiplications + exponentiations. The buckets are computed once and reused across all ~12K allocations.
 
 ### Attribute Allocation Space
 
@@ -145,11 +165,11 @@ Brain size determines how many skills can train simultaneously:
 
 3. **Optimization** (`eve-remap optimize --character-id <id> --targets <file>`)
    - Load character state + target skills
+   - Pre-compute per-(attribute, modifier) SP buckets from target queue
    - For each valid remap allocation:
-     - Calculate total duration for all target skills at desired levels
-     - Score the allocation (lower = better)
+     - Score using bucketed formula (~25 divisions per allocation)
    - Return top-N allocations with projected queue
-   - Output ordered skill list respecting prerequisites & brain size
+   - Output ordered skill list respecting brain size
 
 ## Implementation Plan
 
@@ -166,8 +186,8 @@ Brain size determines how many skills can train simultaneously:
 
 ### Phase 3 — Optimizer Core
 - Enumerate valid attribute allocations given character constraints
-- Score each allocation against target skill set
-- Return ranked results
+- Build SP buckets from target skill set (one-time precomputation)
+- Score each allocation against bucketed sums; return ranked results
 
 ### Phase 4 — Scheduler
 - Brain-size-aware parallel scheduling
