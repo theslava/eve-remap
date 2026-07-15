@@ -6,7 +6,7 @@ EVE Online players invest hundreds of hours training skills on their characters.
 
 The optimizer should answer:
 
-> Given my character's current state and target skills — how should I sequence my allocations across remap epochs to minimize total wall-clock time until everything finishes?
+> Given my character's current state and queued skills — how should I sequence my allocations across remap epochs to minimize total wall-clock time until everything finishes?
 
 Output: phased plan telling the user what allocation to set at each epoch, which skills will finish by then, and projected completion dates.
 
@@ -14,17 +14,19 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 
 ### In Scope (MVP)
 
-1. **Skill duration calculator** — compute exact training time for any skill→level transition given an effective attribute allocation (base + implants), using SDE-derived skill data (baseTime, primaryAttribute + modifier, secondaryAttribute + modifier).
-2. **Multi-epoch optimizer** — simulate all target skills training in parallel under each epoch's allocation; find the allocation per epoch that minimizes when the last skill finishes. Skills carry progress forward across epochs with no rollback.
-3. **Data layer** — parse SDE JSON dump once into a compact `skills.json`; query ESI for live character state (attributes, implant IDs, skill levels, queue).
-4. **CLI interface** — user provides remap info via CLI args; tool outputs phased plan.
+1. **Interactive SSO authentication** — CLI opens browser for EVE login, catches callback on localhost, stores tokens locally. Supports multiple characters; prompts to select if none specified via `--character-id`.
+2. **Skill duration calculator** — compute exact training time for any skill→level transition given an effective attribute allocation (base + implants), using SDE-derived skill data (baseTime, primaryAttribute + modifier, secondaryAttribute + modifier).
+3. **Multi-epoch optimizer** — simulate all target skills training in parallel under each epoch's allocation; find the allocation per epoch that minimizes when the last skill finishes. Skills carry progress forward across epochs with no rollback. Target skills come from ESI `/skillqueue` directly.
+4. **Data layer** — parse SDE JSON dump once into a compact `skills.json`; query ESI for live character state (attributes, implant IDs, skill levels, queue).
+5. **CLI interface** — minimal args: `eve-remap optimize --remaps N --last-remap-date D [--character-id ID]`.
 
 ### Out of Scope (for now)
 
 - GUI / web frontend
 - Real-time ESI polling or live progress tracking
-- Multi-character fleet optimization
+- Multi-character fleet optimization (multi-char is only auth/storage support)
 - Prerequisite graph between skills (flat priority list first)
+- Copy/paste queue input (future feature)
 
 ## Tech Stack
 
@@ -33,8 +35,8 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 | Language | **Rust** | Fast computation, strong typing, great CLI ergonomics via clap, native binary distribution |
 | CLI | **clap** | Standard Rust CLI framework |
 | Skill data | **JSON file** (`assets/skills.json`) | Only ~400 skills × 7 fields each; loads in microseconds with serde |
-| HTTP | **reqwest** | Fetch ESI character data |
-| Config | **env vars** | ESI token in env, no runtime config files |
+| HTTP | **reqwest** | Fetch ESI character data + OAuth token exchange |
+| Token storage | **JSON file** (`~/.config/eve-remap/tokens.json`) | Per-character tokens with auto-refresh on expiry (~20 min access, long-lived refresh) |
 | Testing | **cargo test** with proptest | Deterministic, fast |
 
 ## Architecture
@@ -42,10 +44,12 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 ```
 ┌───────────────────────────────────────┐
 │              CLI (clap)               │
+│    login                              │
 │    optimize --remaps N                │
 │             --last-remap-date D       │
-│             --character-id ID         │
-│             --targets file            │
+│             [--character-id ID]       │
+│    logout                             │
+│    accounts list                      │
 └──────────────┬────────────────────────┘
                │
 ┌──────────────▼────────────────────────┐
@@ -54,7 +58,7 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 │  ┌─────────────────────────────────┐  │
 │  │      Multi-Epoch Optimizer       │  │
 │  │                                  │  │
-│  │  Simulate all skills training    │  │
+│  │  Simulate all queue skills       │  │
 │  │  under allocation per epoch.     │  │
 │  │  Score = when last skill done.   │  │
 │  │  Greedy: fix epoch0=current,     │  │
@@ -70,7 +74,9 @@ Output: phased plan telling the user what allocation to set at each epoch, which
               │
 ┌─────────────▼─────────────────────────┐
 │           Data Layer                  │
+│                                       │
 │  skills.json   ESI HTTP Client        │
+│  tokens.json   SSO Auth (PKCE)        │
 └───────────────────────────────────────┘
 ```
 
@@ -84,18 +90,22 @@ eve-remap/
 │   ├── cli.rs             — clap argument definitions
 │   ├── calculator.rs      — duration formula, rate computation, implant resolution
 │   ├── optimizer.rs       — multi-epoch allocation search with simulation
+│   ├── auth/
+│   │   ├── mod.rs         — auth facade
+│   │   ├── sso.rs         — EVE SSO OAuth2 PKCE flow (authorize, token exchange)
+│   │   └── store.rs       — local token persistence (~/.config/eve-remap/tokens.json)
 │   ├── data/
 │   │   ├── mod.rs         — data layer facade
 │   │   ├── sde.rs         — SDE JSONL → skills.json parser
-│   │   ├── esi.rs         — ESI client (reqwest wrapper)
+│   │   ├── esi.rs         — ESI client (reqwest wrapper, auto-refreshes tokens)
 │   │   └── models.rs      — shared domain types
-│   └── config.rs          — token / path configuration
+│   └── config.rs          — app paths, SSO client ID config
 ├── assets/
-│   └── skills.json        — pre-parsed skill data (~400 entries, ~150KB)
+│   ├── skills.json        — pre-parsed skill data (~400 entries, ~150KB)
+│   └── implants.json      — implant type → attribute bonus mapping
 ├── tests/
 │   ├── calculator_test.rs — duration formula against known values
 │   └── optimizer_test.rs  — small character scenarios
-└── .env                   — gitignored; ESI credentials
 ```
 
 ## Domain Model
@@ -164,15 +174,45 @@ Valid remaps distribute points across 5 attributes with constraints:
 - Total points depends on character's SP investment (typically 25 base + unallocated SP can buy more, up to 25 per attribute max)
 - At N=25: C(24,4) = 12,650 combinations. With actual min/max constraints from character data, typically fewer (~560 realistic combos).
 
+### SSO Authentication & Token Lifecycle
+
+OAuth 2.0 Authorization Code flow with PKCE — no client secret needed. Requires a registered app on [developers.eveonline.com](https://developers.eveonline.com/applications/) with a `http://127.0.0.1/callback` redirect URI.
+
+**Flow:**
+1. CLI spins up local HTTP listener on `127.0.0.1:<port>` (random available port).
+2. Opens browser to `login.eveonline.com/v2/oauth/authorize?code_challenge=...&redirect_uri=http://127.0.0.1:<port>/callback`.
+3. User logs into EVE, selects character, consents to scopes.
+4. EVE redirects back to localhost callback with authorization code.
+5. CLI exchanges the code for access token + refresh token at `login.eveonline.com/v2/oauth/token`.
+6. Access token is a JWT containing `owner_character_id` and `character_owner_email` — gives us the character ID automatically.
+7. Store `{ characterId, characterName, accessToken, refreshToken, expiresAt }` in `~/.config/eve-remap/tokens.json`.
+8. On subsequent runs, check if stored access token is still valid; auto-refresh via POST to `/token` with `grant_type=refresh_token` if expired (~20 min lifetime). Refresh tokens are long-lived unless revoked by user.
+
+**Scopes requested:**
+- `esi-skills.read_skills.v1` — current skill levels and SP totals
+- `esi-skills.read_skillqueue.v1` — queued skills and training progress
+- `esi-clones.read_clones.v1` — home clone location (optional context)
+
+### Multi-Character Support
+
+Token store maps character ID → credentials. When multiple characters are logged in:
+
+| Scenario | Behavior |
+|----------|----------|
+| `--character-id` specified | Use that character directly; error if not found in store |
+| No flag, single character in store | Use it silently |
+| No flag, multiple characters in store | Print numbered list, prompt for selection |
+| No characters in store | Run `login` flow first, then proceed |
+
 ## Input Parameters (CLI)
 
 | Parameter | Source | Description |
 |-----------|--------|-------------|
-| `--character-id` | CLI | ESI character ID |
-| `--remaps` | CLI | Number of **bonus** remaps available (timed ones are computed from date) |
-| `--last-remap-date` | CLI | Date of last remap; used to compute when next timed remap unlocks (+365 days) |
-| `--targets` | CLI | File listing target skills and desired levels (`skillId:desiredLevel`, one per line) |
-| ESI token | env var `EVE_ESI_TOKEN` | Authenticated API access |
+| `--remaps` | CLI (required) | Number of **bonus** remaps available (timed ones computed from date) |
+| `--last-remap-date` | CLI (required) | Date of last remap (`YYYY-MM-DD`); used to compute when next timed remap unlocks (+365 days) |
+| `--character-id` | CLI (optional) | Override auto-selection; must match a previously authorized character |
+
+No `--targets` flag — the optimizer reads the current skill queue directly from ESI `/characters/{id}/skillqueue/`. If users want skills beyond their queue accounted for, they add them in-game first and re-run.
 
 ## Data Flow
 
@@ -183,16 +223,21 @@ Valid remaps distribute points across 5 attributes with constraints:
    - Parse implant bonus data → `assets/implants.json`
      - Each record: `{ typeId, attributeName, bonus }`
 
-2. **Character Fetch** — fetch current state via ESI
+2. **Authentication** (`eve-remap login`, or auto on first use)
+   - PKCE flow: open browser → user authorizes → catch localhost callback → exchange code for tokens
+   - Store tokens locally with expiry tracking
+   - On subsequent runs: verify token validity via JWT inspection or `/oauth/verify`; refresh if expired
+
+3. **Character Fetch** — fetch current state via ESI (auto-refreshes token if needed)
    - `/characters/{id}/attributes/` → base attribute values
    - `/characters/{id}/skills/` → trained skill levels, SP totals
-   - `/characters/{id}/skillqueue/` → what's currently queued (optional, for context)
+   - `/characters/{id}/skillqueue/` → target skills and their training progress
    - `/characters/{id}/implants/` → active implant IDs → resolve to effective attributes
 
-3. **Optimization Pipeline**
+4. **Optimization Pipeline**
    - Compute epoch boundaries from `--last-remap-date` + 365-day intervals + bonus count
    - Resolve effective attributes = base + implants
-   - Epoch 0 fixed to current effective attrs; simulate all target skills forward
+   - Epoch 0 fixed to current effective attrs; simulate all queue skills forward
    - For each subsequent epoch: greedy best-response allocation minimizing projected finish of bottleneck skill
    - Output phased plan with allocations, per-skill completion dates, and total duration
 
@@ -203,8 +248,10 @@ Valid remaps distribute points across 5 attributes with constraints:
 - Implement SDE parser: download JSONL → extract skill records + implant bonuses → write `skills.json` and `implants.json`
 - Build `calculator.rs` with the duration formula; test against known values
 
-### Phase 2 — Data Layer
-- ESI client: authenticated requests to `/attributes`, `/skills`, `/implants`
+### Phase 2 — Auth & Data Layer
+- SSO module: PKCE flow (code verifier/challenge generation, browser open, localhost callback server, token exchange)
+- Token store: persistent JSON file at `~/.config/eve-remap/tokens.json`; JWT expiry checking; refresh logic
+- ESI client: authenticated requests to `/attributes`, `/skills`, `/skillqueue`, `/implants`; auto-refresh on 401
 - Domain models mapping API responses → internal types
 - Character state snapshot combining ESI data + assets lookups (effective attributes)
 
@@ -215,7 +262,7 @@ Valid remaps distribute points across 5 attributes with constraints:
 - Output phased plan
 
 ### Phase 4 — CLI Polish
-- All commands wired up with clap subcommands
+- All commands wired up with clap subcommands (`login`, `logout`, `accounts`, `download`, `optimize`)
 - Human-readable output: table per epoch showing allocation, which skills complete, start/end dates
 - JSON output format for scripting
 
@@ -223,8 +270,12 @@ Valid remaps distribute points across 5 attributes with constraints:
 
 1. **Rust**: Fast computation for the optimizer's tight loop, native binary distribution, no venv or dependency hell.
 
-2. **JSON files over SQLite**: Skill data is ~400 entries × 7 fields. A flat JSON file loads in microseconds with serde — no DB library needed.
+2. **JSON files over SQLite**: Skill and implant data are ~400+ entries × 7 fields each. Flat JSON loads in microseconds with serde — no DB library needed.
 
 3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
 
 4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count. User provides `--remaps` (bonus count) and `--last-remap-date`; timed remaps are computed as +365 day intervals.
+
+5. **SSO login via PKCE**: No client secret to manage locally. Registered app on developers.eveonline.com with `http://127.0.0.1/callback` redirect URI. Local HTTP server catches the callback; tokens stored persistently with auto-refresh.
+
+6. **Queue from ESI, not file input**: Target skills come directly from `/skillqueue/`. If users want different targets, they adjust their queue in-game first. Keeps the tool focused on optimization, not queue management.
