@@ -3,7 +3,7 @@ target/
 **/*.rs.bk
 
 # Data (SDE downloads, SQLite DB)
-data/
+/data/
 
 # Secrets
 .env
