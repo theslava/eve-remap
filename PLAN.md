@@ -12,11 +12,11 @@ Secondary question: given a fixed remap, what is the optimal skill training orde
 
 ### In Scope (MVP)
 
-1. **Skill duration calculator** — compute exact training time for any skill→level transition given an attribute allocation, using SDE data (baseTime, governingAttributeID, attributeModifier).
-2. **Optimizer core** — given a character snapshot + target skill list → find the attribute allocation (remap) that minimizes total queue duration. Brute-force over valid allocations (max ~560 combinations for 25 points across 5 attributes with min 1 each); this is tractable.
+1. **Skill duration calculator** — compute exact training time for any skill→level transition given an attribute allocation, using SDE-derived skill data (baseTime, primaryAttribute + modifier, secondaryAttribute + modifier).
+2. **Optimizer core** — given a character snapshot + target skill list → find the attribute allocation (remap) that minimizes total queue duration. Brute-force over valid allocations (~12K combos max); tractable thanks to bucketed scoring.
 3. **Queue scheduler** — given a fixed remap + target skills, determine optimal ordering respecting brain size limits and prerequisite chains.
-4. **Data layer** — ingest SDE JSON dump (types.jsonl, typeDogma.jsonl, dogmaAttributes.jsonl, characterAttributes.jsonl) into a local SQLite database; query ESI for character state.
-5. **CLI interface** — `eve-remap optimize --character-id <id> --skills <file>` produces the recommended remap + ordered queue.
+4. **Data layer** — parse SDE JSON dump once into a compact `skills.json` (one record per skill: id, name, baseTime, primaryAttrId, primaryModifier, secondaryAttrId, secondaryModifier); query ESI for live character state.
+5. **CLI interface** — `eve-remap optimize --character-id <id> --targets <file>` produces the recommended remap + ordered queue.
 
 ### Out of Scope (for now)
 
@@ -29,12 +29,12 @@ Secondary question: given a fixed remap, what is the optimal skill training orde
 
 | Layer | Choice | Rationale |
 |-------|--------|-----------|
-| Language | **Rust** | Fast computation (optimizer runs many combos), strong typing, great CLI ergonomics via clap, excellent ecosystem for data work |
+| Language | **Rust** | Fast computation, strong typing, great CLI ergonomics via clap, native binary distribution |
 | CLI | **clap** | Standard Rust CLI framework |
-| Data format | **SQLite** (via rusqlite) | SDE fits in ~50MB on disk; perfect for joins between types/dogma/attributes |
+| Skill data | **JSON file** (`assets/skills.json`) | Only ~400 skills × 6 fields each; no DB needed. Generated once from SDE at build time or via `download` command. |
 | HTTP | **reqwest** | Fetch ESI character data |
-| Config | **toml** (.env-style env vars for tokens) | Simple, no runtime config file needed |
-| Testing | **cargo test** with proptest for fuzzing duration formulas | Deterministic, fast |
+| Config | **env vars** | ESI token in env, no runtime config files |
+| Testing | **cargo test** with proptest | Deterministic, fast |
 
 ## Architecture
 
@@ -43,7 +43,7 @@ Secondary question: given a fixed remap, what is the optimal skill training orde
 │           CLI (clap)            │
 │  Commands:                      │
 │    optimize   — full pipeline   │
-│    download   — fetch SDE       │
+│    download   — fetch + parse SDE│
 │    char-show  — inspect char     │
 └──────────────┬──────────────────┘
                │
@@ -58,8 +58,8 @@ Secondary question: given a fixed remap, what is the optimal skill training orde
 │        │              │         │
 │  ┌─────▼──────────────▼──────┐  │
 │  │      Duration Calculator   │  │
-│  │  f(baseTime, attrVal,      │  │
-│  │     modifier, level) → ms  │  │
+│  │  f(baseTime, primaryAttr,  │  │
+│  │     secondaryAttr, level)  │  │
 │  └──────────────┬─────────────┘  │
 └─────────────────┼────────────────┘
                   │
@@ -67,13 +67,14 @@ Secondary question: given a fixed remap, what is the optimal skill training orde
 │          Data Layer              │
 │                                  │
 │  ┌──────────────┐  ┌──────────┐ │
-│  │ SDE SQLite DB │  │ ESI HTTP │ │
-│  │ (types, dogma)│  │ Client   │ │
+│  │ skills.json  │  │ ESI HTTP │ │
+│  │ (pre-parsed  │  │ Client   │ │
+│  │  SDE extract)│  │          │ │
 │  └──────────────┘  └──────────┘ │
 └──────────────────────────────────┘
 ```
 
-### Crate Structure
+### Project Structure
 
 ```
 eve-remap/
@@ -81,20 +82,20 @@ eve-remap/
 ├── src/
 │   ├── main.rs           — CLI entrypoint (clap commands)
 │   ├── cli.rs             — clap argument definitions
-│   ├── calculator.rs      — skill duration formula
-│   ├── optimizer.rs       — remap search + scoring
+│   ├── calculator.rs      — skill duration formula + bucket builder
+│   ├── optimizer.rs       — allocation enumeration + scoring
 │   ├── scheduler.rs       — queue ordering with brain size
 │   ├── data/
 │   │   ├── mod.rs         — data layer facade
-│   │   ├── sde.rs         — SDE ingestion → SQLite
+│   │   ├── sde.rs         — SDE JSONL → skills.json parser
 │   │   ├── esi.rs         — ESI client (reqwest wrapper)
 │   │   └── models.rs      — shared domain types
 │   └── config.rs          — token / path configuration
+├── assets/
+│   └── skills.json        — pre-parsed skill data (~400 entries, ~150KB)
 ├── tests/
 │   ├── calculator_test.rs — duration formula against known values
 │   └── optimizer_test.rs  — small character scenarios
-├── data/                  — gitignored; holds SDE SQLite DB
-│   └── sde.db
 └── .env                   — gitignored; ESI credentials
 ```
 
@@ -102,39 +103,40 @@ eve-remap/
 
 ### Skill Duration Formula
 
-From EVE mechanics:
+From EVE mechanics, each skill has a **primary** and **secondary** attribute:
 
 ```
-duration(skill, level) = baseTime × levelMultiplier[level] / (attrValue ^ modifier)
+duration(skill, level) = baseTime × levelMultiplier[level]
+    / (primaryAttrValue ^ primaryModifier)
+    / (secondaryAttrValue ^ secondaryModifier)
 
 levelMultiplier = [1, 4, 20, 80, 360]  // for levels 1-5
 ```
 
-Where:
-- `baseTime` — dogma attribute of the skill type (in seconds)
-- `attributeValue` — character's value in the governing attribute (1..25)
-- `modifier` — dogma attribute of the skill type (varies per skill)
-- Each skill has exactly one governing attribute ID (also from dogma)
+Where per skill:
+- `baseTime` — base training time in seconds
+- `primaryAttrId` / `primaryModifier` — governing attribute and its exponent
+- `secondaryAttrId` / `secondaryModifier` — secondary attribute and its exponent
 
-### Bucketed Scoring (avoids per-allocation re-scan)
+### Bucketed Scoring
 
-Instead of iterating every target skill for every candidate allocation, precompute **once**:
+Precompute once from the target queue. Each skill transition contributes to exactly one bucket keyed by `(primaryAttrId, primaryModifier, secondaryAttrId, secondaryModifier)`:
 
 ```
 For each target skill transition (currentLevel → desiredLevel):
     rawSP = baseTime × sum(levelMultiplier[currentLevel..desiredLevel-1])
-    governingAttr = skill's governing attribute
-    modifier     = skill's training modifier
-    bucket[governingAttr][modifier] += rawSP
+    key   = (skill.primaryAttrId, skill.primaryMod,
+             skill.secondaryAttrId, skill.secondaryMod)
+    bucket[key] += rawSP
 ```
 
-Then scoring any allocation `(a1, a2, a3, a4, a5)` is just:
+Scoring any allocation `(a1..a5)` is then:
 
 ```
-totalDuration = Σ_attr Σ_modifier bucket[attr][mod] / (alloc[attr] ^ mod)
+totalDuration = Σ_keys bucket[k] / (alloc[k.pAttr]^k.pMod) / (alloc[k.sAttr]^k.sMod)
 ```
 
-This reduces the inner loop from `O(numSkills)` to `O(distinctModifiers × 5)` — typically ~25 divisions instead of hundreds of multiplications + exponentiations. The buckets are computed once and reused across all ~12K allocations.
+With ~400 skills collapsing into a handful of distinct (attr×mod) pairs, this is O(bucketCount) per allocation instead of O(numSkills).
 
 ### Attribute Allocation Space
 
@@ -154,8 +156,8 @@ Brain size determines how many skills can train simultaneously:
 
 1. **SDE Ingestion** (`eve-remap download`)
    - Download SDE zip from CCP → extract relevant JSONL files
-   - Parse and load into SQLite with indexed tables
-   - Pre-compute a `skills` view joining types + dogma for quick lookups
+   - Parse types.jsonl + typeDogma.jsonl → compact `assets/skills.json`
+   - Each record: `{ id, name, baseTime, primaryAttrId, primaryModifier, secondaryAttrId, secondaryModifier }`
 
 2. **Character Fetch** (`eve-remap char-show --character-id <id>`)
    - Auth via ESI token (stored in env var or .env file)
@@ -165,7 +167,7 @@ Brain size determines how many skills can train simultaneously:
 
 3. **Optimization** (`eve-remap optimize --character-id <id> --targets <file>`)
    - Load character state + target skills
-   - Pre-compute per-(attribute, modifier) SP buckets from target queue
+   - Pre-compute per-(attr, modifier) SP buckets from target queue
    - For each valid remap allocation:
      - Score using bucketed formula (~25 divisions per allocation)
    - Return top-N allocations with projected queue
@@ -174,15 +176,15 @@ Brain size determines how many skills can train simultaneously:
 ## Implementation Plan
 
 ### Phase 1 — Foundation
-- Scaffold Rust project with Cargo workspace
-- Implement SDE download + SQLite ingestion pipeline
+- Scaffold Rust project with Cargo
+- Implement SDE parser: download JSONL → extract skill records → write `skills.json`
 - Build `calculator.rs` with the duration formula; test against known values
-- Add `.gitignore` for data/ and .env
+- Add `.gitignore` for .env
 
 ### Phase 2 — Data Layer
 - ESI client: authenticated requests to `/skills` and `/skillqueue`
 - Domain models mapping API responses → internal types
-- Character state snapshot type combining ESI + SDE lookups
+- Character state snapshot type combining ESI + skills.json lookups
 
 ### Phase 3 — Optimizer Core
 - Enumerate valid attribute allocations given character constraints
@@ -201,10 +203,10 @@ Brain size determines how many skills can train simultaneously:
 
 ## Key Decisions
 
-1. **Rust over Python**: The optimizer's inner loop is tight but not GPU-bound; Rust gives us speed without complexity, plus we get a native binary distribution. No venv, no dependency hell.
+1. **Rust over Python**: Fast computation for the optimizer's tight loop, native binary distribution, no venv or dependency hell.
 
-2. **SQLite over flat files for SDE**: We need joins between types ↔ dogmaAttributes ↔ attributes. SQLite handles this natively and the DB fits in memory easily (~50MB).
+2. **JSON file over SQLite**: The data we need per skill is 6 scalar fields (~400 skills). A flat JSON file loads in microseconds with serde — no DB library, no schema migrations, no runtime dependency.
 
-3. **Brute-force over heuristic search**: The allocation space is small enough that exhaustive search is correct by construction. No risk of local optima.
+3. **Brute-force over heuristic search**: ~12K allocations max × O(1) bucketed scoring = sub-second runtime. Exhaustive search is correct by construction.
 
-4. **No prerequisite graph in MVP**: Skill prerequisites are complex and many players already know them. The scheduler can work on a flat priority list first; prerequisites can be added later when we parse the SDE's skill group dependencies.
+4. **No prerequisite graph in MVP**: Skill prerequisites are complex. The scheduler works on a flat priority list first; prerequisites can be added later from SDE group dependencies.
