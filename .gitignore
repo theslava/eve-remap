@@ -1,0 +1,19 @@
+# Build
+target/
+**/*.rs.bk
+
+# Data (SDE downloads, SQLite DB)
+data/
+
+# Secrets
+.env
+.env.*
+
+# IDE
+.idea/
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,3 @@
+# OMP project configuration
+# Native provider (.omp/) has highest discovery priority (100).
+# AGENTS.md at repo root is also loaded via agents-md provider (priority 10).
