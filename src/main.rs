@@ -1,8 +1,8 @@
 mod calculator;
 mod data;
 mod auth;
-
-use anyhow::Result;
+mod optimizer;
+use anyhow::{Context, Result};
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -54,7 +54,41 @@ fn cmd_verify() {
 }
 
 async fn cmd_optimize(_subargs: &[String]) -> Result<()> {
-    // TODO: implement optimizer pipeline
-    println!("Optimizer coming soon. Run 'eve-remap verify' first.");
+    let skills_db = data::load_skills()?;
+    let implants = data::load_implants()?;
+    
+    // For now, run with a sample character state for demonstration.
+    // In production this would be populated from ESI /character and /skillqueue endpoints.
+    let char_state = optimizer::CharacterState {
+        base_attributes: crate::data::models::BaseAttributes {
+            intelligence: 12.0,
+            charisma: 3.0,
+            perception: 4.0,
+            memory: 4.0,
+            willpower: 2.0,
+        },
+        active_implant_ids: vec![],
+        queued_skills: vec![],
+    };
+    
+    let result = optimizer::optimize(&char_state, &skills_db, &implants);
+    
+    println!("Optimization complete: {} epochs, {:.1} total days", 
+        result.epochs.len(), result.total_days);
+    
+    for (i, epoch) in result.epochs.iter().enumerate() {
+        println!("  Epoch {}: start={:.0}d attrs=({}, {}, {}, {}, {}) completed={} finish={:.0}d",
+            i,
+            epoch.start_offset_days,
+            epoch.attributes.intelligence as u32,
+            epoch.attributes.charisma as u32,
+            epoch.attributes.perception as u32,
+            epoch.attributes.memory as u32,
+            epoch.attributes.willpower as u32,
+            epoch.completed_skills.len(),
+            epoch.projected_finish_days,
+        );
+    }
+    
     Ok(())
 }
