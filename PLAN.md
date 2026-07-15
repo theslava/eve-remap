@@ -2,28 +2,30 @@
 
 ## Problem Statement
 
-EVE Online players invest hundreds of hours training skills on their characters. When they use a Neural Interface to remap (reallocate attribute points between Intelligence, Memory, Processing, Perception, Willpower), it resets all currently training skills back to their starting SP levels. The optimizer should answer:
+EVE Online players invest hundreds of hours training skills on their characters. When they use a Neural Interface to remap (reallocate attribute points between Intelligence, Memory, Processing, Perception, Willpower), it resets all currently training skills back to their starting SP levels. Players have a timed remap available every 365 days plus any bonus remaps they've purchased.
 
-> Given my character's current state and a target set of skills I want to train, what attribute allocation minimizes total training time?
+The optimizer should answer:
 
-Secondary question: given a fixed remap, what is the optimal skill training order?
+> Given my character's current attributes, skill queue, and available remaps — how should I order my skills across remap epochs to minimize total completion time?
+
+Output: the user gets a phased plan telling them which skills to train under each allocation and when to hit remap.
 
 ## Scope
 
 ### In Scope (MVP)
 
 1. **Skill duration calculator** — compute exact training time for any skill→level transition given an attribute allocation, using SDE-derived skill data (baseTime, primaryAttribute + modifier, secondaryAttribute + modifier).
-2. **Optimizer core** — given a character snapshot + target skill list → find the attribute allocation (remap) that minimizes total queue duration. Brute-force over valid allocations (~12K combos max); tractable thanks to bucketed scoring.
-3. **Queue scheduler** — given a fixed remap + target skills, determine optimal ordering respecting brain size limits and prerequisite chains.
-4. **Data layer** — parse SDE JSON dump once into a compact `skills.json` (one record per skill: id, name, baseTime, primaryAttrId, primaryModifier, secondaryAttrId, secondaryModifier); query ESI for live character state.
-5. **CLI interface** — `eve-remap optimize --character-id <id> --targets <file>` produces the recommended remap + ordered queue.
+2. **Multi-epoch optimizer** — partition target skills into sequential "epochs" separated by remaps. Each epoch has its own optimal allocation. The optimizer finds the allocation per epoch that minimizes total wall-clock time from now through all epochs.
+3. **Data layer** — parse SDE JSON dump once into a compact `skills.json`; query ESI for live character state (current attributes, skill levels, queue).
+4. **CLI interface** — user provides remap info via CLI args; tool outputs phased plan with allocations, skill ordering, and dates.
 
 ### Out of Scope (for now)
 
 - GUI / web frontend
 - Real-time ESI polling or live progress tracking
-- Implant bonuses (those modify effective attributes but are per-character and optional)
+- Implant bonuses on effective attributes (per-character, optional)
 - Multi-character fleet optimization
+- Prerequisite graph between skills (flat priority list first)
 
 ## Tech Stack
 
@@ -31,7 +33,7 @@ Secondary question: given a fixed remap, what is the optimal skill training orde
 |-------|--------|-----------|
 | Language | **Rust** | Fast computation, strong typing, great CLI ergonomics via clap, native binary distribution |
 | CLI | **clap** | Standard Rust CLI framework |
-| Skill data | **JSON file** (`assets/skills.json`) | Only ~400 skills × 6 fields each; no DB needed. Generated once from SDE at build time or via `download` command. |
+| Skill data | **JSON file** (`assets/skills.json`) | Only ~400 skills × 7 fields each; loads in microseconds with serde |
 | HTTP | **reqwest** | Fetch ESI character data |
 | Config | **env vars** | ESI token in env, no runtime config files |
 | Testing | **cargo test** with proptest | Deterministic, fast |
@@ -39,39 +41,37 @@ Secondary question: given a fixed remap, what is the optimal skill training orde
 ## Architecture
 
 ```
-┌─────────────────────────────────┐
-│           CLI (clap)            │
-│  Commands:                      │
-│    optimize   — full pipeline   │
-│    download   — fetch + parse SDE│
-│    char-show  — inspect char     │
-└──────────────┬──────────────────┘
+┌───────────────────────────────────────┐
+│              CLI (clap)               │
+│    optimize --remaps N                │
+│             --last-remap-date D       │
+│             --character-id ID         │
+│             --targets file            │
+└──────────────┬────────────────────────┘
                │
-┌──────────────▼──────────────────┐
-│        Application Layer        │
-│                                 │
-│  ┌───────────┐  ┌────────────┐ │
-│  │ Optimizer  │  │ Scheduler  │ │
-│  │ (remap +   │  │ (brain-    │ │
-│  │  ordering) │  │  aware)    │ │
-│  └─────┬─────┘  └─────┬──────┘ │
-│        │              │         │
-│  ┌─────▼──────────────▼──────┐  │
-│  │      Duration Calculator   │  │
-│  │  f(baseTime, primaryAttr,  │  │
-│  │     secondaryAttr, level)  │  │
-│  └──────────────┬─────────────┘  │
-└─────────────────┼────────────────┘
-                  │
-┌─────────────────▼────────────────┐
-│          Data Layer              │
-│                                  │
-│  ┌──────────────┐  ┌──────────┐ │
-│  │ skills.json  │  │ ESI HTTP │ │
-│  │ (pre-parsed  │  │ Client   │ │
-│  │  SDE extract)│  │          │ │
-│  └──────────────┘  └──────────┘ │
-└──────────────────────────────────┘
+┌──────────────▼────────────────────────┐
+│          Application Layer            │
+│                                       │
+│  ┌─────────────────────────────────┐  │
+│  │      Multi-Epoch Optimizer       │  │
+│  │                                  │  │
+│  │  For each epoch (N+1 total):     │  │
+│  │    - find best allocation        │  │
+│  │    - assign skill group          │  │
+│  │    - compute duration            │  │
+│  │                                  │  │
+│  │  Output: phased plan with dates  │  │
+│  └──────────┬──────────────────────┘  │
+│             │                         │
+│  ┌──────────▼──────────────────────┐  │
+│  │      Duration Calculator         │  │
+│  └──────────┬──────────────────────┘  │
+└─────────────┼─────────────────────────┘
+              │
+┌─────────────▼─────────────────────────┐
+│           Data Layer                  │
+│  skills.json   ESI HTTP Client        │
+└───────────────────────────────────────┘
 ```
 
 ### Project Structure
@@ -83,8 +83,7 @@ eve-remap/
 │   ├── main.rs           — CLI entrypoint (clap commands)
 │   ├── cli.rs             — clap argument definitions
 │   ├── calculator.rs      — skill duration formula + bucket builder
-│   ├── optimizer.rs       — allocation enumeration + scoring
-│   ├── scheduler.rs       — queue ordering with brain size
+│   ├── optimizer.rs       — multi-epoch allocation search
 │   ├── data/
 │   │   ├── mod.rs         — data layer facade
 │   │   ├── sde.rs         — SDE JSONL → skills.json parser
@@ -100,6 +99,13 @@ eve-remap/
 ```
 
 ## Domain Model
+
+### Remap Mechanics (confirmed from CCP support docs)
+
+- **Timed remap**: available every 365 days after last use. Consumed first if both timed and bonus are available.
+- **Bonus remaps**: purchased separately, usable anytime alongside the timed cooldown.
+- User provides: number of bonus remaps available + date of last remap (to compute when next timed one unlocks).
+- ESI does NOT expose the neural interface cooldown or bonus remap count — these come from CLI args.
 
 ### Skill Duration Formula
 
@@ -118,39 +124,67 @@ Where per skill:
 - `primaryAttrId` / `primaryModifier` — governing attribute and its exponent
 - `secondaryAttrId` / `secondaryModifier` — secondary attribute and its exponent
 
-### Bucketed Scoring
+### Multi-Epoch Optimization Strategy
 
-Precompute once from the target queue. Each skill transition contributes to exactly one bucket keyed by `(primaryAttrId, primaryModifier, secondaryAttrId, secondaryModifier)`:
+The optimizer partitions target skills into sequential epochs separated by remaps:
 
 ```
-For each target skill transition (currentLevel → desiredLevel):
+Epoch 0 (now → remap 1):   allocation A0, skills S0
+Epoch 1 (remap 1 → remap2): allocation A1, skills S1
+...
+Epoch N (remap N → end):    allocation AN, skills SN
+```
+
+For each epoch, skills are bucketed by their dominant attribute affinity. The strategy:
+
+1. **Epoch 0**: train skills that already benefit from current attributes (no remap cost yet). These are the "free" skills.
+2. **Subsequent epochs**: assign the biggest remaining bucket to the next epoch's optimal allocation. Each epoch's allocation is optimized for that epoch's skill group.
+
+This avoids the combinatorial explosion of trying every possible partition across all allocations. Instead it follows a greedy heuristic grounded in the intuition that you want to maximize throughput within each epoch before paying the remap penalty.
+
+### Bucketed Scoring (within an epoch)
+
+Precompute once per epoch candidate. Each skill transition contributes rawSP to a bucket keyed by `(primaryAttrId, primaryModifier, secondaryAttrId, secondaryModifier)`:
+
+```
+For each skill in the epoch:
     rawSP = baseTime × sum(levelMultiplier[currentLevel..desiredLevel-1])
     key   = (skill.primaryAttrId, skill.primaryMod,
              skill.secondaryAttrId, skill.secondaryMod)
     bucket[key] += rawSP
 ```
 
-Scoring any allocation `(a1..a5)` is then:
+Scoring any allocation `(a1..a5)` for this epoch:
 
 ```
-totalDuration = Σ_keys bucket[k] / (alloc[k.pAttr]^k.pMod) / (alloc[k.sAttr]^k.sMod)
+epochDuration = Σ_keys bucket[k] / (alloc[k.pAttr]^k.pMod) / (alloc[k.sAttr]^k.sMod)
 ```
 
-With ~400 skills collapsing into a handful of distinct (attr×mod) pairs, this is O(bucketCount) per allocation instead of O(numSkills).
+O(bucketCount) per allocation — typically ~25 divisions.
 
 ### Attribute Allocation Space
 
 Valid remaps distribute points across 5 attributes with constraints:
 - Each attribute must be ≥ 1
-- Total points depends on character's SP investment in attributes (typically 25 base + unallocated SP can buy more, up to 25 per attribute max)
-- For brute-force: enumerate all integer partitions of N into 5 bins with bounds [minAttr, maxAttr]. At N=25, that's C(24,4) = 12,650 combinations — very fast even in Rust without optimization. With actual min/max constraints from character data, it's typically fewer (~560 realistic combos).
+- Total points depends on character's SP investment (typically 25 base + unallocated SP can buy more, up to 25 per attribute max)
+- At N=25: C(24,4) = 12,650 combinations. With actual min/max constraints from character data, typically fewer (~560 realistic combos).
 
 ### Brain Size
 
 Brain size determines how many skills can train simultaneously:
 - Base brain size grows with total trained skill levels
 - Max ~25 concurrent training slots at high brain size
-- The scheduler fills parallel slots before sequencing
+- Within each epoch, skills fill parallel slots before sequencing
+
+## Input Parameters (CLI)
+
+| Parameter | Source | Description |
+|-----------|--------|-------------|
+| `--character-id` | CLI | ESI character ID |
+| `--remaps` | CLI | Number of **bonus** remaps available (timed ones are computed from date) |
+| `--last-remap-date` | CLI | Date of last remap; used to compute when next timed remap unlocks (+365 days) |
+| `--targets` | CLI | File listing target skills and desired levels |
+| ESI token | env var `EVE_ESI_TOKEN` | Authenticated API access |
 
 ## Data Flow
 
@@ -159,19 +193,17 @@ Brain size determines how many skills can train simultaneously:
    - Parse types.jsonl + typeDogma.jsonl → compact `assets/skills.json`
    - Each record: `{ id, name, baseTime, primaryAttrId, primaryModifier, secondaryAttrId, secondaryModifier }`
 
-2. **Character Fetch** (`eve-remap char-show --character-id <id>`)
-   - Auth via ESI token (stored in env var or .env file)
-   - Fetch `/characters/{id}/skills` (current skill levels, SP totals)
-   - Fetch `/characters/{id}/skillqueue` (what's currently queued)
-   - Display summary
+2. **Character Fetch** — fetch current state via ESI
+   - `/characters/{id}/attributes/` → current attribute values
+   - `/characters/{id}/skills/` → trained skill levels, SP totals
+   - `/characters/{id}/skillqueue/` → what's currently queued
 
-3. **Optimization** (`eve-remap optimize --character-id <id> --targets <file>`)
-   - Load character state + target skills
-   - Pre-compute per-(attr, modifier) SP buckets from target queue
-   - For each valid remap allocation:
-     - Score using bucketed formula (~25 divisions per allocation)
-   - Return top-N allocations with projected queue
-   - Output ordered skill list respecting brain size
+3. **Optimization Pipeline**
+   - Compute remap dates from `--last-remap-date` + 365-day intervals + bonus count
+   - Group target skills by dominant attribute affinity
+   - Epoch 0: assign skills matching current attributes; find best allocation = current attrs (fixed)
+   - Remaining epochs: greedily assign biggest remaining bucket; optimize allocation for that bucket
+   - Output phased plan with allocations, skill groups, and projected completion dates
 
 ## Implementation Plan
 
@@ -179,34 +211,30 @@ Brain size determines how many skills can train simultaneously:
 - Scaffold Rust project with Cargo
 - Implement SDE parser: download JSONL → extract skill records → write `skills.json`
 - Build `calculator.rs` with the duration formula; test against known values
-- Add `.gitignore` for .env
 
 ### Phase 2 — Data Layer
-- ESI client: authenticated requests to `/skills` and `/skillqueue`
+- ESI client: authenticated requests to `/attributes`, `/skills`, `/skillqueue`
 - Domain models mapping API responses → internal types
-- Character state snapshot type combining ESI + skills.json lookups
+- Character state snapshot combining ESI data + skills.json lookups
 
-### Phase 3 — Optimizer Core
-- Enumerate valid attribute allocations given character constraints
-- Build SP buckets from target skill set (one-time precomputation)
-- Score each allocation against bucketed sums; return ranked results
+### Phase 3 — Multi-Epoch Optimizer
+- Remap date computation from user input
+- Skill grouping by attribute affinity
+- Greedy epoch assignment: current-attrs first, then biggest buckets
+- Per-epoch allocation optimization using bucketed scoring
+- Output phased plan
 
-### Phase 4 — Scheduler
-- Brain-size-aware parallel scheduling
-- Prerequisite resolution (some skills require others as pre-requisites — stored in SDE dogma effects or computed from game knowledge)
-- Generate final ordered queue output
-
-### Phase 5 — CLI Polish
+### Phase 4 — CLI Polish
 - All commands wired up with clap subcommands
-- JSON and pretty-print output formats
-- Configuration via environment variables
+- Human-readable output: table per epoch showing allocation, skills, start/end dates
+- JSON output format for scripting
 
 ## Key Decisions
 
-1. **Rust over Python**: Fast computation for the optimizer's tight loop, native binary distribution, no venv or dependency hell.
+1. **Rust**: Fast computation for the optimizer's tight loop, native binary distribution, no venv or dependency hell.
 
-2. **JSON file over SQLite**: The data we need per skill is 6 scalar fields (~400 skills). A flat JSON file loads in microseconds with serde — no DB library, no schema migrations, no runtime dependency.
+2. **JSON file over SQLite**: The data we need per skill is 7 scalar fields (~400 skills). A flat JSON file loads in microseconds with serde — no DB library, no schema migrations, no runtime dependency.
 
-3. **Brute-force over heuristic search**: ~12K allocations max × O(1) bucketed scoring = sub-second runtime. Exhaustive search is correct by construction.
+3. **Greedy epoch assignment over exhaustive search**: Trying every possible partition of skills across epochs × allocations would be combinatorially explosive. The greedy heuristic (current-attr skills first, then assign biggest remaining bucket) matches how players actually think about remaps and runs instantly.
 
-4. **No prerequisite graph in MVP**: Skill prerequisites are complex. The scheduler works on a flat priority list first; prerequisites can be added later from SDE group dependencies.
+4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count. User provides `--remaps` (bonus count) and `--last-remap-date`; timed remaps are computed as +365 day intervals.
