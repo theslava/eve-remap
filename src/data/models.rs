@@ -158,6 +158,31 @@ impl QueuedSkill {
     }
 }
 
+/// Full character state snapshot combining ESI data with resolved SDE lookups.
+/// This is the single source of truth consumed by the optimizer.
+#[derive(Debug, Clone)]
+pub struct CharacterState {
+    /// Current base remapped attribute values from neural interface.
+    pub base_attributes: BaseAttributes,
+    /// IDs of currently active implants providing attribute bonuses.
+    pub active_implant_ids: Vec<u32>,
+    /// Effective attributes after applying active implant bonuses.
+    pub effective_attributes: EffectiveAttributes,
+    /// Skills queued for training, ordered by position (first is active).
+    pub queued_skills: Vec<QueuedSkill>,
+}
+
+impl CharacterState {
+    /// Derive effective attributes from base values plus active implants.
+    pub fn recompute_effective(&mut self, implants: &[ImplantRecord]) {
+        self.effective_attributes = EffectiveAttributes::from_base_and_implants(
+            &self.base_attributes,
+            &self.active_implant_ids,
+            implants,
+        );
+    }
+}
+
 /// A single epoch in the optimizer plan.
 #[derive(Debug, Clone)]
 pub struct EpochPlan {

@@ -1,0 +1,67 @@
+use clap::{Parser, Subcommand};
+
+/// eve-remap — EVE Online skill queue remap optimizer
+#[derive(Parser)]
+#[command(name = "eve-remap", version, about, long_about = None)]
+pub struct Cli {
+    #[command(subcommand)]
+    pub command: Commands,
+}
+
+#[derive(Subcommand)]
+pub enum Commands {
+    /// Authenticate with EVE SSO (set token for API access).
+    Login(LoginArgs),
+
+    /// Remove stored authentication tokens.
+    Logout,
+
+    /// List authenticated characters or show current account info.
+    Accounts(AccountsArgs),
+
+    /// Download and parse latest SDE data into assets/.
+    Download(DownloadArgs),
+
+    /// Verify that local asset files are present and valid.
+    Verify,
+
+    /// Optimize character's skill training queue across remap epochs.
+    Optimize(OptimizeArgs),
+}
+
+#[derive(clap::Args)]
+pub struct LoginArgs {
+    /// Bearer token from EVE SSO (paste full JWT string).
+    /// If omitted, will prompt interactively.
+    #[arg(short, long, env = "EVE_REMAP_TOKEN")]
+    pub token: Option<String>,
+}
+
+#[derive(clap::Args)]
+pub struct AccountsArgs {
+    /// Show token details including expiry time.
+    #[arg(short, long)]
+    pub verbose: bool,
+}
+
+#[derive(clap::Args)]
+pub struct DownloadArgs {
+    /// Output directory for parsed assets (default: assets/ in repo root).
+    #[arg(short, long)]
+    pub dir: Option<String>,
+}
+
+#[derive(clap::Args)]
+pub struct OptimizeArgs {
+    /// Character ID to optimize for (overrides auto-selection).
+    #[arg(long)]
+    pub character_id: Option<u64>,
+
+    /// Output results as JSON instead of human-readable table.
+    #[arg(long)]
+    pub json: bool,
+
+    /// Number of bonus remaps available now (in addition to timed cooldown).
+    #[arg(long, default_value_t = 1)]
+    pub bonus_remaps: u32,
+}

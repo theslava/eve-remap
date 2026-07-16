@@ -2,6 +2,7 @@ use anyhow::{anyhow, Context, Result};
 use reqwest::Client;
 use serde::Deserialize;
 
+pub use crate::data::models::CharacterState;
 use crate::data::models::{BaseAttributes, EffectiveAttributes, ImplantRecord, QueuedSkill, SkillRecord};
 
 // ── ESI response types ────────────────────────────────────────────────
@@ -74,17 +75,16 @@ struct StoredTokens {
     expires_in: u64,
     issued_at: u64,
 }
-
-fn token_dir() -> std::path::PathBuf {
+pub fn token_dir() -> std::path::PathBuf {
     let home = std::env::var("HOME").unwrap_or_default();
     std::path::PathBuf::from(home).join(".config").join("eve-remap")
 }
 
-fn token_path() -> std::path::PathBuf {
+pub fn token_path() -> std::path::PathBuf {
     token_dir().join("tokens.json")
 }
 
-fn save_tokens(token: &str) -> Result<()> {
+pub fn save_tokens(token: &str) -> Result<()> {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
@@ -106,7 +106,7 @@ fn save_tokens(token: &str) -> Result<()> {
 }
 
 /// Try to load a previously saved access token. Returns `None` on any error.
-fn load_saved_token() -> Option<String> {
+pub fn load_saved_token() -> Option<String> {
     let path = token_path();
     if !path.exists() {
         return None;
@@ -114,35 +114,6 @@ fn load_saved_token() -> Option<String> {
     let content = std::fs::read_to_string(&path).ok()?;
     let stored: StoredTokens = serde_json::from_str(&content).ok()?;
     Some(stored.access_token)
-}
-
-// ── Character state (combined snapshot) ───────────────────────────────
-
-/// Full character state snapshot fetched from ESI.
-#[derive(Debug, Clone)]
-pub struct CharacterState {
-    pub base_attributes: BaseAttributes,
-    pub skills: Vec<SkillRecord>,
-    pub skill_queue: Vec<QueuedSkill>,
-    /// implant_ids currently installed on the character.
-    pub active_implant_ids: Vec<u32>,
-    /// Effective attributes after applying active implants.
-    pub effective_attributes: EffectiveAttributes,
-}
-
-impl CharacterState {
-    /// Recompute effective attributes given an SDE implant table.
-    pub fn recompute_effective(
-        &mut self,
-        implants: &[ImplantRecord],
-    ) {
-        self.effective_attributes =
-            EffectiveAttributes::from_base_and_implants(
-                &self.base_attributes,
-                &self.active_implant_ids,
-                implants,
-            );
-    }
 }
 
 // ── Time helpers (no chrono dep — use std + simple ISO parse) ────────
@@ -475,11 +446,9 @@ impl EsIClient {
             &active_implants,
             sde_implants,
         );
-
         Ok(CharacterState {
             base_attributes: base_attrs,
-            skills: resolved_skills,
-            skill_queue: queue,
+            queued_skills: queue,
             active_implant_ids: active_implants,
             effective_attributes: effective_attrs,
         })

@@ -20,16 +20,6 @@ const MAX_ATTR_VAL: u32 = 25;
 // Domain types
 // ---------------------------------------------------------------------------
 
-/// Character state at the moment optimization begins.
-#[derive(Debug, Clone)]
-pub struct CharacterState {
-    /// Current base remapped attribute values.
-    pub base_attributes: BaseAttributes,
-    /// IDs of currently active implants providing attribute bonuses.
-    pub active_implant_ids: Vec<u32>,
-    /// Skills queued for training, ordered by position (first is active).
-    pub queued_skills: Vec<QueuedSkill>,
-}
 
 /// Internal per-skill tracking during simulation.
 #[derive(Debug, Clone)]
@@ -761,6 +751,7 @@ mod tests {
             base_attributes: base_attrs(5.0, 5.0, 5.0, 5.0, 5.0),
             active_implant_ids: vec![],
             queued_skills: vec![],
+            effective_attributes: attrs(5.0, 5.0, 5.0, 5.0, 5.0),
         };
         let skills_db: Vec<SkillRecord> = vec![];
         let implants: Vec<ImplantRecord> = vec![];
@@ -787,6 +778,7 @@ mod tests {
                 remaining_sec: 600,      // not started yet
                 is_active: true,
             }],
+            effective_attributes: attrs(10.0, 3.0, 3.0, 7.0, 2.0),
         };
 
         let result = optimize(&char_state, &skills_db, &implants);
@@ -813,7 +805,6 @@ mod tests {
         let implants: Vec<ImplantRecord> = vec![];
 
         // Character has high INT but low MEM — will train INT skill fast, MEM slow.
-        // A good remap would shift points to MEM after the first skill finishes.
         let char_state = CharacterState {
             base_attributes: clamp_to_valid(20.0, 1.0, 1.0, 3.0, 0.0),
             active_implant_ids: vec![],
@@ -835,6 +826,7 @@ mod tests {
                     is_active: false,
                 },
             ],
+            effective_attributes: attrs(20.0, 1.0, 1.0, 3.0, 1.0),
         };
 
         let result = optimize(&char_state, &skills_db, &implants);
@@ -862,7 +854,6 @@ mod tests {
 
         let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 4.0);
         let skills_db = vec![skill];
-
         let char_state = CharacterState {
             base_attributes: base_attrs(10.0, 3.0, 3.0, 7.0, 2.0),
             active_implant_ids: vec![9000], // activate the INT+3 implant
@@ -874,6 +865,7 @@ mod tests {
                 remaining_sec: 600,
                 is_active: true,
             }],
+            effective_attributes: attrs(13.0, 3.0, 3.0, 7.0, 2.0), // INT boosted by +3 implant
         };
 
         let result = optimize(&char_state, &skills_db, &implants);
