@@ -186,13 +186,14 @@ A remap distributes `N` total attribute points across 5 attributes (INT/CHA/PER/
 
 The greedy approach avoids exhaustive `allocations^epochs` by optimizing each bucket independently given its position in the timeline.
 
+### Character Attributes & Remap Constraints
 
-### Attribute Allocation Space
+- **Base attribute value**: 17 for all five attributes (hard floor — cannot go lower via remap).
+- **Implant bonuses**: +1 to +5 per slot. SDE `implants.json` currently has talismans (+2 to +4); live ESI `/implants/` returns equipped implants and their exact bonuses. Effective attribute = 17 + implant bonus + remapped points.
+- **Remappable points**: **14** free points distributed above base during each neural interface remap.
+- **Per-attribute cap**: Maximum **+10** on any single attribute from a remap (i.e., one attribute can reach at most 17 + 10 = 27, leaving 4 points for others if fully dumped into two).
+- **Allocation space**: With base=17, sum of added points=14, max add per attr=10 → **2,886 valid distributions**. No single-attribute dump is possible (14 > 10), so every allocation touches at least 2 attributes. Distribution by boosted attr count: 2 attrs (70 combos), 3 attrs (690), 4 attrs (1,410), 5 attrs (715).
 
-Valid remaps distribute points across 5 attributes with constraints:
-- Each attribute must be ≥ 1
-- Total points depends on character's SP investment (typically 25 base + unallocated SP can buy more, up to 25 per attribute max)
-- At N=25: C(24,4) = 12,650 combinations. With actual min/max constraints from character data, typically fewer (~560 realistic combos).
 
 ### SSO Authentication & Token Lifecycle
 
@@ -209,14 +210,6 @@ Requires a registered app on [developers.eveonline.com](https://developers.eveon
 - `scp`: array of granted scope strings
 - `name`: character name
 - `exp`: Unix timestamp expiry
-
-Store `{ characterId, characterName, accessToken, refreshToken, expiresAt, scopes }` in `~/.config/eve-remap/accounts.json`. Refresh token logic is a placeholder pending implementation.
-
-**Scopes requested:**
-- `esi-skills.read_skills.v1` — current skill levels and SP totals
-- `esi-skills.read_skillqueue.v1` — queued skills and training progress
-
-### Multi-Character Support
 
 Token store maps character ID → credentials. When multiple characters are logged in:
 
