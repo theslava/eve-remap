@@ -221,6 +221,30 @@ fn ymd_to_days(year: i32, month: i32, day: i32) -> Option<i64> {
     Some(days_before_year + day_of_year - 719_162)
 }
 
+// ── Structured ESI Errors ─────────────────────────────────────────────
+
+/// Error from an ESI API call with full context.
+#[derive(Debug)]
+pub struct EsiError {
+    pub endpoint: String,
+    pub status: u16,
+}
+
+impl std::fmt::Display for EsiError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self.status {
+            401 => write!(f, "[{}] {} - Unauthorized: token expired or invalid. Re-authenticate.", self.endpoint, self.status),
+            403 => write!(f, "[{}] {} - Forbidden: missing scope or insufficient permissions", self.endpoint, self.status),
+            404 => write!(f, "[{}] {} - Not Found: character ID may be wrong", self.endpoint, self.status),
+            429 => write!(f, "[{}] {} - Too Many Requests: rate limited by ESI", self.endpoint, self.status),
+            _ if (500..=599).contains(&self.status) => write!(f, "[{}] {} - Server Error: EVE backend issue", self.endpoint, self.status),
+            _ => write!(f, "[{}] {} - HTTP Error", self.endpoint, self.status),
+        }
+    }
+}
+
+impl std::error::Error for EsiError {}
+
 // ── EsIClient ─────────────────────────────────────────────────────────
 
 const ESI_BASE_URL: &str = "https://esi.evetech.net/latest";
@@ -277,16 +301,16 @@ impl EsIClient {
             .send().await.with_context(|| format!("Request failed to {}", url))?;
 
         let status = response.status();
+        eprintln!("[+] {} -> {}", path, status);
         if status.is_success() {
             let body = response.text().await.context("Failed to read response body")?;
             serde_json::from_str::<T>(&body).context("Failed to parse ESI JSON response")
-        } else if status == reqwest::StatusCode::UNAUTHORIZED {
-            Err(anyhow!(
-                "401 Unauthorized — token may be expired. Please re-authenticate."
-            ).context(url))
         } else {
-            let body = response.text().await.unwrap_or_default();
-            Err(anyhow!("ESI request failed with {}: {}", status, body).context(url))
+            let err = EsiError {
+                endpoint: path.to_string(),
+                status: status.as_u16(),
+            };
+            Err(anyhow!(err))
         }
     }
 

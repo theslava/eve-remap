@@ -1,3 +1,4 @@
+use std::time::Instant;
 use crate::calculator::{sp_rate_per_second, sp_for_level};
 use crate::data::models::*;
 
@@ -382,6 +383,8 @@ pub fn optimize(
     skills_db: &[SkillRecord],
     implants: &[ImplantRecord],
 ) -> OptimizationResult {
+    let start = Instant::now();
+    eprintln!("[+] Starting optimization...");
     let mut sim_state = char_state.build_simulation_state(skills_db);
 
     // Nothing to optimize — queue is empty or all skills are already at max level.
@@ -406,6 +409,7 @@ pub fn optimize(
         let epoch_duration = (next_remap_at_secs - sim_state.elapsed_seconds).max(0.0);
         let epoch_result = simulate_epoch(sim_state.clone(), &initial_effective, epoch_duration);
 
+        let completed_count = epoch_result.completed.len();
         result_epochs.push(EpochPlan {
             start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
             attributes: char_state.base_attributes,
@@ -413,6 +417,8 @@ pub fn optimize(
             completed_skills: epoch_result.completed,
             projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
         });
+        let elapsed_0 = start.elapsed().as_secs_f64();
+        eprintln!("[+] Epoch 0 (current attrs): {} skills done in {:.1}s", completed_count, elapsed_0);
         sim_state = epoch_result.state_after;
     }
 
@@ -438,6 +444,7 @@ pub fn optimize(
             );
             let epoch_result = simulate_epoch(sim_state.clone(), &final_effective, f64::INFINITY);
 
+            let completed_count = epoch_result.completed.len();
             result_epochs.push(EpochPlan {
                 start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
                 attributes: best_alloc,
@@ -445,6 +452,8 @@ pub fn optimize(
                 completed_skills: epoch_result.completed,
                 projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
             });
+            let elapsed_final = start.elapsed().as_secs_f64();
+            eprintln!("[+] Final epoch: {} skills done in {:.1}s", completed_count, elapsed_final);
             sim_state = epoch_result.state_after;
             break;
         }
@@ -465,6 +474,7 @@ pub fn optimize(
 
         let epoch_result = simulate_epoch(sim_state.clone(), &chosen_effective, time_until_next_remap);
 
+        let completed_count = epoch_result.completed.len();
         result_epochs.push(EpochPlan {
             start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
             attributes: chosen,
@@ -472,12 +482,16 @@ pub fn optimize(
             completed_skills: epoch_result.completed,
             projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
         });
+        let elapsed_epoch = start.elapsed().as_secs_f64();
+        eprintln!("[+] Epoch {}: {} skills done (total {:.1}s)", result_epochs.len(), completed_count, elapsed_epoch);
         sim_state = epoch_result.state_after;
 
         next_remap_at_secs += REMAP_COOLDOWN_DAYS * SECS_PER_DAY;
     }
 
     let total_wall_clock = sim_state.elapsed_seconds;
+    let total_time = start.elapsed();
+    eprintln!("[+] Optimization complete: {} epochs in {:.2}s", result_epochs.len(), total_time.as_secs_f64());
     OptimizationResult {
         epochs: result_epochs,
         total_days: total_wall_clock / SECS_PER_DAY,

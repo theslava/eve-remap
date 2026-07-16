@@ -92,7 +92,7 @@ fn cmd_login_browser() -> Result<()> {
 
     let redirect_uri = "https://127.0.0.1/callback";
     let state = rand::random::<u64>().to_string();
-    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1";
+    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1 esi-clones.read_implants.v1";
 
     let auth_url = format!(
         "https://login.eveonline.com/v2/oauth/authorize?\
