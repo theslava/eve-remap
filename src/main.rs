@@ -81,6 +81,8 @@ fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
     Ok(())
 }
 
+// ── Browser login (implicit grant — no port forwarding) ────────────────────
+
 fn cmd_login_browser() -> Result<()> {
     let client_id = std::env::var("ESI_CLIENT_ID").context(
         "ESI_CLIENT_ID not set.\n\
@@ -88,10 +90,9 @@ fn cmd_login_browser() -> Result<()> {
          Then export ESI_CLIENT_ID=<your-client-id>"
     )?;
 
-    // Use a dummy redirect that captures the token in the URL fragment.
     let redirect_uri = "https://127.0.0.1/callback";
     let state = rand::random::<u64>().to_string();
-    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1";
+    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1 esi-characters.read_attributes.v1";
 
     let auth_url = format!(
         "https://login.eveonline.com/v2/oauth/authorize?\
@@ -121,7 +122,6 @@ fn cmd_login_browser() -> Result<()> {
         anyhow::bail!("No URL provided. Aborting.");
     }
 
-    // Extract access_token and expires_in from the URL fragment.
     let token = parse_implicit_grant_callback(&callback_url, &state)?;
 
     match auth::decode_jwt_token(&token) {
@@ -166,7 +166,6 @@ fn open_browser(url: &str) -> std::io::Result<()> {
 }
 
 /// Parse the callback URL from an implicit grant flow and extract the access token.
-/// The fragment looks like: #access_token=...&expires_in=3600&state=...
 fn parse_implicit_grant_callback(callback_url: &str, expected_state: &str) -> Result<String> {
     let fragment_start = callback_url.find('#')
         .ok_or_else(|| anyhow::anyhow!("No fragment (#) in callback URL"))?;
@@ -180,7 +179,6 @@ fn parse_implicit_grant_callback(callback_url: &str, expected_state: &str) -> Re
         }
     }
 
-    // Verify state to prevent CSRF.
     let has_valid_state = callback_url.contains(&format!("state={}", expected_state));
     if !has_valid_state {
         return Err(anyhow::anyhow!(
@@ -208,7 +206,6 @@ fn parse_implicit_grant_callback(callback_url: &str, expected_state: &str) -> Re
 fn cmd_logout() -> Result<()> {
     let accounts = auth::load_accounts()?;
     if accounts.is_empty() {
-        // Also clean legacy tokens file.
         let path = data::esi::token_path();
         if path.exists() {
             std::fs::remove_file(&path)?;
@@ -218,7 +215,6 @@ fn cmd_logout() -> Result<()> {
         for acct in &accounts {
             auth::remove_account(acct.character_id)?;
         }
-        // Clean legacy tokens file too.
         let path = data::esi::token_path();
         if path.exists() {
             std::fs::remove_file(&path).ok();
@@ -235,7 +231,6 @@ fn cmd_accounts(args: &cli::AccountsArgs) -> Result<()> {
     let chars = auth::list_characters()?;
 
     if chars.is_empty() {
-        // Check legacy token storage.
         match data::esi::load_saved_token() {
             Some(_) => {
                 println!("Status: authenticated (legacy token — run 'login' again to migrate)");
@@ -257,13 +252,17 @@ fn cmd_accounts(args: &cli::AccountsArgs) -> Result<()> {
     for acct in &accounts {
         let expired = acct.expires_at <= now;
         let status = if expired { "[expired]" } else { "[active]" };
-        println!("  {} - {} ({}) {}", status, acct.character_name, acct.character_id, {
+        println!(
+            "  {} - {} ({}) {}",
+            status,
+            acct.character_name,
+            acct.character_id,
             if args.verbose {
                 format!("expires in {} min", ((acct.expires_at as i64 - now as i64).max(0)) / 60)
             } else {
                 String::new()
             }
-        });
+        );
     }
     Ok(())
 }
@@ -271,7 +270,6 @@ fn cmd_accounts(args: &cli::AccountsArgs) -> Result<()> {
 // ── Download ─────────────────────────────────────────────────────────────
 
 async fn cmd_download(_args: &cli::DownloadArgs) -> Result<()> {
-    // TODO: implement SDE download and parsing pipeline
     println!("SDE download not yet implemented. Assets already in repo.");
     Ok(())
 }
@@ -304,11 +302,10 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
     let skills_db = data::load_skills().context("Failed to load skill database")?;
     let implants = data::load_implants().context("Failed to load implant database")?;
 
-    // Try ESI client first for live data, fall back to demo mode.
     let result = match try_fetch_and_optimize(&args.character_id, &skills_db, &implants).await {
         Ok(r) => r,
         Err(e) => {
-            eprintln!("Note: could not fetch character data ({e}). Running in demo mode.");
+            eprintln!("\nNote: could not fetch character data:\n  {}", e);
             run_demo_optimizer(&skills_db, &implants)?
         }
     };
@@ -321,6 +318,7 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
 
     Ok(())
 }
+
 /// Attempt to fetch real character state via ESI and optimize.
 async fn try_fetch_and_optimize(
     char_id_flag: &Option<u64>,
@@ -354,8 +352,6 @@ fn run_demo_optimizer(
 ) -> Result<data::models::OptimizationResult> {
     use data::models::{BaseAttributes, EffectiveAttributes, QueuedSkill};
 
-    // Build a realistic demo queue using actual SDE skill IDs.
-    // Find some representative INT and MEM skills from the database.
     let int_skill = skills_db
         .iter()
         .find(|s| s.primary_attribute == data::models::Attribute::Intelligence)
@@ -478,11 +474,8 @@ fn print_table_output(result: &data::models::OptimizationResult) {
 }
 
 fn print_json_output(result: &data::models::OptimizationResult) {
-    // Build a serializable structure.
     let mut epochs = Vec::new();
     for epoch in &result.epochs {
-        use data::models::Attribute;
-
         let attrs_map: HashMap<String, f64> = HashMap::from([
             ("intelligence".to_string(), epoch.effective_attributes.intelligence),
             ("charisma".to_string(), epoch.effective_attributes.charisma),

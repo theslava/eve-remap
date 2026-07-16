@@ -8,6 +8,7 @@ const DEFAULT_CLIENT_ID: &str = "YOUR_CLIENT_ID";
 const REQUIRED_SCOPES: &[&str] = &[
     "esi-skills.read_skills.v1",
     "esi-skills.read_skillqueue.v1",
+    "esi-characters.read_attributes.v1",
 ];
 
 // ── PKCE helpers ────────────────────────────────────────────────────────

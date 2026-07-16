@@ -1,3 +1,4 @@
+#[allow(unused_imports)] // used by test helpers below
 use crate::data::models::{Attribute, EffectiveAttributes, SkillRecord};
 
 /// Level multipliers for EVE Online skill training (SP required per level).
