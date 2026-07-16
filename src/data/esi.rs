@@ -229,7 +229,7 @@ const ESI_BASE_URL: &str = "https://esi.evetech.net/latest";
 #[derive(Clone)]
 pub struct EsIClient {
     http: Client,
-    token: std::sync::Arc<std::sync::Mutex<String>>,
+    token: String, // immutable after construction — no lock needed
 }
 
 impl EsIClient {
@@ -240,13 +240,14 @@ impl EsIClient {
         let _ = save_tokens(&token); // best-effort persistence
         Self {
             http: Client::new(),
-            token: std::sync::Arc::new(std::sync::Mutex::new(token)),
+            token,
         }
     }
 
     /// Create a client by resolving the token in priority order:
     /// 1. `EVE_REMAP_TOKEN` env var
-    /// 2. Previously saved token file
+    /// 2. Previously saved legacy token file
+    /// 3. New account store (`accounts.json`)
     /// Returns an error if no token is available.
     pub fn from_env() -> Result<Self> {
         if let Ok(token) = std::env::var("EVE_REMAP_TOKEN") {
@@ -255,8 +256,11 @@ impl EsIClient {
         if let Some(token) = load_saved_token() {
             return Ok(Self::from_token(token));
         }
+        if let Ok(Some((token, _))) = crate::auth::find_valid_token() {
+            return Ok(Self::from_token(token));
+        }
         Err(anyhow!(
-            "No ESI token found. Set EVE_REMAP_TOKEN or provide one via CLI."
+            "No ESI token found. Set EVE_REMAP_TOKEN or run 'eve-remap login'."
         ))
     }
 
@@ -267,28 +271,19 @@ impl EsIClient {
         T: for<'de> Deserialize<'de>,
     {
         let url = format!("{}{}", ESI_BASE_URL, path);
-        let token = self.token.lock().map_err(|e| anyhow!("{}", e))?;
-        let response = self
-            .http
-            .get(&url)
-            .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", *token))
-            .send()
-            .await
-            .with_context(|| format!("Request failed to {}", url))?;
+        eprintln!("[+] Fetching {} ...", path);
+        let response = self.http.get(&url)
+            .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", &self.token))
+            .send().await.with_context(|| format!("Request failed to {}", url))?;
 
         let status = response.status();
         if status.is_success() {
-            let body = response
-                .text()
-                .await
-                .with_context(|| "Failed to read response body")?;
+            let body = response.text().await.context("Failed to read response body")?;
             serde_json::from_str::<T>(&body).context("Failed to parse ESI JSON response")
         } else if status == reqwest::StatusCode::UNAUTHORIZED {
-            drop(token);
             Err(anyhow!(
                 "401 Unauthorized — token may be expired. Please re-authenticate."
-            )
-            .context(url))
+            ).context(url))
         } else {
             let body = response.text().await.unwrap_or_default();
             Err(anyhow!("ESI request failed with {}: {}", status, body).context(url))
