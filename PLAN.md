@@ -148,20 +148,43 @@ SDE needs to also store implant→attribute bonus mapping. This means `skills.js
 
 ### Multi-Epoch Optimization (no rollback model)
 
-Because skills keep their SP across remaps and train sequentially (only the currently active skill earns SP at any given moment), the optimizer simulates the queue advancing through sequential epochs:
+Skills train **sequentially** in queue order — only one skill earns SP at any given moment. On completion, the next queued skill starts. Skills keep their SP across remaps; only the future training rate changes. Lower levels of a skill must complete before higher ones (Gunnery 1 → Gunnery 2), but cross-skill prerequisites are ignored for now.
 
+#### SP Rate Formula
+
+```text
+rate(SP/s) = (primary_attr + secondary_attr / 2) / 60
 ```
-Epoch 0 (now → next remap):       allocation A0 (= current attrs, fixed)
-Epoch 1 (next remap → end):        allocation A1
-...
+
+Primary attribute points are worth exactly **twice** as much as secondary attribute points: `+1 primary ≡ +2 secondary`. This equivalency is exact because the formula is linear.
+
+#### Time-Bucket Grouping Strategy
+
+The optimizer groups skills into "time buckets" based on when they'll be training relative to remap boundaries:
+
+1. **Group skills by (primary, secondary) attribute pair.** There are only 15 unique pairs in the game (e.g., INT+MEM covers 149 skills). Skills sharing the same pair benefit from the same allocation.
+
+2. **Estimate each bucket's wall-clock duration** under current attributes to determine which remap window it falls in.
+
+3. **Cluster adjacent buckets with overlapping attributes.** If Bucket A (INT+MEM) trains for 200 days and Bucket B (MEM+INT) trains next for 50 days, they share Memory — one MEM-heavy allocation serves both efficiently rather than splitting across two epochs.
+
+4. **Assign the best allocation per cluster.** For each time-bounded cluster, search all valid allocations (C(24,4)=10,626 combinations at 25 total points) and pick the one minimizing that cluster's projected finish time.
+
+This produces a schedule like:
+```
+Epoch 0  [now → day 365]:   current attrs (fixed, no reason to waste a remap immediately)
+Epoch 1  [day 365 → day X]: allocation optimized for Bucket A+B (shared primary)
+Epoch 2  [day X → end]:     allocation optimized for remaining buckets
 ```
 
-Each skill tracks remaining SP toward its target level. Only one skill is "live" at a time — it earns SP at its rate, completes, and the next queued skill starts. At each remap boundary, the live skill carries its accumulated progress forward; only the new allocation's rate applies going forward. The score is **wall-clock time until the last queued skill completes**.
+#### Allocation Space
 
-**Greedy strategy:**
-1. Epoch 0 uses current attributes — no reason to waste a remap immediately.
-2. For epoch N, simulate forward under every candidate allocation; pick the one that minimizes projected finish time of the entire queue.
-This avoids exhaustive search over `allocations^epochs` by greedily optimizing each step. With ~4 max epochs and up to C(24,4)=12,650 allocations per greedy pass, it runs in milliseconds.
+A remap distributes `N` total attribute points across 5 attributes (INT/CHA/PER/MEM/WIL):
+- Each attribute ≥ 1 (hard minimum)
+- Sum of all five = N (typically 25 base; extra SP can buy more, up to 25 per attribute max)
+- At N=25 with min=1: C(24,4) = 10,626 valid distributions via stars-and-bars combinatorics
+
+The greedy approach avoids exhaustive `allocations^epochs` by optimizing each bucket independently given its position in the timeline.
 
 
 ### Attribute Allocation Space
@@ -299,7 +322,7 @@ Drone Navigation 2
 ## Key Decisions
 
 1. **Rust**: Fast computation for the optimizer's tight loop, native binary distribution, no venv or dependency hell. Edition pinned to 2021 for Rust 1.75 compatibility on WSL.
-3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates whichever skill is active (and those about to become active).
+3. **Time-bucket grouping over raw greedy**: Skills are grouped into clusters by shared attributes before allocation search. Adjacent buckets with overlapping primary/secondary attrs share one remap allocation rather than splitting across epochs. Primary points are worth exactly 2× secondary (+1 primary ≡ +2 secondary), making it straightforward to score allocations against bucket composition.
 2. **JSON files over SQLite**: Skill and implant data are ~400+ entries × 7 fields each. Flat JSON loads in microseconds with serde — no DB library needed.
 
 3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
