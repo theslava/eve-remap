@@ -191,7 +191,7 @@ pub struct EpochPlan {
     pub start_offset_days: f64,  // days from now when this epoch starts
     pub attributes: BaseAttributes,
     pub effective_attributes: EffectiveAttributes,
-    pub completed_skills: Vec<(u32, String)>, // (skill_id, skill_name) that finish during this epoch
+    pub completed_skills: Vec<(u32, String, f64)>, // (skill_id, skill_name, train_seconds)
     pub projected_finish_days: f64,  // when this epoch ends or last skill completes
 }
 

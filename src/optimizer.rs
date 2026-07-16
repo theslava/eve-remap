@@ -213,7 +213,7 @@ pub fn simulate_epoch(
             time_remaining -= secs_needed;
 
             let finished = state.entries.remove(state.active_index);
-            completed.push((finished.skill_id, finished.name));
+            completed.push((finished.skill_id, finished.name, secs_needed));
 
             // Don't advance active_index — remove shifts later entries down.
         } else {
@@ -239,7 +239,7 @@ pub fn simulate_epoch(
 #[derive(Debug, Clone)]
 struct EpochResult {
     /// Skills that fully completed during this epoch (in order of completion).
-    completed: Vec<(u32, String)>,
+    completed: Vec<(u32, String, f64)>, // (skill_id, name, seconds_to_train)
     state_after: SimulationState,
     seconds_used: f64,
 }

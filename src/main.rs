@@ -484,9 +484,10 @@ fn print_table_output(result: &data::models::OptimizationResult) {
         );
 
         if !epoch.completed_skills.is_empty() {
-            println!("│ Skills completing this epoch:");
-            for (id, name) in &epoch.completed_skills {
-                println!("│   • {} [{}]", name, id);
+            for (id, name, secs) in &epoch.completed_skills {
+                let hours = secs / 3600.0;
+                let label = if hours >= 24.0 { format!("{:.1}d", hours / 24.0) } else { format!("{:.0}h", hours) };
+                println!("│   • {} [{}] — {}", name, id, label);
             }
         } else {
             println!("│ No skills completed in this epoch.");
@@ -520,7 +521,7 @@ fn print_json_output(result: &data::models::OptimizationResult) {
         let completed: Vec<_> = epoch
             .completed_skills
             .iter()
-            .map(|(id, name)| serde_json::json!({ "skill_id": id, "name": name }))
+            .map(|(id, name, secs)| serde_json::json!({ "skill_id": id, "name": name, "training_seconds": *secs }))
             .collect();
 
         epochs.push(serde_json::json!({
