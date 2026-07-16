@@ -188,17 +188,17 @@ impl CharacterState {
 /// A single epoch in the optimizer plan.
 #[derive(Debug, Clone)]
 pub struct EpochPlan {
-    pub start_offset_days: f64,  // days from now when this epoch starts
+    pub start_offset_secs: f64,  // seconds from now when this epoch starts
     pub attributes: BaseAttributes,
     pub effective_attributes: EffectiveAttributes,
     pub completed_skills: Vec<(u32, String, f64)>, // (skill_id, skill_name, train_seconds)
-    pub projected_finish_days: f64,  // when this epoch ends or last skill completes
+    pub projected_finish_secs: f64,  // seconds from now when this epoch ends
 }
 
 /// Full optimization result across all epochs.
 #[derive(Debug, Clone)]
 pub struct OptimizationResult {
     pub epochs: Vec<EpochPlan>,
-    pub total_days: f64,
+    // removed: derived from total_wall_clock_seconds at display time
     pub total_wall_clock_seconds: f64,
 }

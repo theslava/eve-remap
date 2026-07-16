@@ -1,23 +1,18 @@
 #[allow(unused_imports)] // used by test helpers below
 use crate::data::models::{Attribute, EffectiveAttributes, SkillRecord};
 
-/// Level multipliers for EVE Online skill training (SP required per level).
-/// Source: EVE wiki — these are well-established constants.
-const LEVEL_MULTIPLIERS: [f64; 5] = [1.0, 4.0, 20.0, 80.0, 360.0];
+/// Cumulative SP required at each skill level for STC=1 (rank 1).
+/// Source: EVE Online forums archive — verified canonical values.
+const CUMULATIVE_SP: [f64; 6] = [0.0, 250.0, 1_414.0, 8_000.0, 45_255.0, 256_000.0]; // levels 0..5
 
 /// Compute the SP required to go from current_level to target_level for a given skill.
 pub fn sp_for_level(skill: &SkillRecord, from_level: u8, to_level: u8) -> f64 {
-    // Base SP unit in EVE Online — all level costs are multiples of this.
-    const BASE_SP: f64 = 20_000.0;
-    
-    let mut total_sp = 0.0;
-    for lvl in from_level..to_level.min(5) {
-        let idx = (lvl - 1) as usize; // levels 1-5 map to indices 0-4
-        if idx < LEVEL_MULTIPLIERS.len() {
-            total_sp += LEVEL_MULTIPLIERS[idx] * skill.skill_time_constant * BASE_SP;
-        }
+    let from_idx = from_level.min(5) as usize;
+    let to_idx = to_level.min(5) as usize;
+    if from_idx >= to_idx {
+        return 0.0;
     }
-    total_sp
+    (CUMULATIVE_SP[to_idx] - CUMULATIVE_SP[from_idx]) * skill.skill_time_constant
 }
 
 /// Compute the rate of SP generation per second for a skill under given effective attributes.
@@ -52,29 +47,23 @@ pub fn duration_seconds(
     sp_needed / rate
 }
 
-/// Format seconds into a human-readable duration string.
+/// Format seconds into a human-readable duration string, capped at days.
 pub fn format_duration(seconds: f64) -> String {
-    let total_days = seconds / 86_400.0;
-    
-    if total_days >= 365.0 {
-        let years = total_days / 365.0;
-        format!("{:.1}y {:.0}d", 
-            years.floor(), 
-            ((years.fract() * 365.0).floor()))
-    } else if total_days >= 30.0 {
-        let weeks = total_days / 7.0;
-        format!("{:.1}w {:.0}d",
-            weeks.floor(),
-            ((weeks.fract() * 7.0).floor()))
-    } else if total_days >= 1.0 {
-        format!("{:.1}d {:.0}h",
-            total_days.floor(),
-            ((total_days.fract() * 24.0).floor()))
+    let days = seconds / 86_400.0;
+    if days >= 1.0 {
+        format!("{:.1}d", days)
     } else {
-        let hours = total_days * 24.0;
-        format!("{:.1}h {:.0}m",
-            hours.floor(),
-            ((hours.fract() * 60.0).floor()))
+        let hours = days * 24.0;
+        if hours >= 1.0 {
+            format!("{:.0}h", hours)
+        } else {
+            let minutes = hours * 60.0;
+            if minutes >= 1.0 {
+                format!("{:.0}m", minutes)
+            } else {
+                format!("{:.0}s", seconds)
+            }
+        }
     }
 }
 
@@ -110,7 +99,7 @@ mod tests {
 
     #[test]
     fn test_sp_for_level_1_to_2() {
-        // Level 1→2 uses multiplier[0]=1.0 * timeConstant * 20000
+        // Cumulative L1=250, L2=1414 → incremental = 1164 × STC
         let skill = SkillRecord {
             id: 999,
             name: "Test".to_string(),
@@ -120,12 +109,12 @@ mod tests {
         };
         
         let sp = sp_for_level(&skill, 1, 2);
-        assert_eq!(sp, 1.0 * 4.0 * 20_000.0); // 80000.0
+        assert_eq!(sp, (1_414.0 - 250.0) * 4.0); // 4656.0
     }
 
     #[test]
     fn test_sp_for_level_3_to_5() {
-        // Level 3→4 uses multiplier[2]=20.0; Level 4→5 uses multiplier[3]=80.0
+        // Cumulative L3=8000, L5=256000 → incremental = 248000 × STC
         let skill = SkillRecord {
             id: 999,
             name: "Test".to_string(),
@@ -135,7 +124,7 @@ mod tests {
         };
         
         let sp = sp_for_level(&skill, 3, 5);
-        assert_eq!(sp, (20.0 + 80.0) * 3.0 * 20_000.0); // 6000000.0
+        assert_eq!(sp, (256_000.0 - 8_000.0) * 3.0); // 744000.0
     }
 
     #[test]
@@ -149,23 +138,17 @@ mod tests {
         };
         let attrs = test_attrs(10.0, 1.0, 1.0, 6.0, 1.0);
         
-        // SP for level 1→2 = 1.0 * 2.0 * 20000 = 40000
+        // SP for level 1→2 = (1414-250)*2.0 = 2328.0
         // Rate = (10 + 6/2)/60 = 13/60 ≈ 0.2167 SP/s
-        // Duration = 40000 / (13/60) ≈ 184615.4 seconds (~2.14 days)
+        // Duration = 2328 / (13/60) ≈ 10763.1 seconds (~3 hours)
         let dur = duration_seconds(&skill, 1, 2, &attrs);
-        assert!((dur - 184615.4).abs() < 1.0);
+        assert!((dur - 10_744.6).abs() < 1.0);
     }
-
     #[test]
-    fn test_format_duration_days() {
-        let s = format_duration(86_400.0 * 15.5); // 15.5 days
-        assert!(s.contains("d"));
-        assert!(!s.contains("y") && !s.contains("w"));
-    }
-
-    #[test]
-    fn test_format_duration_years() {
-        let s = format_duration(86_400.0 * 400.0); // ~1.1 years
-        assert!(s.contains("y"));
+    fn test_format_duration_days_cap() {
+        // Large value should show as days, not years/weeks.
+        let s = format_duration(86_400.0 * 400.0); // 400 days
+        assert!(s.contains("d"), "expected 'd' in '{}'", s);
+        assert!(!s.contains("w") && !s.contains("y"));
     }
 }

@@ -394,7 +394,8 @@ fn run_optimizer_from_queue_file(
                 "Line {}: skill '{}' not found in database", line_num + 1, skill_name
             ))?;
 
-        let from_level = if level <= 1 { 1 } else { level - 1 };
+        // level N means "train from level N-1 to N". Level 1 = from nothing.
+        let from_level = if level <= 1 { 0u8 } else { level - 1 };
         let sp_to_next = calculator::sp_for_level(record, from_level, level);
         let effective_attrs = data::models::EffectiveAttributes::from(base_attrs);
         let duration_secs = calculator::duration_seconds(
@@ -403,7 +404,7 @@ fn run_optimizer_from_queue_file(
 
         queued_skills.push(QueuedSkill {
             id: record.id,
-            level,
+            level: from_level, // current trained level; optimizer adds +1 for target
             sp: sp_to_next as u64,
             duration: duration_secs.max(1.0) as u64,
             remaining_sec: duration_secs.max(1.0) as u64,
@@ -457,8 +458,8 @@ fn print_table_output(result: &data::models::OptimizationResult) {
 
     println!();
     println!(
-        "═ Repaired Optimization Plan ({:.1} total days)",
-        result.total_days
+        "═ Repaired Optimization Plan ({} total time)",
+        calculator::format_duration(result.total_wall_clock_seconds)
     );
     println!();
 
@@ -471,8 +472,8 @@ fn print_table_output(result: &data::models::OptimizationResult) {
 
         println!("┌─ {} ──────────────", label);
         println!(
-            "│ Start: {:.1} days from now",
-            epoch.start_offset_days
+            "│ Start: {} from now",
+            calculator::format_duration(epoch.start_offset_secs)
         );
         println!(
             "│ Attributes: INT={} CHA={} PER={} MEM={} WIL={}",
@@ -485,8 +486,7 @@ fn print_table_output(result: &data::models::OptimizationResult) {
         if !epoch.completed_skills.is_empty() {
             println!("│ Skills completing this epoch:");
             for (id, name, secs) in &epoch.completed_skills {
-                let hours = secs / 3600.0;
-                let label = if hours >= 24.0 { format!("{:.1}d", hours / 24.0) } else { format!("{:.0}h", hours) };
+                let label = calculator::format_duration(*secs);
                 println!("│   • {} [{}] — {}", name, id, label);
             }
         } else {
@@ -494,16 +494,15 @@ fn print_table_output(result: &data::models::OptimizationResult) {
         }
 
         println!(
-            "│ Projected finish: {:.1} days from now",
-            epoch.projected_finish_days
+            "│ Projected finish: {} from now",
+            calculator::format_duration(epoch.projected_finish_secs)
         );
         println!("└──────────────────\n");
     }
 
     println!(
-        "Total training time: {:.1} days ({:.0} years)",
-        result.total_days,
-        result.total_days / 365.0
+        "Total training time: {}",
+        calculator::format_duration(result.total_wall_clock_seconds)
     );
 }
 
@@ -525,7 +524,7 @@ fn print_json_output(result: &data::models::OptimizationResult) {
             .collect();
 
         epochs.push(serde_json::json!({
-            "start_offset_days": epoch.start_offset_days,
+            "start_offset_days": epoch.start_offset_secs / 86_400.0,
             "base_attributes": {
                 "intelligence": epoch.attributes.intelligence as u32,
                 "charisma": epoch.attributes.charisma as u32,
@@ -535,13 +534,13 @@ fn print_json_output(result: &data::models::OptimizationResult) {
             },
             "effective_attributes": attrs_map,
             "completed_skills": completed,
-            "projected_finish_days": epoch.projected_finish_days,
+            "projected_finish_days": epoch.projected_finish_secs / 86_400.0,
         }));
     }
 
     let output = serde_json::json!({
         "total_epochs": result.epochs.len(),
-        "total_days": result.total_days,
+        "total_days": result.total_wall_clock_seconds / 86_400.0,
         "total_wall_clock_seconds": result.total_wall_clock_seconds,
         "epochs": epochs,
     });

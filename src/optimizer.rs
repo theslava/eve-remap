@@ -294,7 +294,6 @@ pub fn optimize(
     if sim_state.is_empty() {
         return OptimizationResult {
             epochs: Vec::new(),
-            total_days: 0.0,
             total_wall_clock_seconds: 0.0,
         };
     }
@@ -328,11 +327,11 @@ pub fn optimize(
         let epoch_result = simulate_epoch(sim_state.clone(), &initial_effective, epoch_duration);
 
         result_epochs.push(EpochPlan {
-            start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
+            start_offset_secs: sim_state.elapsed_seconds,
             attributes: char_state.base_attributes,
             effective_attributes: initial_effective,
             completed_skills: epoch_result.completed.clone(),
-            projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
+            projected_finish_secs: epoch_result.state_after.elapsed_seconds,
         });
         eprintln!(
             "[+] Epoch 0 (current attrs): {} skills done, {:.1}s wall",
@@ -369,11 +368,11 @@ pub fn optimize(
         let epoch_result = simulate_epoch(sim_state.clone(), &chosen_effective, epoch_duration);
 
         result_epochs.push(EpochPlan {
-            start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
+            start_offset_secs: sim_state.elapsed_seconds,
             attributes: chosen,
             effective_attributes: chosen_effective,
             completed_skills: epoch_result.completed.clone(),
-            projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
+            projected_finish_secs: epoch_result.state_after.elapsed_seconds,
         });
 
         eprintln!(
@@ -396,8 +395,7 @@ pub fn optimize(
 
     OptimizationResult {
         epochs: result_epochs,
-        total_days: total_wall_clock / SECS_PER_DAY,
-        total_wall_clock_seconds: total_wall_clock,
+                total_wall_clock_seconds: total_wall_clock,
     }
 }
 
@@ -567,7 +565,7 @@ mod tests {
     fn test_optimize_empty_queue() {
         let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), Vec::new(), None);
         let result = optimize(&char_st, &[], &[]);
-        assert_eq!(result.total_days, 0.0);
+        assert_eq!(result.total_wall_clock_seconds, 0.0);
         assert!(result.epochs.is_empty());
     }
 
@@ -578,7 +576,7 @@ mod tests {
         let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), vec![qe(skill.id, 1, sp_needed)], Some(1));
         let result = optimize(&char_st, &[skill], &[]);
         assert!(!result.epochs.is_empty());
-        assert!(result.total_days > 0.0);
+        assert!(result.total_wall_clock_seconds > 0.0);
     }
 
     #[test]
@@ -608,7 +606,7 @@ mod tests {
         let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), queued_skills, Some(2));
         let result = optimize(&char_st, &skills_db, &[]);
         assert!(!result.epochs.is_empty());
-        assert!(result.total_days > 0.0);
+        assert!(result.total_wall_clock_seconds > 0.0);
     }
 
     #[test]
@@ -620,7 +618,7 @@ mod tests {
         let sp_needed = sp_for_level(&skill, 1, 2);
         let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), vec![qe(skill.id, 1, sp_needed)], Some(1));
         let result = optimize(&char_st, &[skill], &implants);
-        assert!(result.total_days > 0.0);
+        assert!(result.total_wall_clock_seconds > 0.0);
     }
 
     #[test]
