@@ -432,10 +432,8 @@ fn run_optimizer_from_queue_file(
         active_implant_ids: vec![],
         queued_skills,
         effective_attributes: EffectiveAttributes::from(base_attrs),
+        bonus_remaps: Some(bonus_remaps),
     };
-
-    // Note: bonus_remaps isn't passed to optimizer yet — it's stored for future use.
-    let _ = bonus_remaps;
     run_optimizer_with_state(&char_state, skills_db, implants)
 }
 

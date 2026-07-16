@@ -170,6 +170,8 @@ pub struct CharacterState {
     pub effective_attributes: EffectiveAttributes,
     /// Skills queued for training, ordered by position (first is active).
     pub queued_skills: Vec<QueuedSkill>,
+    /// Number of bonus neural interface remaps available (timed cooldown separate).
+    pub bonus_remaps: Option<u32>,
 }
 
 impl CharacterState {

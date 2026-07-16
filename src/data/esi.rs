@@ -470,6 +470,7 @@ impl EsIClient {
             queued_skills: queue,
             active_implant_ids: active_implants,
             effective_attributes: effective_attrs,
+            bonus_remaps: None, // ESI doesn't expose this; user provides via --bonus-remaps
         })
     }
 }
