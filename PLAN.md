@@ -16,7 +16,7 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 
 1. **Interactive SSO authentication** — CLI opens browser for EVE login via implicit grant flow (works cross-platform including WSL). Supports multiple characters; token persistence with JWT introspection. Also supports pasting tokens directly (`login -t TOKEN`).
 2. **Skill duration calculator** — compute exact training time for any skill→level transition given an effective attribute allocation (base + implants), using SDE-derived skill data. Formula: `SP = baseTimeConstant × levelMultiplier[level] × 20000`, rate = `(primary + secondary/2) / 60` SP/s.
-3. **Multi-epoch optimizer** — simulate all target skills training in parallel under each epoch's allocation; find the allocation per epoch that minimizes when the last skill finishes. Skills carry progress forward across epochs with no rollback. Target skills can come from ESI `/skillqueue` or a local queue file (`--queue FILE`).
+3. **Multi-epoch optimizer** — simulate target skills training sequentially (one at a time, in queue order) under each epoch's allocation; find the allocation per epoch that minimizes total wall-clock time until everything finishes. Skills carry progress forward across epochs with no rollback. Lower skill levels must complete before higher ones of the same skill (e.g., Gunnery 1 before Gunnery 2), but cross-skill prerequisites are ignored for now. Target skills can come from ESI `/skillqueue` or a local queue file (`--queue FILE`).
 4. **Data layer** — flat JSON assets (`assets/skills.json`, `assets/implants.json`) loaded once at startup; query ESI for live character state (attributes, implant IDs, skill levels, queue) when authenticated.
 5. **CLI interface** — clap derive subcommands: `login`, `logout`, `accounts`, `download`, `verify`, `optimize`. Offline mode via `--queue FILE` and `--attributes INT:CHA:PER:MEM:WIL` requires no authentication.
 
@@ -56,13 +56,13 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 │                                       │
 │  ┌─────────────────────────────────┐  │
 │  │      Multi-Epoch Optimizer       │  │
-│  │                                  │  │
-│  │  Simulate all queue skills       │  │
-│  │  under allocation per epoch.     │  │
-│  │  Score = when last skill done.   │  │
-│  │  Greedy: fix epoch0=current,     │  │
-│  │  then pick each next alloc to    │  │
-│  │  minimize projected finish.      │  │
+│  │                                  │
+│  │  Simulate skills one-by-one in   │
+│  │  queue order under each epoch's  │
+│  │  allocation. Score = when last   │
+│  │  skill completes. Greedy: fix    │
+│  │  epoch0=current, then pick each  │
+│  │  next alloc to minimize finish.  │
 │  └──────────┬──────────────────────┘  │
 │             │                         │
 │  ┌──────────▼──────────────────────┐  │
@@ -148,7 +148,7 @@ SDE needs to also store implant→attribute bonus mapping. This means `skills.js
 
 ### Multi-Epoch Optimization (no rollback model)
 
-Because skills keep their SP across remaps, the optimizer simulates all target skills training continuously through sequential epochs:
+Because skills keep their SP across remaps and train sequentially (only the currently active skill earns SP at any given moment), the optimizer simulates the queue advancing through sequential epochs:
 
 ```
 Epoch 0 (now → next remap):       allocation A0 (= current attrs, fixed)
@@ -156,15 +156,13 @@ Epoch 1 (next remap → end):        allocation A1
 ...
 ```
 
-Each skill tracks remaining time toward its target level. At each remap boundary, rates switch but progress carries forward. The score is **wall-clock time until the last unfinished skill completes**.
+Each skill tracks remaining SP toward its target level. Only one skill is "live" at a time — it earns SP at its rate, completes, and the next queued skill starts. At each remap boundary, the live skill carries its accumulated progress forward; only the new allocation's rate applies going forward. The score is **wall-clock time until the last queued skill completes**.
 
 **Greedy strategy:**
 1. Epoch 0 uses current attributes — no reason to waste a remap immediately.
-2. For epoch N, simulate forward under every candidate allocation; pick the one that minimizes projected finish time of the slowest remaining skill.
-
+2. For epoch N, simulate forward under every candidate allocation; pick the one that minimizes projected finish time of the entire queue.
 This avoids exhaustive search over `allocations^epochs` by greedily optimizing each step. With ~4 max epochs and up to C(24,4)=12,650 allocations per greedy pass, it runs in milliseconds.
 
-Brain size (~25 concurrent slots) means many skills train simultaneously within each epoch. The simulator advances them all at once: each skill progresses independently at its own rate under the current allocation.
 
 ### Attribute Allocation Space
 
@@ -277,7 +275,7 @@ Drone Navigation 2
 - [ ] Token refresh via `/oauth/token` endpoint (placeholder pending implementation)
 
 ### Phase 3 — Multi-Epoch Optimizer ✅
-- [x] Simulation engine: advance all skills through epochs at varying rates
+- [x] Simulation engine: advance queue sequentially through epochs at varying rates
 - [x] Allocation generator: backtracking search producing valid attribute distributions
 - [x] Greedy allocation search per epoch (minimize last-skill finish time)
 - [x] Output phased plan with table and JSON formats
@@ -301,7 +299,7 @@ Drone Navigation 2
 ## Key Decisions
 
 1. **Rust**: Fast computation for the optimizer's tight loop, native binary distribution, no venv or dependency hell. Edition pinned to 2021 for Rust 1.75 compatibility on WSL.
-
+3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates whichever skill is active (and those about to become active).
 2. **JSON files over SQLite**: Skill and implant data are ~400+ entries × 7 fields each. Flat JSON loads in microseconds with serde — no DB library needed.
 
 3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
