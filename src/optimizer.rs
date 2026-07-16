@@ -348,12 +348,13 @@ pub fn optimize(
     // -----------------------------------------------------------------------
     while !sim_state.is_empty() {
         next_remap_at_secs += REMAP_COOLDOWN_DAYS * SECS_PER_DAY;
-
         let Some(chosen) = choose_best_allocation(&sim_state, &allocations, implants) else {
             break;
         };
+        // Add implant bonus back on top of the new remap allocation.
+        let chosen_with_implants = chosen.add(&char_state.implant_bonus);
         let chosen_effective = EffectiveAttributes::from_base_and_implants(
-            &chosen,
+            &chosen_with_implants,
             &char_state.active_implant_ids,
             implants,
         );
@@ -439,6 +440,7 @@ mod tests {
         CharacterState {
             base_attributes: attrs, queued_skills: skills,
             active_implant_ids: Vec::new(),
+            implant_bonus: BaseAttributes { intelligence: 0., charisma: 0., perception: 0., memory: 0., willpower: 0. },
             effective_attributes: EffectiveAttributes::from(attrs),
             bonus_remaps,
         }

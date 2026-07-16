@@ -304,7 +304,14 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
 
     let result = if let Some(queue_path) = &args.queue {
         // Parse queue file locally — no ESI needed.
-        run_optimizer_from_queue_file(&args.attributes, args.bonus_remaps, queue_path, &skills_db, &implants)?
+        run_optimizer_from_queue_file(
+            &args.attributes,
+            &args.implant_bonuses,
+            args.bonus_remaps,
+            queue_path,
+            &skills_db,
+            &implants,
+        )?
     } else {
         match try_fetch_and_optimize(&skills_db, &implants).await {
             Ok(r) => r,
@@ -324,7 +331,6 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
 
     Ok(())
 }
-
 /// Attempt to fetch real character state via ESI and optimize.
 async fn try_fetch_and_optimize(
     skills_db: &[data::models::SkillRecord],
@@ -343,6 +349,7 @@ async fn try_fetch_and_optimize(
 /// Parse a queue file and optimize directly without ESI.
 fn run_optimizer_from_queue_file(
     attrs_str: &str,
+    implant_bonuses_str: &str,
     bonus_remaps: Option<u32>,
     path: &str,
     skills_db: &[data::models::SkillRecord],
@@ -363,6 +370,21 @@ fn run_optimizer_from_queue_file(
         willpower: parts[2],
         intelligence: parts[3],
         charisma: parts[4],
+    };
+
+    // Parse implant bonus string like "0:0:0:0:0" (PER:MEM:WIL:INT:CHA).
+    let ib_parts: Vec<f64> = implant_bonuses_str.split(':')
+        .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid implant bonus value: {}", s)))
+        .collect::<Result<Vec<_>>>()?;
+    if ib_parts.len() != 5 {
+        anyhow::bail!("--implant-bonuses must have exactly 5 values (PER:MEM:WIL:INT:CHA), got {}", ib_parts.len());
+    }
+    let implant_bonus = BaseAttributes {
+        perception: ib_parts[0],
+        memory: ib_parts[1],
+        willpower: ib_parts[2],
+        intelligence: ib_parts[3],
+        charisma: ib_parts[4],
     };
 
     // Read and parse queue file.
@@ -431,6 +453,7 @@ fn run_optimizer_from_queue_file(
     let char_state = data::models::CharacterState {
         base_attributes: base_attrs,
         active_implant_ids: vec![],
+        implant_bonus,
         queued_skills,
         effective_attributes: EffectiveAttributes::from(base_attrs),
         bonus_remaps,
@@ -476,12 +499,12 @@ fn print_table_output(result: &data::models::OptimizationResult) {
             calculator::format_duration(epoch.start_offset_secs)
         );
         println!(
-            "│ Attributes: INT={} CHA={} PER={} MEM={} WIL={}",
-            epoch.attributes.intelligence as u32,
-            epoch.attributes.charisma as u32,
-            epoch.attributes.perception as u32,
-            epoch.attributes.memory as u32,
-            epoch.attributes.willpower as u32,
+            "│ Effective:   INT={} CHA={} PER={} MEM={} WIL={}",
+            epoch.effective_attributes.intelligence as u32,
+            epoch.effective_attributes.charisma as u32,
+            epoch.effective_attributes.perception as u32,
+            epoch.effective_attributes.memory as u32,
+            epoch.effective_attributes.willpower as u32,
         );
         if !epoch.completed_skills.is_empty() {
             println!("│ Skills completing this epoch:");

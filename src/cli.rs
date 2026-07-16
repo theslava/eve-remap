@@ -79,4 +79,10 @@ pub struct OptimizeArgs {
     /// Number of bonus neural interface remaps available (in addition to timed cooldown).
     #[arg(long)]
     pub bonus_remaps: Option<u32>,
+
+    /// Implant attribute bonuses that persist across remaps.
+    /// Format: PER:MEM:WIL:INT:CHA (e.g., 0:1:2:0:1).
+    /// If omitted, defaults to zero — meaning --attributes are treated as raw base values.
+    #[arg(long, default_value = "0:0:0:0:0")]
+    pub implant_bonuses: String,
 }

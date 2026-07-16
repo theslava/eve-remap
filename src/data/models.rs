@@ -129,6 +129,22 @@ impl BaseAttributes {
     pub fn total(&self) -> f64 {
         self.intelligence + self.charisma + self.perception + self.memory + self.willpower
     }
+
+    /// Create a zeroed-out attribute set (useful as default/empty value).
+    pub const fn zero() -> Self {
+        BaseAttributes { intelligence: 0., charisma: 0., perception: 0., memory: 0., willpower: 0. }
+    }
+
+    /// Add another attribute set pointwise.
+    pub fn add(&self, other: &Self) -> Self {
+        BaseAttributes {
+            intelligence: self.intelligence + other.intelligence,
+            charisma: self.charisma + other.charisma,
+            perception: self.perception + other.perception,
+            memory: self.memory + other.memory,
+            willpower: self.willpower + other.willpower,
+        }
+    }
 }
 
 /// A skill currently being trained by a character (from ESI /skillqueue).
@@ -166,6 +182,9 @@ pub struct CharacterState {
     pub base_attributes: BaseAttributes,
     /// IDs of currently active implants providing attribute bonuses.
     pub active_implant_ids: Vec<u32>,
+    /// Direct implant bonus values (for offline mode when --implant-bonuses is used).
+    /// When non-zero, these are added back after each remap regardless of active_implant_ids.
+    pub implant_bonus: BaseAttributes,
     /// Effective attributes after applying active implant bonuses.
     pub effective_attributes: EffectiveAttributes,
     /// Skills queued for training, ordered by position (first is active).
