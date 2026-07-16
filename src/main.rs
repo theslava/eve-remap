@@ -1,5 +1,6 @@
 mod calculator;
 mod cli;
+mod auth;
 mod data;
 mod optimizer;
 
@@ -24,6 +25,15 @@ fn main() -> Result<()> {
 // ── Login ────────────────────────────────────────────────────────────────
 
 fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
+    if args.sso {
+        return tokio::runtime::Runtime::new()?.block_on(async {
+            let entry = auth::run_pkce_flow().await?;
+            auth::save_account(entry.clone())?;
+            println!("\nAuthenticated as {} (ID: {}).", entry.character_name, entry.character_id);
+            Ok::<_, anyhow::Error>(())
+        });
+    }
+
     let token = if let Some(t) = &args.token {
         t.clone()
     } else {
@@ -38,8 +48,32 @@ fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
         trimmed
     };
 
-    data::esi::save_tokens(&token)?;
-    println!("\nToken saved successfully.");
+    match auth::decode_jwt_token(&token) {
+        Some(claims) => {
+            let now_secs = std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs();
+
+            let entry = auth::StoredAccountEntry {
+                character_id: claims.owner_character_id,
+                character_name: claims.character_name.clone(),
+                access_token: token.clone(),
+                refresh_token: String::new(),
+                expires_at: now_secs + 3600,
+                scopes: claims.scopes,
+                created_at: now_secs,
+            };
+
+            auth::save_account(entry)?;
+            println!("\nToken saved for {} (ID: {}).", claims.character_name, claims.owner_character_id);
+        }
+        None => {
+            data::esi::save_tokens(&token)?;
+            println!("\nToken saved (could not decode JWT — use --sso next time for full info).");
+        }
+    }
+
     println!("Run 'eve-remap optimize' to start optimizing your skill queue.");
     Ok(())
 }
@@ -47,28 +81,64 @@ fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
 // ── Logout ───────────────────────────────────────────────────────────────
 
 fn cmd_logout() -> Result<()> {
-    let path = data::esi::token_path();
-    if path.exists() {
-        std::fs::remove_file(&path).context("Failed to remove tokens file")?;
-        println!("Tokens removed. You are now logged out.");
+    let accounts = auth::load_accounts()?;
+    if accounts.is_empty() {
+        // Also clean legacy tokens file.
+        let path = data::esi::token_path();
+        if path.exists() {
+            std::fs::remove_file(&path)?;
+        }
+        println!("No stored accounts found (already logged out).");
     } else {
-        println!("No stored tokens found (already logged out).");
+        for acct in &accounts {
+            auth::remove_account(acct.character_id)?;
+        }
+        // Clean legacy tokens file too.
+        let path = data::esi::token_path();
+        if path.exists() {
+            std::fs::remove_file(&path).ok();
+        }
+        println!("Logged out {} account(s).", accounts.len());
     }
     Ok(())
 }
 
 // ── Accounts ─────────────────────────────────────────────────────────────
 
-fn cmd_accounts(_args: &cli::AccountsArgs) -> Result<()> {
-    match data::esi::load_saved_token() {
-        Some(_) => {
-            println!("Status: authenticated");
-            println!("Run 'eve-remap optimize' with --character-id to select a character.");
+fn cmd_accounts(args: &cli::AccountsArgs) -> Result<()> {
+    let accounts = auth::load_accounts()?;
+    let chars = auth::list_characters()?;
+
+    if chars.is_empty() {
+        // Check legacy token storage.
+        match data::esi::load_saved_token() {
+            Some(_) => {
+                println!("Status: authenticated (legacy token — run 'login' again to migrate)");
+            }
+            None => {
+                println!("No authenticated accounts.");
+                println!("Run 'eve-remap login --sso' or 'eve-remap login -t TOKEN' to authenticate.");
+            }
         }
-        None => {
-            println!("Status: not authenticated");
-            println!("Run 'eve-remap login' first, or set EVE_REMAP_TOKEN environment variable.");
-        }
+        return Ok(());
+    }
+
+    println!("Authenticated accounts:");
+    let now = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs();
+
+    for acct in &accounts {
+        let expired = acct.expires_at <= now;
+        let status = if expired { "[expired]" } else { "[active]" };
+        println!("  {} - {} ({}) {}", status, acct.character_name, acct.character_id, {
+            if args.verbose {
+                format!("expires in {} min", ((acct.expires_at as i64 - now as i64).max(0)) / 60)
+            } else {
+                String::new()
+            }
+        });
     }
     Ok(())
 }
@@ -126,25 +196,28 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
 
     Ok(())
 }
-
 /// Attempt to fetch real character state via ESI and optimize.
 async fn try_fetch_and_optimize(
-    _char_id: &Option<u64>,
+    char_id_flag: &Option<u64>,
     skills_db: &[data::models::SkillRecord],
     implants: &[data::models::ImplantRecord],
 ) -> anyhow::Result<data::models::OptimizationResult> {
+    // Resolve character ID: CLI flag > stored account > error.
+    let char_id = match char_id_flag {
+        Some(id) => *id,
+        None => {
+            match auth::find_valid_token() {
+                Ok(Some((_token, id))) => id,
+                Ok(None) => return Err(anyhow::anyhow!(
+                    "No authenticated accounts found.\n\
+                     Run 'eve-remap login --sso' or pass --character-id."
+                )),
+                Err(e) => return Err(anyhow::anyhow!("Failed to load accounts: {}", e)),
+            }
+        }
+    };
+
     let client = data::esi::EsIClient::from_env()?;
-
-    // For now we need a character ID — either from flag or from token introspection.
-    // Without it, we can't proceed with live data.
-    // TODO: extract owner_character_id from JWT payload when char_id is None.
-    let char_id = 0u64; // placeholder until JWT parsing is wired
-    if char_id == 0 {
-        return Err(anyhow::anyhow!(
-            "No character ID available. Pass --character-id or set up JWT introspection."
-        ));
-    }
-
     let char_state = client.fetch_character_state(char_id, skills_db, implants).await?;
     run_optimizer_with_state(&char_state, skills_db, implants)
 }
