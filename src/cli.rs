@@ -32,13 +32,18 @@ pub enum Commands {
 #[derive(clap::Args)]
 pub struct LoginArgs {
     /// Bearer token from EVE SSO (paste full JWT string).
-    /// If omitted and --sso is not set, will prompt interactively.
+    /// If omitted and --sso/--browser are not set, will prompt interactively.
     #[arg(short, long, env = "EVE_REMAP_TOKEN")]
     pub token: Option<String>,
 
     /// Use interactive browser-based SSO/PKCE flow instead of pasting a token.
     #[arg(long)]
     pub sso: bool,
+
+    /// Open browser for authorization, then paste the callback URL back.
+    /// Works cross-platform (WSL, macOS, Linux) without port forwarding.
+    #[arg(long)]
+    pub browser: bool,
 }
 
 #[derive(clap::Args)]

@@ -25,7 +25,12 @@ fn main() -> Result<()> {
 // ── Login ────────────────────────────────────────────────────────────────
 
 fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
+    if args.browser {
+        return cmd_login_browser();
+    }
     if args.sso {
+        eprintln!("Note: PKCE server-based SSO (--sso) requires port forwarding from WSL.");
+        eprintln!("Use '--browser' instead for a simpler flow that works cross-platform.\n");
         return tokio::runtime::Runtime::new()?.block_on(async {
             let entry = auth::run_pkce_flow().await?;
             auth::save_account(entry.clone())?;
@@ -50,19 +55,17 @@ fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
 
     match auth::decode_jwt_token(&token) {
         Some(claims) => {
-            let now_secs = std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_secs();
-
             let entry = auth::StoredAccountEntry {
                 character_id: claims.owner_character_id,
                 character_name: claims.character_name.clone(),
                 access_token: token.clone(),
                 refresh_token: String::new(),
-                expires_at: now_secs + 3600,
+                expires_at: claims.expires_at,
                 scopes: claims.scopes,
-                created_at: now_secs,
+                created_at: std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs(),
             };
 
             auth::save_account(entry)?;
@@ -70,12 +73,134 @@ fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
         }
         None => {
             data::esi::save_tokens(&token)?;
-            println!("\nToken saved (could not decode JWT — use --sso next time for full info).");
+            println!("\nToken saved (could not decode JWT — use --browser next time for full info).");
         }
     }
 
     println!("Run 'eve-remap optimize' to start optimizing your skill queue.");
     Ok(())
+}
+
+fn cmd_login_browser() -> Result<()> {
+    let client_id = std::env::var("ESI_CLIENT_ID").context(
+        "ESI_CLIENT_ID not set.\n\
+         Register an app at https://developers.eveonline.com/applications/\n\
+         Then export ESI_CLIENT_ID=<your-client-id>"
+    )?;
+
+    // Use a dummy redirect that captures the token in the URL fragment.
+    let redirect_uri = "https://127.0.0.1/callback";
+    let state = rand::random::<u64>().to_string();
+    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1";
+
+    let auth_url = format!(
+        "https://login.eveonline.com/v2/oauth/authorize?\
+         response_type=token&\
+         client_id={}&\
+         redirect_uri={}&\
+         state={}&\
+         scope={}",
+        urlencoding::encode(&client_id),
+        urlencoding::encode(redirect_uri),
+        urlencoding::encode(&state),
+        urlencoding::encode(scopes),
+    );
+
+    println!("Opening browser for EVE SSO authorization...");
+    println!("If it doesn't open, visit:\n{}\n", auth_url);
+
+    let _ = open_browser(&auth_url);
+
+    print!("Paste the redirected URL from your browser: ");
+    io::stdout().flush()?;
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+    let callback_url = input.trim().to_string();
+
+    if callback_url.is_empty() {
+        anyhow::bail!("No URL provided. Aborting.");
+    }
+
+    // Extract access_token and expires_in from the URL fragment.
+    let token = parse_implicit_grant_callback(&callback_url, &state)?;
+
+    match auth::decode_jwt_token(&token) {
+        Some(claims) => {
+            let entry = auth::StoredAccountEntry {
+                character_id: claims.owner_character_id,
+                character_name: claims.character_name.clone(),
+                access_token: token,
+                refresh_token: String::new(),
+                expires_at: claims.expires_at,
+                scopes: claims.scopes,
+                created_at: std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .unwrap_or_default()
+                    .as_secs(),
+            };
+
+            auth::save_account(entry)?;
+            println!("\nToken saved for {} (ID: {}).", claims.character_name, claims.owner_character_id);
+        }
+        None => {
+            data::esi::save_tokens(&token)?;
+            println!("\nToken saved (could not decode JWT).");
+        }
+    }
+
+    println!("Run 'eve-remap optimize' to start optimizing your skill queue.");
+    Ok(())
+}
+
+fn open_browser(url: &str) -> std::io::Result<()> {
+    #[cfg(target_os = "linux")]
+    std::process::Command::new("xdg-open").arg(url).spawn()?;
+    #[cfg(target_os = "macos")]
+    std::process::Command::new("open").arg(url).spawn()?;
+    #[cfg(target_os = "windows")]
+    std::process::Command::new("cmd")
+        .args(["/C", "start"])
+        .arg(url)
+        .spawn()?;
+    Ok(())
+}
+
+/// Parse the callback URL from an implicit grant flow and extract the access token.
+/// The fragment looks like: #access_token=...&expires_in=3600&state=...
+fn parse_implicit_grant_callback(callback_url: &str, expected_state: &str) -> Result<String> {
+    let fragment_start = callback_url.find('#')
+        .ok_or_else(|| anyhow::anyhow!("No fragment (#) in callback URL"))?;
+
+    for param in callback_url[fragment_start + 1..].split('&') {
+        if param.starts_with("error=") {
+            return Err(anyhow::anyhow!(
+                "Authorization error: {}",
+                param.trim_start_matches("error=")
+            ));
+        }
+    }
+
+    // Verify state to prevent CSRF.
+    let has_valid_state = callback_url.contains(&format!("state={}", expected_state));
+    if !has_valid_state {
+        return Err(anyhow::anyhow!(
+            "State mismatch — this might be a CSRF attempt or the wrong auth URL.\n\
+             Make sure you used the URL printed above."
+        ));
+    }
+
+    for param in callback_url[fragment_start + 1..].split('&') {
+        if let Some((key, value)) = param.split_once('=') {
+            if key == "access_token" && !value.is_empty() {
+                return Ok(value.to_string());
+            }
+        }
+    }
+
+    Err(anyhow::anyhow!(
+        "No access_token found in callback URL fragment.\n\
+         The browser may have shown an error page."
+    ))
 }
 
 // ── Logout ───────────────────────────────────────────────────────────────

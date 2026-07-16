@@ -11,6 +11,8 @@ pub struct JwtClaims {
     pub owner_character_id: u64,
     pub character_name: String,
     pub scopes: Vec<String>,
+    /// Expiration timestamp (seconds since epoch) from the JWT.
+    pub expires_at: u64,
 }
 
 /// Decode the payload of a JWT access token without verifying the signature.
@@ -18,12 +20,12 @@ pub struct JwtClaims {
 /// This is safe for introspection since we just need to read what the server told us.
 /// The token will be validated on next API call anyway.
 pub fn decode_jwt_token(token: &str) -> Option<JwtClaims> {
-    // JWT = header.payload.signature — only the payload matters.
     let parts: Vec<&str> = token.split('.').collect();
     if parts.len() < 2 {
         return None;
     }
 
+    // EVE uses base64url without padding for the payload.
     let raw = base64::Engine::decode(
         &base64::engine::general_purpose::URL_SAFE_NO_PAD,
         parts[1],
@@ -33,18 +35,30 @@ pub fn decode_jwt_token(token: &str) -> Option<JwtClaims> {
 
     #[derive(serde::Deserialize)]
     struct RawClaims {
-        #[serde(rename = "owner_character_id")]
-        owner_character_id: u64,
-        #[serde(rename = "character_owner_email")]
-        _email: String,
-        scope: String,
+        /// e.g. "CHARACTER:EVE:1092366687"
+        sub: String,
+        /// Character display name, e.g. "Test Pilot"
+        name: Option<String>,
+        /// Scopes as array of strings, e.g. ["esi-skills.read_skills.v1", ...]
+        scp: Vec<String>,
+        /// Expiration timestamp (seconds since epoch)
+        exp: u64,
+        /// Issued-at timestamp
+        iat: u64,
     }
 
     let claims: RawClaims = serde_json::from_str(text).ok()?;
+
+    // Extract character ID from sub: "CHARACTER:EVE:<id>"
+    let char_id = claims.sub.split(':')
+        .last()
+        .and_then(|s| s.parse::<u64>().ok())?;
+
     Some(JwtClaims {
-        owner_character_id: claims.owner_character_id,
-        character_name: format!("Character {}", claims.owner_character_id),
-        scopes: claims.scope.split_whitespace().map(|s| s.to_string()).collect(),
+        owner_character_id: char_id,
+        character_name: claims.name.unwrap_or_else(|| format!("Character {}", char_id)),
+        scopes: claims.scp,
+        expires_at: claims.exp,
     })
 }
 
@@ -178,11 +192,12 @@ mod tests {
 
     #[test]
     fn test_decode_jwt_token_minimal() {
-        // Build a minimal JWT with known claims.
         let payload = serde_json::json!({
-            "owner_character_id": 90123456,
-            "character_owner_email": "test@example.com",
-            "scope": "esi-skills.read_skills.v1"
+            "sub": "CHARACTER:EVE:90123456",
+            "name": "Test Pilot",
+            "scp": ["esi-skills.read_skills.v1"],
+            "exp": 999999999u64,
+            "iat": 1700000000
         });
         let encoded_payload = base64::Engine::encode(
             &base64::engine::general_purpose::URL_SAFE_NO_PAD,
@@ -192,6 +207,7 @@ mod tests {
 
         let claims = decode_jwt_token(&token).expect("Should parse valid JWT");
         assert_eq!(claims.owner_character_id, 90123456);
+        assert_eq!(claims.character_name, "Test Pilot");
         assert!(claims.scopes.contains(&"esi-skills.read_skills.v1".to_string()));
     }
 
