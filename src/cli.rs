@@ -66,9 +66,8 @@ pub struct OptimizeArgs {
     /// Example lines: "Gunnery 3", "Navigation 5"
     #[arg(long, short = 'q')]
     pub queue: Option<String>,
-
-    /// Base attribute values to use when not fetching from ESI.
-    /// Format: PER:MEM:WIL:INT:CHA (e.g., 17:17:17:17:17). Defaults to 17:17:17:17:17.
+    /// Effective attribute values including implants for offline mode.
+    /// Format: PER:MEM:WIL:INT:CHA (e.g., 22:19:17:17:17). Defaults to 17:17:17:17:17.
     #[arg(long, default_value = "17:17:17:17:17")]
     pub attributes: String,
 

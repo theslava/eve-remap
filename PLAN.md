@@ -15,10 +15,10 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 ### In Scope (MVP)
 
 1. **Interactive SSO authentication** — CLI opens browser for EVE login via implicit grant flow (works cross-platform including WSL). Supports multiple characters; token persistence with JWT introspection. Also supports pasting tokens directly (`login -t TOKEN`).
-2. **Skill duration calculator** — compute exact training time for any skill→level transition given an effective attribute allocation (base + implants), using SDE-derived skill data. Formula: `SP = baseTimeConstant × levelMultiplier[level] × 20000`, rate = `(primary + secondary/2) / 60` SP/s.
+2. **Skill duration calculator** — compute exact training time for any skill→level transition given an effective attribute allocation (base + implants), using SDE-derived skill data. Formula: `SP = (CUMULATIVE[to_level] − CUMULATIVE[from_level]) × skillTimeConstant`, rate = `(primary + secondary/2) / 60` SP/s. Cumulative SP table (rank 1): L1=250, L2=1414, L3=8000, L4=45255, L5=256000.
 3. **Multi-epoch optimizer** — simulate target skills training sequentially (one at a time, in queue order) under each epoch's allocation; find the allocation per epoch that minimizes total wall-clock time until everything finishes. Skills carry progress forward across epochs with no rollback. Lower skill levels must complete before higher ones of the same skill (e.g., Gunnery 1 before Gunnery 2), but cross-skill prerequisites are ignored for now. Target skills can come from ESI `/skillqueue` or a local queue file (`--queue FILE`).
 4. **Data layer** — flat JSON assets (`assets/skills.json`, `assets/implants.json`) loaded once at startup; query ESI for live character state (attributes, implant IDs, skill levels, queue) when authenticated.
-5. **CLI interface** — clap derive subcommands: `login`, `logout`, `accounts`, `download`, `verify`, `optimize`. Offline mode via `--queue FILE` and `--attributes INT:CHA:PER:MEM:WIL` requires no authentication.
+5. **CLI interface** — clap derive subcommands: `login`, `logout`, `accounts`, `download`, `verify`, `optimize`. Offline mode via `--queue FILE`, `--attributes PER:MEM:WIL:INT:CHA`, and `--implant-bonuses PER:MEM:WIL:INT:CHA` requires no authentication.
 
 ### Out of Scope (for now)
 
@@ -67,7 +67,7 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 │             │                         │
 │  ┌──────────▼──────────────────────┐  │
 │  │      Duration Calculator         │  │
-│  │  SP = tc × multiplier × 20000   │  │
+│  │  SP = cumulative delta × STC    │  │
 │  │  rate = (P + S/2) / 60 SP/s     │  │
 │  └──────────┬──────────────────────┘  │
 └─────────────┼─────────────────────────┘
@@ -109,32 +109,31 @@ eve-remap/
 ### Remap Mechanics (confirmed from CCP support docs)
 
 - **Timed remap**: available every 365 days after last use. Consumed first if both timed and bonus are available.
-- **Bonus remaps**: purchased separately, usable anytime alongside the timed cooldown.
 - **No SP rollback**: actively training skills keep their accumulated SP and immediately switch to the new rate. Only future SP generation is affected.
-- **Default assumption**: 1 bonus remap available now; next timed remap at 365 days from today. Configurable via `--bonus-remaps N`.
+- **Bonus remaps**: Optional — if `--bonus-remaps N` is not specified, the optimizer runs unlimited timed epochs until the queue empties. Configurable via `--bonus-remaps N`.
 - ESI does NOT expose the neural interface cooldown or bonus remap count — defaults apply unless user customizes via CLI.
 
 ### Skill Duration Formula
+From EVE mechanics, each skill has a **primary** and **secondary** attribute. SP costs use an authoritative cumulative table (rank 1):
 
-From EVE mechanics, each skill has a **primary** and **secondary** attribute:
+| Level | Cumulative SP | Incremental SP |
+|-------|--------------|----------------|
+| L1    | 250          | 250            |
+| L2    | 1,414        | 1,164          |
+| L3    | 8,000        | 6,586          |
+| L4    | 45,255       | 37,255         |
+| L5    | 256,000      | 210,745        |
 
 ```
-SP for level transition = skillTimeConstant × levelMultiplier[level] × 20000
-
-rate_per_second = (effectivePrimaryAttr + effectiveSecondaryAttr / 2.0) / 60.0
-
-duration_seconds = SP_for_transition / rate_per_second
-
-levelMultiplier = [1, 4, 20, 80, 360]  // for levels 1→2, 2→3, 3→4, 4→5, 5→(max)
+SP for transition = (CUMULATIVE[to_level] - CUMULATIVE[from_level]) × skillTimeConstant
+rate_per_second   = (effectivePrimaryAttr + effectiveSecondaryAttr / 2.0) / 60.0
+duration_seconds  = SP_for_transition / rate_per_second
 ```
 
 Where per skill:
 - `skillTimeConstant` — multiplier from SDE type data (typically 1.0–4.0)
 - `primaryAttribute` / `secondaryAttribute` — governing attributes by name
 - `effectiveAttrValue = baseRemappedValue + sum(implantBonuses for that attr)`
-
-The `× 20000` is the base SP unit in EVE Online — all level costs are multiples of this value. Without it, durations would be off by four orders of magnitude.
-
 ### Effective Attributes
 
 ESI returns data separately:
@@ -168,7 +167,7 @@ The optimizer groups skills into "time buckets" based on when they'll be trainin
 
 3. **Cluster adjacent buckets with overlapping attributes.** If Bucket A (INT+MEM) trains for 200 days and Bucket B (MEM+INT) trains next for 50 days, they share Memory — one MEM-heavy allocation serves both efficiently rather than splitting across two epochs.
 
-4. **Assign the best allocation per cluster.** For each time-bounded cluster, search all valid allocations (C(24,4)=10,626 combinations at 25 total points) and pick the one minimizing that cluster's projected finish time.
+4. **Assign the best allocation per cluster.** For each time-bounded cluster, search all valid allocations (2,886 distributions: base=17 + 14 free points, max +10 per attr) and pick the one minimizing that cluster's projected finish time.
 
 This produces a schedule like:
 ```
@@ -179,10 +178,7 @@ Epoch 2  [day X → end]:     allocation optimized for remaining buckets
 
 #### Allocation Space
 
-A remap distributes `N` total attribute points across 5 attributes (INT/CHA/PER/MEM/WIL):
-- Each attribute ≥ 1 (hard minimum)
-- Sum of all five = N (typically 25 base; extra SP can buy more, up to 25 per attribute max)
-- At N=25 with min=1: C(24,4) = 10,626 valid distributions via stars-and-bars combinatorics
+A remap distributes **14** free points above a hard floor of **17** across 5 attributes. Per-attribute cap is **+10** (max value = 27). This yields **2,886 valid distributions**. No single-attribute dump is possible since 14 > 10.
 
 The greedy approach avoids exhaustive `allocations^epochs` by optimizing each bucket independently given its position in the timeline.
 
@@ -224,8 +220,9 @@ Token store maps character ID → credentials. When multiple characters are logg
 | Command | Flags | Description |
 |---------|-------|-------------|
 | `optimize` | `-q FILE`, `--queue FILE` | Path to queue file with target skills (one per line as "Skill Name \<level>") |
-| `optimize` | `--attributes INT:CHA:PER:MEM:WIL` | Base attribute values for offline mode (default: 12:3:4:4:2) |
-| `optimize` | `--bonus-remaps N` | Number of bonus remaps available now (default: 1) |
+| `optimize` | `--attributes PER:MEM:WIL:INT:CHA` | Effective attribute values including implants (default: 17:17:17:17:17) |
+| `optimize` | `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses persisting across remaps (default: 0:0:0:0:0) |
+| `optimize` | `--bonus-remaps N` | Number of bonus neural interface remaps (optional — unlimited timed epochs if omitted) |
 | `optimize` | `--json` | Output results as JSON instead of human-readable table |
 | `login` | `-t TOKEN` / `EVE_REMAP_TOKEN` env | Paste a JWT bearer token directly |
 | `login` | `--browser` | Open browser for authorization (implicit grant, cross-platform) |
@@ -250,8 +247,8 @@ Drone Navigation 2
 
 1. Parse queue file into target skills and levels.
 2. Look up each skill in `assets/skills.json` to get time constant and attributes.
-3. Compute SP needed per transition using the corrected formula (×20000 base unit).
-4. Build character state from `--attributes` values (no implants applied).
+3. Compute SP needed per transition using cumulative table lookup × skillTimeConstant.
+4. Build character state from `--attributes` values. If `--implant-bonuses` is provided, those deltas are preserved across post-remap epochs.
 5. Run multi-epoch optimizer — output phased plan.
 
 ### Online Mode (ESI authentication)
@@ -278,9 +275,9 @@ Drone Navigation 2
 
 ### Phase 1 — Foundation ✅
 - [x] Rust project scaffolded with Cargo, edition 2021
-- [x] `calculator.rs` with correct duration formula including ×20000 base SP unit
+- [x] `calculator.rs` with correct duration formula using cumulative SP table lookup
 - [x] SDE asset files (`assets/skills.json`, `assets/implants.json`) present in repo
-- [x] 6 calculator tests passing against known values
+- [x] Calculator tests covering SP rate, cumulative table, and duration helpers
 
 ### Phase 2 — Auth & Data Layer ✅
 - [x] JWT introspection: decode payload extracting character ID from `sub` field
@@ -295,14 +292,14 @@ Drone Navigation 2
 - [x] Allocation generator: backtracking search producing valid attribute distributions
 - [x] Greedy allocation search per epoch (minimize last-skill finish time)
 - [x] Output phased plan with table and JSON formats
-- [x] 14 optimizer tests including multi-epoch progression
+- [x] Optimizer tests covering allocation generation, epoch simulation, and greedy scheduling
 
 ### Phase 4 — CLI Polish ✅
 - [x] All commands wired up with clap derive subcommands
 - [x] Human-readable output: table per epoch showing allocation, which skills complete, projected dates
 - [x] JSON output format for scripting (`--json`)
 - [x] PKCE SSO flow (`--sso`) and implicit grant browser login (`--browser`)
-- [x] Queue file input (`--queue FILE`) with offline mode (`--attributes`)
+- [x] Queue file input (`--queue FILE`) with offline mode (`--attributes`, `--implant-bonuses`)
 - [x] Graceful fallback when no token available suggests using `--queue`
 
 ### Phase 5 — Remaining Work
@@ -320,12 +317,12 @@ Drone Navigation 2
 
 3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
 
-4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count; user provides `--bonus-remaps N`. Defaults to 1 if not specified.
+4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count; user provides `--bonus-remaps N`. Optional — if omitted, optimizer runs unlimited timed epochs until queue empties.
 
 5. **Queue from file OR ESI**: Target skills can come from `--queue FILE` (offline, copy/paste friendly) or fetched live from ESI `/skillqueue/` when authenticated. This removes the authentication barrier for initial use and testing.
 
 6. **Browser login over PKCE for WSL**: Implicit grant flow avoids port forwarding issues between Windows host and WSL guest where `http://localhost:<port>` isn't routable. PKCE (`--sso`) still available as an option.
 
-7. **SP base multiplier ×20000**: EVE Online skill training uses a base SP unit of 20,000. Level costs are `timeConstant × levelMultiplier × 20000`. Without this factor, durations would be off by four orders of magnitude (seconds instead of days).
+7. **Cumulative SP table over multiplier formula**: Authoritative values from EVE Online forums archive: L1=250, L2=1414, L3=8000, L4=45255, L5=256000. SP for transition = `(CUMULATIVE[to] - CUMULATIVE[from]) × STC`. This replaced the incorrect LEVEL_MULTIPLIERS×BASE_SP approach.
 
 8. **EsIClient uses immutable tokens**: Replaced `Arc<Mutex<String>>` with plain `String` to avoid holding locks across `.await` points, eliminating deadlock risk in async context.

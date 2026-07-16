@@ -47,11 +47,10 @@ cargo test optimizer::tests         # only optimizer module
 - **No emojis**, no marketing language in prose
 
 ## Key Architecture Facts
-
-- **SP formula**: `SP = skillTimeConstant × levelMultiplier[level] × 20000`. The ×20000 base unit is critical — without it durations are off by 4 orders of magnitude.
-- **Rate formula**: `(effectivePrimary + effectiveSecondary / 2.0) / 60.0` SP/s.
-- **Optimizer**: greedy best-response per epoch. Epoch 0 fixed to current attributes; each subsequent epoch picks the allocation minimizing projected finish of the bottleneck skill. ~12K allocations searched per epoch via backtracking (C(24,4)).
-- **Queue input**: two modes — ESI `/skillqueue` when authenticated, or `--queue FILE` for offline use. Queue files: one "Skill Name \<level>" per line; `#` comments and blank lines ignored; case-insensitive name matching against SDE data.
+- **SP formula**: Cumulative table lookup — `(CUMULATIVE[to] - CUMULATIVE[from]) × skillTimeConstant`. Table (rank 1): L1=250, L2=1414, L3=8000, L4=45255, L5=256000. Replaced the incorrect multiplier×20000 approach.
+- **Rate formula**: `(effectivePrimary + effectiveSecondary / 2.0) / 60.0` SP/s. Primary points worth exactly 2× secondary.
+- **Optimizer**: greedy best-response per epoch. Epoch 0 fixed to current attributes; each subsequent epoch picks the allocation minimizing last-skill finish time across **2,886** valid distributions (base=17 + 14 free points, max +10/attr). Implant bonuses from `--implant-bonuses` are added back after each remap.
+- **Queue input**: two modes — ESI `/skillqueue` when authenticated, or `--queue FILE` for offline use. Queue files: one "Skill Name \<level>" per line; `#` comments and blank lines ignored; case-insensitive name matching against SDE data. Level N means train from (N-1) to N.
 - **Auth**: PKCE (`--sso`) requires port forwarding on WSL; implicit grant (`--browser`) works cross-platform. JWT claims differ from docs: `sub: "CHARACTER:EVE:<id>"`, `scp` array for scopes, `name` for character name.
 - **Token refresh**: currently a placeholder — `refresh_token` field stored but not yet wired to `/oauth/token` endpoint.
 
@@ -60,7 +59,7 @@ cargo test optimizer::tests         # only optimizer module
 ```
 src/
 ├── main.rs           — CLI entrypoint, command dispatch, output formatters, queue file parser
-├── cli.rs            — clap derive argument definitions (OptimizeArgs has --queue, --attributes)
+├── cli.rs            — clap derive argument definitions (OptimizeArgs has --queue, --attributes, --implant-bonuses)
 ├── calculator.rs     — SP formula, rate computation, duration helpers, format_duration
 ├── optimizer.rs      — multi-epoch allocation search with simulation engine
 ├── auth/
