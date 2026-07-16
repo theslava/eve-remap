@@ -312,29 +312,28 @@ pub fn optimize(
         allocations.len()
     );
 
-    let bonus_remaps = char_state.bonus_remaps.unwrap_or(1);
-
     let mut result_epochs = Vec::new();
     let mut next_remap_at_secs: f64 = REMAP_COOLDOWN_DAYS * SECS_PER_DAY;
-    let mut remap_count = 0u32;
 
     // -----------------------------------------------------------------------
-    // Epoch 0: fixed to current character attributes (no reason to waste a
-    // remap immediately when the queue is fresh).
+    // Epoch 0: fixed to current character attributes. No reason to waste a
+    // remap immediately when the queue is fresh and we haven't optimized yet.
     // -----------------------------------------------------------------------
     {
-        let epoch_duration = (next_remap_at_secs - sim_state.elapsed_seconds).max(0.0);
+        let epoch_duration = if sim_state.elapsed_seconds < next_remap_at_secs {
+            next_remap_at_secs - sim_state.elapsed_seconds
+        } else {
+            f64::INFINITY // already past cooldown — treat as free remap window
+        };
         let epoch_result = simulate_epoch(sim_state.clone(), &initial_effective, epoch_duration);
 
-        if !epoch_result.completed.is_empty() || sim_state.len() > 0 {
-            result_epochs.push(EpochPlan {
-                start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
-                attributes: char_state.base_attributes,
-                effective_attributes: initial_effective,
-                completed_skills: epoch_result.completed.clone(),
-                projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
-            });
-        }
+        result_epochs.push(EpochPlan {
+            start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
+            attributes: char_state.base_attributes,
+            effective_attributes: initial_effective,
+            completed_skills: epoch_result.completed.clone(),
+            projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
+        });
         eprintln!(
             "[+] Epoch 0 (current attrs): {} skills done, {:.1}s wall",
             epoch_result.completed.len(),
@@ -344,12 +343,13 @@ pub fn optimize(
     }
 
     // -----------------------------------------------------------------------
-    // Subsequent epochs: greedy allocation selection at each remap boundary.
+    // Subsequent epochs: one per timed remap boundary. Each picks the best
+    // allocation for remaining skills and runs until the next 365-day mark
+    // or queue completion.
     // -----------------------------------------------------------------------
-    while !sim_state.is_empty() && remap_count < bonus_remaps {
-        remap_count += 1;
-        
-        // Pick best allocation for remaining skills.
+    while !sim_state.is_empty() {
+        next_remap_at_secs += REMAP_COOLDOWN_DAYS * SECS_PER_DAY;
+
         let Some(chosen) = choose_best_allocation(&sim_state, &allocations, implants) else {
             break;
         };
@@ -359,17 +359,11 @@ pub fn optimize(
             implants,
         );
 
-        // Determine how long this epoch runs (until next remap or completion).
-        let time_until_next_remap = if remap_count < bonus_remaps {
-            (next_remap_at_secs - sim_state.elapsed_seconds).max(0.0)
+        // Run this epoch until the next cooldown boundary (or to completion).
+        let epoch_duration = if sim_state.elapsed_seconds < next_remap_at_secs {
+            next_remap_at_secs - sim_state.elapsed_seconds
         } else {
-            f64::INFINITY // last remap — run to completion
-        };
-
-        let epoch_duration = if time_until_next_remap == f64::INFINITY {
             f64::INFINITY
-        } else {
-            time_until_next_remap
         };
 
         let epoch_result = simulate_epoch(sim_state.clone(), &chosen_effective, epoch_duration);
@@ -381,53 +375,19 @@ pub fn optimize(
             completed_skills: epoch_result.completed.clone(),
             projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
         });
-        
+
         eprintln!(
-            "[+] Epoch {} (remap #{}, attrs {:?}): {} skills done ({:.1}s wall)",
-            remap_count,
-            remap_count,
+            "[+] Epoch {} (attrs {:?}): {} skills done ({:.1}s wall)",
+            result_epochs.len() - 1,
             format_attrs(&chosen),
             epoch_result.completed.len(),
             _timer.elapsed().as_secs_f64()
         );
-        
-        sim_state = epoch_result.state_after;
-        next_remap_at_secs += REMAP_COOLDOWN_DAYS * SECS_PER_DAY;
-    }
 
-    // If there are still skills left but no more remaps, use best allocation to finish.
-    if !sim_state.is_empty() {
-        let chosen = match choose_best_allocation(&sim_state, &allocations, implants) {
-            Some(a) => a,
-            None => return OptimizationResult {
-                epochs: result_epochs,
-                total_days: sim_state.elapsed_seconds / SECS_PER_DAY,
-                total_wall_clock_seconds: sim_state.elapsed_seconds,
-            },
-        };
-        let final_effective = EffectiveAttributes::from_base_and_implants(
-            &chosen,
-            &char_state.active_implant_ids,
-            implants,
-        );
-        let epoch_result = simulate_epoch(sim_state.clone(), &final_effective, f64::INFINITY);
-
-        result_epochs.push(EpochPlan {
-            start_offset_days: sim_state.elapsed_seconds / SECS_PER_DAY,
-            attributes: chosen,
-            effective_attributes: final_effective,
-            completed_skills: epoch_result.completed.clone(),
-            projected_finish_days: epoch_result.state_after.elapsed_seconds / SECS_PER_DAY,
-        });
-        
-        eprintln!(
-            "[+] Final epoch (no remaps left): {} skills done",
-            epoch_result.completed.len()
-        );
         sim_state = epoch_result.state_after;
     }
 
-    let total_wall_clock = sim_state.elapsed_seconds;
+        let total_wall_clock = sim_state.elapsed_seconds;
     eprintln!(
         "[+] Optimization complete: {} epochs in {:.2}s",
         result_epochs.len(),

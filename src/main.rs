@@ -343,7 +343,7 @@ async fn try_fetch_and_optimize(
 /// Parse a queue file and optimize directly without ESI.
 fn run_optimizer_from_queue_file(
     attrs_str: &str,
-    bonus_remaps: u32,
+    bonus_remaps: Option<u32>,
     path: &str,
     skills_db: &[data::models::SkillRecord],
     implants: &[data::models::ImplantRecord],
@@ -424,7 +424,7 @@ fn run_optimizer_from_queue_file(
         base_attrs.perception as u32,
         base_attrs.memory as u32,
         base_attrs.willpower as u32,
-        bonus_remaps,
+        bonus_remaps.map_or("not set".into(), |n| n.to_string()),
     );
 
     let char_state = data::models::CharacterState {
@@ -432,7 +432,7 @@ fn run_optimizer_from_queue_file(
         active_implant_ids: vec![],
         queued_skills,
         effective_attributes: EffectiveAttributes::from(base_attrs),
-        bonus_remaps: Some(bonus_remaps),
+        bonus_remaps,
     };
     run_optimizer_with_state(&char_state, skills_db, implants)
 }

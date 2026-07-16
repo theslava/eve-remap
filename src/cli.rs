@@ -76,7 +76,7 @@ pub struct OptimizeArgs {
     #[arg(long)]
     pub json: bool,
 
-    /// Number of bonus remaps available now (in addition to timed cooldown).
-    #[arg(long, default_value_t = 1)]
-    pub bonus_remaps: u32,
+    /// Number of bonus neural interface remaps available (in addition to timed cooldown).
+    #[arg(long)]
+    pub bonus_remaps: Option<u32>,
 }
