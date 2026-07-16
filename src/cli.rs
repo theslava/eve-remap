@@ -68,8 +68,8 @@ pub struct OptimizeArgs {
     pub queue: Option<String>,
 
     /// Base attribute values to use when not fetching from ESI.
-    /// Format: INT:CHA:PER:MEM:WIL (e.g., 12:3:4:4:2). Defaults to 12:3:4:4:2.
-    #[arg(long, default_value = "12:3:4:4:2")]
+    /// Format: PER:MEM:WIL:INT:CHA (e.g., 4:4:2:12:3). Defaults to 4:4:2:12:3.
+    #[arg(long, default_value = "4:4:2:12:3")]
     pub attributes: String,
 
     /// Output results as JSON instead of human-readable table.

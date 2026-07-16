@@ -355,14 +355,14 @@ fn run_optimizer_from_queue_file(
         .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid attribute value: {}", s)))
         .collect::<Result<Vec<_>>>()?;
     if parts.len() != 5 {
-        anyhow::bail!("--attributes must have exactly 5 values (INT:CHA:PER:MEM:WIL), got {}", parts.len());
+        anyhow::bail!("--attributes must have exactly 5 values (PER:MEM:WIL:INT:CHA), got {}", parts.len());
     }
     let base_attrs = BaseAttributes {
-        intelligence: parts[0],
-        charisma: parts[1],
-        perception: parts[2],
-        memory: parts[3],
-        willpower: parts[4],
+        perception: parts[0],
+        memory: parts[1],
+        willpower: parts[2],
+        intelligence: parts[3],
+        charisma: parts[4],
     };
 
     // Read and parse queue file.
