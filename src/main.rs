@@ -482,8 +482,8 @@ fn print_table_output(result: &data::models::OptimizationResult) {
             epoch.attributes.memory as u32,
             epoch.attributes.willpower as u32,
         );
-
         if !epoch.completed_skills.is_empty() {
+            println!("│ Skills completing this epoch:");
             for (id, name, secs) in &epoch.completed_skills {
                 let hours = secs / 3600.0;
                 let label = if hours >= 24.0 { format!("{:.1}d", hours / 24.0) } else { format!("{:.0}h", hours) };
