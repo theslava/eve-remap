@@ -350,7 +350,7 @@ fn run_optimizer_from_queue_file(
 ) -> Result<data::models::OptimizationResult> {
     use data::models::{BaseAttributes, EffectiveAttributes, QueuedSkill};
 
-    // Parse attributes string like "12:3:4:4:2".
+    // Parse attributes string like "17:17:17:17:17" (PER:MEM:WIL:INT:CHA).
     let parts: Vec<f64> = attrs_str.split(':')
         .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid attribute value: {}", s)))
         .collect::<Result<Vec<_>>>()?;
