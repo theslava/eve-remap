@@ -7,11 +7,14 @@ const LEVEL_MULTIPLIERS: [f64; 5] = [1.0, 4.0, 20.0, 80.0, 360.0];
 
 /// Compute the SP required to go from current_level to target_level for a given skill.
 pub fn sp_for_level(skill: &SkillRecord, from_level: u8, to_level: u8) -> f64 {
+    // Base SP unit in EVE Online — all level costs are multiples of this.
+    const BASE_SP: f64 = 20_000.0;
+    
     let mut total_sp = 0.0;
     for lvl in from_level..to_level.min(5) {
         let idx = (lvl - 1) as usize; // levels 1-5 map to indices 0-4
         if idx < LEVEL_MULTIPLIERS.len() {
-            total_sp += LEVEL_MULTIPLIERS[idx] * skill.skill_time_constant;
+            total_sp += LEVEL_MULTIPLIERS[idx] * skill.skill_time_constant * BASE_SP;
         }
     }
     total_sp
@@ -107,7 +110,7 @@ mod tests {
 
     #[test]
     fn test_sp_for_level_1_to_2() {
-        // Level 1→2 uses multiplier[0]=1.0 * timeConstant
+        // Level 1→2 uses multiplier[0]=1.0 * timeConstant * 20000
         let skill = SkillRecord {
             id: 999,
             name: "Test".to_string(),
@@ -117,7 +120,7 @@ mod tests {
         };
         
         let sp = sp_for_level(&skill, 1, 2);
-        assert_eq!(sp, 4.0); // 1.0 * 4.0
+        assert_eq!(sp, 1.0 * 4.0 * 20_000.0); // 80000.0
     }
 
     #[test]
@@ -132,7 +135,7 @@ mod tests {
         };
         
         let sp = sp_for_level(&skill, 3, 5);
-        assert_eq!(sp, (20.0 + 80.0) * 3.0); // 300.0
+        assert_eq!(sp, (20.0 + 80.0) * 3.0 * 20_000.0); // 6000000.0
     }
 
     #[test]
@@ -146,11 +149,11 @@ mod tests {
         };
         let attrs = test_attrs(10.0, 1.0, 1.0, 6.0, 1.0);
         
-        // SP for level 1→2 = 1.0 * 2.0 = 2.0
+        // SP for level 1→2 = 1.0 * 2.0 * 20000 = 40000
         // Rate = (10 + 6/2)/60 = 13/60 ≈ 0.2167 SP/s
-        // Duration = 2.0 / (13/60) = 120/13 ≈ 9.23 seconds
+        // Duration = 40000 / (13/60) ≈ 184615.4 seconds (~2.14 days)
         let dur = duration_seconds(&skill, 1, 2, &attrs);
-        assert!((dur - 9.23).abs() < 0.1);
+        assert!((dur - 184615.4).abs() < 1.0);
     }
 
     #[test]

@@ -62,9 +62,15 @@ pub struct DownloadArgs {
 
 #[derive(clap::Args)]
 pub struct OptimizeArgs {
-    /// Character ID to optimize for (overrides auto-selection).
-    #[arg(long)]
-    pub character_id: Option<u64>,
+    /// Path to a file listing target skills, one per line as "Skill Name <level>".
+    /// Example lines: "Gunnery 3", "Navigation 5"
+    #[arg(long, short = 'q')]
+    pub queue: Option<String>,
+
+    /// Base attribute values to use when not fetching from ESI.
+    /// Format: INT:CHA:PER:MEM:WIL (e.g., 12:3:4:4:2). Defaults to 12:3:4:4:2.
+    #[arg(long, default_value = "12:3:4:4:2")]
+    pub attributes: String,
 
     /// Output results as JSON instead of human-readable table.
     #[arg(long)]

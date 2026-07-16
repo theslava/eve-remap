@@ -92,7 +92,7 @@ fn cmd_login_browser() -> Result<()> {
 
     let redirect_uri = "https://127.0.0.1/callback";
     let state = rand::random::<u64>().to_string();
-    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1 esi-characters.read_attributes.v1";
+    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1";
 
     let auth_url = format!(
         "https://login.eveonline.com/v2/oauth/authorize?\
@@ -302,11 +302,17 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
     let skills_db = data::load_skills().context("Failed to load skill database")?;
     let implants = data::load_implants().context("Failed to load implant database")?;
 
-    let result = match try_fetch_and_optimize(&args.character_id, &skills_db, &implants).await {
-        Ok(r) => r,
-        Err(e) => {
-            eprintln!("\nNote: could not fetch character data:\n  {}", e);
-            run_demo_optimizer(&skills_db, &implants)?
+    let result = if let Some(queue_path) = &args.queue {
+        // Parse queue file locally — no ESI needed.
+        run_optimizer_from_queue_file(&args.attributes, args.bonus_remaps, queue_path, &skills_db, &implants)?
+    } else {
+        match try_fetch_and_optimize(&skills_db, &implants).await {
+            Ok(r) => r,
+            Err(e) => {
+                eprintln!("\nNote: could not fetch character data:\n  {}", e);
+                println!("Use '--queue FILE' with a list of 'Skill Name <level>' lines instead.\n");
+                return Ok(());
+            }
         }
     };
 
@@ -321,90 +327,119 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
 
 /// Attempt to fetch real character state via ESI and optimize.
 async fn try_fetch_and_optimize(
-    char_id_flag: &Option<u64>,
     skills_db: &[data::models::SkillRecord],
     implants: &[data::models::ImplantRecord],
 ) -> anyhow::Result<data::models::OptimizationResult> {
-    // Resolve character ID: CLI flag > stored account > error.
-    let char_id = match char_id_flag {
-        Some(id) => *id,
-        None => {
-            match auth::find_valid_token() {
-                Ok(Some((_token, id))) => id,
-                Ok(None) => return Err(anyhow::anyhow!(
-                    "No authenticated accounts found.\n\
-                     Run 'eve-remap login --sso' or pass --character-id."
-                )),
-                Err(e) => return Err(anyhow::anyhow!("Failed to load accounts: {}", e)),
-            }
-        }
-    };
+    let (_token, char_id) = auth::find_valid_token()?.ok_or_else(|| anyhow::anyhow!(
+        "No authenticated accounts found.\n\
+         Run 'eve-remap login --browser' or pass --queue."
+    ))?;
 
     let client = data::esi::EsIClient::from_env()?;
     let char_state = client.fetch_character_state(char_id, skills_db, implants).await?;
     run_optimizer_with_state(&char_state, skills_db, implants)
 }
 
-/// Run optimizer with a sample/demo character for verification without ESI access.
-fn run_demo_optimizer(
+/// Parse a queue file and optimize directly without ESI.
+fn run_optimizer_from_queue_file(
+    attrs_str: &str,
+    bonus_remaps: u32,
+    path: &str,
     skills_db: &[data::models::SkillRecord],
     implants: &[data::models::ImplantRecord],
 ) -> Result<data::models::OptimizationResult> {
     use data::models::{BaseAttributes, EffectiveAttributes, QueuedSkill};
 
-    let int_skill = skills_db
-        .iter()
-        .find(|s| s.primary_attribute == data::models::Attribute::Intelligence)
-        .ok_or_else(|| anyhow::anyhow!("No intelligence skill found in assets"))?;
+    // Parse attributes string like "12:3:4:4:2".
+    let parts: Vec<f64> = attrs_str.split(':')
+        .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid attribute value: {}", s)))
+        .collect::<Result<Vec<_>>>()?;
+    if parts.len() != 5 {
+        anyhow::bail!("--attributes must have exactly 5 values (INT:CHA:PER:MEM:WIL), got {}", parts.len());
+    }
+    let base_attrs = BaseAttributes {
+        intelligence: parts[0],
+        charisma: parts[1],
+        perception: parts[2],
+        memory: parts[3],
+        willpower: parts[4],
+    };
 
-    let mem_skill = skills_db
-        .iter()
-        .find(|s| s.primary_attribute == data::models::Attribute::Memory)
-        .ok_or_else(|| anyhow::anyhow!("No memory skill found in assets"))?;
+    // Read and parse queue file.
+    let content = std::fs::read_to_string(path).context("Failed to read queue file")?;
+    let mut queued_skills = Vec::new();
+    for (line_num, line) in content.lines().enumerate() {
+        let trimmed = line.trim();
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
+
+        // Parse "Skill Name <level>" — level is the last token, skill name is everything before it.
+        let tokens: Vec<&str> = trimmed.rsplitn(2, |c: char| c.is_whitespace()).collect();
+        if tokens.len() != 2 {
+            anyhow::bail!("Line {}: expected 'Skill Name <level>', got '{}'", line_num + 1, trimmed);
+        }
+
+        let level: u8 = tokens[0].parse::<u8>().with_context(|| format!(
+            "Line {}: invalid level '{}', must be 1-5", line_num + 1, tokens[0]
+        ))?;
+        if level < 1 || level > 5 {
+            anyhow::bail!("Line {}: level {} out of range (must be 1-5)", line_num + 1, level);
+        }
+
+        let skill_name = tokens[1];
+        let record = skills_db.iter()
+            .find(|s| s.name.eq_ignore_ascii_case(skill_name))
+            .ok_or_else(|| anyhow::anyhow!(
+                "Line {}: skill '{}' not found in database", line_num + 1, skill_name
+            ))?;
+
+        let from_level = if level <= 1 { 1 } else { level - 1 };
+        let sp_to_next = calculator::sp_for_level(record, from_level, level);
+        let effective_attrs = data::models::EffectiveAttributes::from(base_attrs);
+        let duration_secs = calculator::duration_seconds(
+            record, from_level, level, &effective_attrs,
+        );
+
+        queued_skills.push(QueuedSkill {
+            id: record.id,
+            level,
+            sp: sp_to_next as u64,
+            duration: duration_secs.max(1.0) as u64,
+            remaining_sec: duration_secs.max(1.0) as u64,
+            is_active: queued_skills.is_empty(),
+        });
+    }
+
+    if queued_skills.is_empty() {
+        anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>'.", path);
+    }
 
     println!(
-        "Demo mode — optimizing {} (INT/TC={}) and {} (MEM/TC={})",
-        int_skill.name,
-        int_skill.skill_time_constant,
-        mem_skill.name,
-        mem_skill.skill_time_constant
+        "Queue file '{}' — {} skills, attributes INT={} CHA={} PER={} MEM={} WIL={}, bonus remaps={}",
+        path,
+        queued_skills.len(),
+        base_attrs.intelligence as u32,
+        base_attrs.charisma as u32,
+        base_attrs.perception as u32,
+        base_attrs.memory as u32,
+        base_attrs.willpower as u32,
+        bonus_remaps,
     );
-
-    let base_attrs = BaseAttributes {
-        intelligence: 12.0,
-        charisma: 3.0,
-        perception: 4.0,
-        memory: 4.0,
-        willpower: 2.0,
-    };
 
     let char_state = data::models::CharacterState {
         base_attributes: base_attrs,
         active_implant_ids: vec![],
-        queued_skills: vec![
-            QueuedSkill {
-                id: int_skill.id,
-                level: 1,
-                sp: 4_000_000,
-                duration: 86400 * 7, // ~1 week
-                remaining_sec: 86400 * 7,
-                is_active: true,
-            },
-            QueuedSkill {
-                id: mem_skill.id,
-                level: 1,
-                sp: 4_000_000,
-                duration: 86400 * 14, // ~2 weeks
-                remaining_sec: 86400 * 14,
-                is_active: false,
-            },
-        ],
+        queued_skills,
         effective_attributes: EffectiveAttributes::from(base_attrs),
     };
 
+    // Note: bonus_remaps isn't passed to optimizer yet — it's stored for future use.
+    let _ = bonus_remaps;
     run_optimizer_with_state(&char_state, skills_db, implants)
 }
 
+/// Run the optimizer engine against a character state and return results.
 fn run_optimizer_with_state(
     char_state: &data::models::CharacterState,
     skills_db: &[data::models::SkillRecord],

@@ -1,0 +1,5 @@
+# Sample skill queue — one per line as "Skill Name <level>"
+# Lines starting with # are comments, blank lines ignored.
+Gunnery 3
+Navigation 5
+Drone Navigation 2
