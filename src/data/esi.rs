@@ -1,11 +1,10 @@
-use anyhow::{anyhow, Context, Result};
-use reqwest::Client;
+use anyhow::{Context, Result};
 use serde::Deserialize;
 
 pub use crate::data::models::CharacterState;
 use crate::data::models::{BaseAttributes, EffectiveAttributes, ImplantRecord, QueuedSkill, SkillRecord};
 
-// ── ESI response types ────────────────────────────────────────────────
+// ── ESI response types ────────────────────────────────────────
 
 /// Raw response from `/characters/{id}/attributes/`.
 #[derive(Debug, Deserialize)]
@@ -54,16 +53,7 @@ struct EsSkillQueueRow {
     pub trained_skill_level: u8,
 }
 
-/// Single implant entry from `/characters/{id}/implants/`.
-#[derive(Debug, Deserialize)]
-struct EsImplantRow {
-    #[serde(rename = "implant_id")]
-    pub implant_id: u32,
-    #[serde(rename = "slot_name")]
-    pub slot_name: Option<String>,
-}
-
-// ── Token persistence ────────────────────────────────────────────────
+// ── Token persistence (legacy file — new store lives in auth::accounts) ───
 
 use serde::Serialize;
 
@@ -75,6 +65,7 @@ struct StoredTokens {
     expires_in: u64,
     issued_at: u64,
 }
+
 pub fn token_dir() -> std::path::PathBuf {
     let home = std::env::var("HOME").unwrap_or_default();
     std::path::PathBuf::from(home).join(".config").join("eve-remap")
@@ -116,9 +107,8 @@ pub fn load_saved_token() -> Option<String> {
     Some(stored.access_token)
 }
 
-// ── Time helpers (no chrono dep — use std + simple ISO parse) ────────
+// ── Time helpers ──────────────────────────────────────────────
 
-/// Return current UTC timestamp as seconds since epoch.
 fn now_utc_secs() -> u64 {
     std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
@@ -135,8 +125,6 @@ fn iso_to_unix_secs(s: &str) -> Option<u64> {
         return None;
     }
 
-    // Minimal RFC 3339 / ISO 8601 parser for the formats ESI returns.
-    // Expected: YYYY-MM-DDTHH:MM:SS[Z|+HH:MM|-HH:MM]
     let parts: Vec<&str> = s.split('T').collect();
     if parts.len() < 2 {
         return None;
@@ -153,12 +141,10 @@ fn iso_to_unix_secs(s: &str) -> Option<u64> {
     let (time_only, tz_offset_minutes): (String, i64) = if time_str.ends_with('Z') {
         (time_str[..time_str.len() - 1].to_string(), 0i64)
     } else {
-        // Find +/- offset at the end: +HH:MM or -HH:MM
         let tz_start = time_str.rfind('+').or_else(|| time_str.rfind(|c| c == '-'));
         match tz_start {
             Some(idx) if idx > 2 => {
                 let tz_part = &time_str[idx..];
-                // Parse offset like "+02:00" or "-05:30"
                 let offset_chars: Vec<char> = tz_part.chars().skip(1).take(5).collect();
                 if offset_chars.len() >= 5 && offset_chars[2] == ':' {
                     let h_s: String = offset_chars.iter().take(2).collect();
@@ -186,22 +172,18 @@ fn iso_to_unix_secs(s: &str) -> Option<u64> {
     }
     let (hour, minute, second) = (time_parts[0], time_parts[1], time_parts[2]);
 
-    // Convert to Unix timestamp using a simple days-since-epoch calculation.
     let days = ymd_to_days(year as i32, month as i32, day as i32)?;
     let secs: i64 = days * 86_400 + hour as i64 * 3_600 + minute as i64 * 60 + second as i64;
     let adjusted = secs - tz_offset_minutes * 60;
     Some(adjusted.max(0) as u64)
 }
 
-/// Convert year/month/day to days since Unix epoch (1970-01-01).
 fn ymd_to_days(year: i32, month: i32, day: i32) -> Option<i64> {
-    // Count total days from year 1 AD to start of `year`, then add day-of-year offset.
     let y = year as i64;
     if y < 1 || month < 1 || month > 12 || day < 1 {
         return None;
     }
 
-    // Days in full years before this one (years 1..y-1).
     let prev = y - 1;
     let leaps_before_y = prev / 4 - prev / 100 + prev / 400;
     let days_before_year = prev * 365 + leaps_before_y;
@@ -213,46 +195,29 @@ fn ymd_to_days(year: i32, month: i32, day: i32) -> Option<i64> {
         [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334]
     };
 
-    // Days before this date within the current year.
     let m = month as usize;
     let day_of_year = cum_days[m - 1] + (day as i64 - 1);
 
-    // Unix epoch (1970-01-01) is 719_162 days after Jan 1 of year 1 AD.
     Some(days_before_year + day_of_year - 719_162)
 }
 
-// ── Structured ESI Errors ─────────────────────────────────────────────
+// ── Scope constants for eve_esi authenticated requests ─────────
 
-/// Error from an ESI API call with full context.
-#[derive(Debug)]
-pub struct EsiError {
-    pub endpoint: String,
-    pub status: u16,
-}
+const SCOPE_SKILLS: &str = "esi-skills.read_skills.v1";
+const SCOPE_QUEUE: &str = "esi-skills.read_skillqueue.v1";
+const SCOPE_IMPLANTS: &str = "esi-clones.read_implants.v1";
 
-impl std::fmt::Display for EsiError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.status {
-            401 => write!(f, "[{}] {} - Unauthorized: token expired or invalid. Re-authenticate.", self.endpoint, self.status),
-            403 => write!(f, "[{}] {} - Forbidden: missing scope or insufficient permissions", self.endpoint, self.status),
-            404 => write!(f, "[{}] {} - Not Found: character ID may be wrong", self.endpoint, self.status),
-            429 => write!(f, "[{}] {} - Too Many Requests: rate limited by ESI", self.endpoint, self.status),
-            _ if (500..=599).contains(&self.status) => write!(f, "[{}] {} - Server Error: EVE backend issue", self.endpoint, self.status),
-            _ => write!(f, "[{}] {} - HTTP Error", self.endpoint, self.status),
-        }
-    }
-}
+fn skills_scope() -> Vec<String> { vec![SCOPE_SKILLS.to_string()] }
+fn queue_scope() -> Vec<String> { vec![SCOPE_QUEUE.to_string()] }
+fn implants_scope() -> Vec<String> { vec![SCOPE_IMPLANTS.to_string()] }
 
-impl std::error::Error for EsiError {}
-
-// ── EsIClient ─────────────────────────────────────────────────────────
-
-const ESI_BASE_URL: &str = "https://esi.evetech.net/latest";
+// ── EsIClient backed by eve_esi ───────────────────────────────
 
 /// High-level client for EVE Single Interface (ESI) endpoints.
+/// Wraps `eve_esi::Client` — all ESI calls go through the library.
 #[derive(Clone)]
 pub struct EsIClient {
-    http: Client,
+    inner: eve_esi::Client,
     token: String, // immutable after construction — no lock needed
 }
 
@@ -262,10 +227,11 @@ impl EsIClient {
     /// Create a client from an explicit bearer token string.
     pub fn from_token(token: String) -> Self {
         let _ = save_tokens(&token); // best-effort persistence
-        Self {
-            http: Client::new(),
-            token,
-        }
+        let inner = eve_esi::Client::builder()
+            .user_agent("eve-remap/0.1.0")
+            .build()
+            .expect("Failed to build eve_esi Client");
+        Self { inner, token }
     }
 
     /// Create a client by resolving the token in priority order:
@@ -283,67 +249,24 @@ impl EsIClient {
         if let Ok(Some((token, _))) = crate::auth::find_valid_token() {
             return Ok(Self::from_token(token));
         }
-        Err(anyhow!(
+        Err(anyhow::anyhow!(
             "No ESI token found. Set EVE_REMAP_TOKEN or run 'eve-remap login'."
         ))
     }
 
     // ── Internal helpers ────────────────────────────────────────────
 
-    async fn get_json<T>(&self, path: &str) -> Result<T>
+    /// Make an authenticated GET request via `eve_esi`, deserializing into `T`.
+    async fn get_json<T>(&self, path: &str, scopes: Vec<String>) -> Result<T>
     where
         T: for<'de> Deserialize<'de>,
     {
-        let url = format!("{}{}", ESI_BASE_URL, path);
         eprintln!("[+] Fetching {} ...", path);
-        let response = self.http.get(&url)
-            .header(reqwest::header::AUTHORIZATION, format!("Bearer {}", &self.token))
-            .send().await.with_context(|| format!("Request failed to {}", url))?;
-
-        let status = response.status();
-        eprintln!("[+] {} -> {}", path, status);
-        if status.is_success() {
-            let body = response.text().await.context("Failed to read response body")?;
-            serde_json::from_str::<T>(&body).context("Failed to parse ESI JSON response")
-        } else {
-            let err = EsiError {
-                endpoint: path.to_string(),
-                status: status.as_u16(),
-            };
-            Err(anyhow!(err))
-        }
-    }
-
-    /// Attempt to refresh the access token via EVE SSO's `/oauth/token` endpoint.
-    /// Returns `Ok(())` on success (token updated in-place), or an error.
-    pub async fn try_refresh_token(&self) -> Result<()> {
-        // We need a refresh_token to actually call the SSO endpoint.
-        // For MVP we don't store it yet — this is a placeholder that returns
-        // an informative error so callers know auth is stale.
-        Err(anyhow!(
-            "Token refresh not yet supported. Re-authenticate and set EVE_REMAP_TOKEN."
-        ))
-    }
-
-    /// Execute a GET with automatic 401 retry: on first 401 attempt a token
-    /// refresh; if that succeeds, retry the original request once.
-    async fn get_json_with_retry<T>(&self, path: &str) -> Result<T>
-    where
-        T: for<'de> Deserialize<'de>,
-    {
-        match self.get_json::<T>(path).await {
-            Ok(data) => Ok(data),
-            Err(e) => {
-                let err_str = e.to_string();
-                if err_str.contains("401") || err_str.contains("Unauthorized") {
-                    let _ = self.try_refresh_token().await;
-                    // Retry after attempted refresh (will fail again if no refresh flow).
-                    self.get_json(path).await
-                } else {
-                    Err(e)
-                }
-            }
-        }
+        let url = format!("https://esi.evetech.net/latest{}", path);
+        self.inner.esi()
+            .get_from_authenticated_esi::<T>(&url, &self.token, scopes)
+            .await
+            .with_context(|| format!("Request failed to {}", path))
     }
 
     // ── Public fetchers ─────────────────────────────────────────────
@@ -351,7 +274,7 @@ impl EsIClient {
     /// Fetch base remapped attributes for a character.
     pub async fn fetch_attributes(&self, char_id: u64) -> Result<BaseAttributes> {
         let path = format!("/characters/{}/attributes/", char_id);
-        let resp: EsAttributesResponse = self.get_json_with_retry(&path).await?;
+        let resp: EsAttributesResponse = self.get_json(&path, skills_scope()).await?;
         Ok(BaseAttributes {
             intelligence: resp.intelligence as f64,
             charisma: resp.processing as f64, // ESI "processing" == charisma
@@ -367,13 +290,11 @@ impl EsIClient {
     /// against SDE `SkillRecord` to resolve names and time constants.
     pub async fn fetch_skills_raw(&self, char_id: u64) -> Result<Vec<(u32, u8, u64)>> {
         let path = format!("/characters/{}/skills/", char_id);
-        let rows: Vec<EsSkillRow> = self.get_json_with_retry(&path).await?;
+        let rows: Vec<EsSkillRow> = self.get_json(&path, skills_scope()).await?;
         Ok(rows.into_iter().map(|r| (r.skill_id, r.level, r.sp)).collect())
     }
 
     /// Fetch trained skills resolved against an SDE skill table.
-    ///
-    /// Skills not found in SDE are silently skipped (shouldn't happen).
     pub async fn fetch_skills(
         &self,
         char_id: u64,
@@ -383,8 +304,6 @@ impl EsIClient {
         let mut result = Vec::with_capacity(raw.len());
         for (id, _level, _sp) in raw {
             if let Some(record) = sde_skills.iter().find(|s| s.id == id).cloned() {
-                // SkillRecord doesn't carry a `level`/`sp` field — we store the
-                // resolved records and the caller tracks levels separately.
                 result.push(record);
             }
         }
@@ -394,19 +313,14 @@ impl EsIClient {
     /// Fetch the character's current skill training queue.
     pub async fn fetch_skillqueue(&self, char_id: u64) -> Result<Vec<QueuedSkill>> {
         let path = format!("/characters/{}/skillqueue/", char_id);
-        let rows: Vec<EsSkillQueueRow> = self.get_json_with_retry(&path).await?;
+        let rows: Vec<EsSkillQueueRow> = self.get_json(&path, queue_scope()).await?;
 
-        // Determine which entry is currently active (is_queued=false means active).
         let active_idx = rows.iter().position(|r| !r.is_queued);
-
         let now = now_utc_secs();
         let mut queue = Vec::new();
         for (i, r) in rows.into_iter().enumerate() {
             let duration = compute_duration_secs(&r, now);
             let remaining = compute_remaining_secs(&r, now);
-
-            // Level being trained toward. For the active slot this is the target level;
-            // for queued entries it is also the target after that entry completes.
             let level = r.trained_skill_level;
 
             queue.push(QueuedSkill {
@@ -422,18 +336,20 @@ impl EsIClient {
     }
 
     /// Fetch the list of implant IDs currently installed on the character.
+    /// Uses the built-in `eve_esi` clones endpoint.
     pub async fn fetch_implants(&self, char_id: u64) -> Result<Vec<u32>> {
-        let path = format!("/characters/{}/implants/", char_id);
-        let rows: Vec<EsImplantRow> = self.get_json_with_retry(&path).await?;
-        Ok(rows.into_iter().map(|r| r.implant_id).collect())
+        eprintln!("[+] Fetching /characters/{}/implants/ ...", char_id);
+        let implants = self.inner
+            .clones()
+            .get_active_implants(&self.token, char_id as i64)
+            .await
+            .context("Failed to fetch implants via eve_esi")?;
+        Ok(implants.into_iter().map(|id| (id as u32)).collect())
     }
 
     // ── Combined snapshot ───────────────────────────────────────────
 
     /// Fetch a complete `CharacterState` snapshot in parallel.
-    ///
-    /// Requires SDE skill and implant tables to resolve names and compute
-    /// effective attributes.
     pub async fn fetch_character_state(
         &self,
         char_id: u64,
@@ -452,7 +368,6 @@ impl EsIClient {
         let queue = queue.context("Failed to fetch skill queue")?;
         let active_implants = implants.context("Failed to fetch implants")?;
 
-        // Resolve skill records from raw data + SDE
         let mut resolved_skills = Vec::with_capacity(raw_skills.len());
         for (id, _level, _sp) in raw_skills {
             if let Some(record) = sde_skills.iter().find(|s| s.id == id).cloned() {
@@ -482,10 +397,8 @@ fn compute_duration_secs(row: &EsSkillQueueRow, now: u64) -> i64 {
         (Some(finish),) => {
             let finish_secs = iso_to_unix_secs(finish).unwrap_or(now) as i64;
             if !row.is_queued {
-                // Active training slot: remaining until finish
                 finish_secs - now as i64
             } else {
-                // Queued entry — unknown start, so we can't know exact duration yet.
                 0
             }
         }
@@ -495,8 +408,6 @@ fn compute_duration_secs(row: &EsSkillQueueRow, now: u64) -> i64 {
 
 /// Compute remaining seconds for a queue entry relative to `now`.
 fn compute_remaining_secs(_row: &EsSkillQueueRow, _now: u64) -> i64 {
-    // Simplified: for MVP treat all non-active entries as having 0 remaining.
-    // The active entry's remaining is captured via compute_duration_secs above.
     0
 }
 
@@ -506,14 +417,12 @@ mod tests {
 
     #[test]
     fn test_iso_to_unix_basic() {
-        // Known epoch: 2021-01-01T00:00:00Z = 1609459200
         let ts = iso_to_unix_secs("2021-01-01T00:00:00Z");
         assert_eq!(ts, Some(1_609_459_200));
     }
 
     #[test]
     fn test_iso_to_unix_with_offset() {
-        // 2021-01-01T02:00:00+02:00 == 2021-01-01T00:00:00Z
         let ts = iso_to_unix_secs("2021-01-01T02:00:00+02:00");
         assert_eq!(ts, Some(1_609_459_200));
     }

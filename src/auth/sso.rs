@@ -11,7 +11,7 @@ const REQUIRED_SCOPES: &[&str] = &[
     "esi-clones.read_implants.v1",        // covers /implants/ (also gives clones)
 ];
 
-// ── PKCE helpers ────────────────────────────────────────────────────────
+// ── PKCE helpers ────────────────────────────────────────────────
 
 fn generate_code_verifier() -> String {
     use rand::RngCore;
@@ -32,7 +32,7 @@ fn random_state() -> String {
     base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(&bytes)
 }
 
-// ── SSO flow ────────────────────────────────────────────────────────────
+// ── SSO flow ────────────────────────────────────────────────────
 
 pub async fn run_pkce_flow() -> Result<super::StoredAccountEntry> {
     let client_id = std::env::var("ESI_CLIENT_ID")
@@ -62,7 +62,7 @@ pub async fn run_pkce_flow() -> Result<super::StoredAccountEntry> {
     exchange_code(&auth_code, &verifier, &client_id, &redirect_uri).await
 }
 
-// ── URL building ────────────────────────────────────────────────────────
+// ── URL building ────────────────────────────────────────────────
 
 fn build_authorize_url(client_id: &str, challenge: &str, redirect_uri: &str) -> String {
     format!(
@@ -82,7 +82,7 @@ fn build_authorize_url(client_id: &str, challenge: &str, redirect_uri: &str) -> 
     )
 }
 
-// ── Browser open (best effort) ─────────────────────────────────────────
+// ── Browser open (best effort) ─────────────────────────────────
 
 fn open_browser(url: &str) -> std::io::Result<()> {
     #[cfg(target_os = "linux")]
@@ -97,7 +97,7 @@ fn open_browser(url: &str) -> std::io::Result<()> {
     Ok(())
 }
 
-// ── Local callback server ───────────────────────────────────────────────
+// ── Local callback server ───────────────────────────────────────
 
 async fn wait_for_callback(listener: TcpListener, port: u16) -> Result<String> {
     println!("Waiting for authorization at http://127.0.0.1:{port}/callback ...");
@@ -152,7 +152,7 @@ fn parse_auth_code_from_request(request: &str) -> Result<String> {
     ))
 }
 
-// ── Token exchange ──────────────────────────────────────────────────────
+// ── Token exchange ──────────────────────────────────────────────
 
 async fn exchange_code(
     auth_code: &str,
