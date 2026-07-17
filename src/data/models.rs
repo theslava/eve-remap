@@ -212,12 +212,15 @@ pub struct EpochPlan {
     pub effective_attributes: EffectiveAttributes,
     pub completed_skills: Vec<(u32, String, f64)>, // (skill_id, skill_name, train_seconds)
     pub projected_finish_secs: f64,  // seconds from now when this epoch ends
+    /// Number of bonus neural interface remaps consumed for this epoch.
+    pub bonus_remaps_used: u32,
 }
 
 /// Full optimization result across all epochs.
 #[derive(Debug, Clone)]
 pub struct OptimizationResult {
     pub epochs: Vec<EpochPlan>,
-    // removed: derived from total_wall_clock_seconds at display time
     pub total_wall_clock_seconds: f64,
+    /// Wall-clock seconds if no remaps were used (current attrs throughout).
+    pub baseline_wall_clock_seconds: f64,
 }

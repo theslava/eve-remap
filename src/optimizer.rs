@@ -279,6 +279,114 @@ fn choose_best_allocation(
     Some(best_alloc)
 }
 
+/// Simulate spending N bonus remaps back-to-back from the current state.
+/// Each bonus pick selects the best allocation for remaining skills and trains
+/// until completion — no cooldown waits between them.
+/// Returns a vector of epochs produced by the bonus runs.
+fn simulate_bonus_remaps(
+    mut sim_state: SimulationState,
+    allocations: &[BaseAttributes],
+    implants: &[ImplantRecord],
+    implant_bonus: &BaseAttributes,
+    active_implant_ids: &[u32],
+    num_bonuses: u32,
+) -> Vec<EpochPlan> {
+    let mut epochs = Vec::new();
+    let mut bonuses_left = num_bonuses;
+
+    while !sim_state.is_empty() && bonuses_left > 0 {
+        let Some(chosen) = choose_best_allocation(&sim_state, allocations, implants) else {
+            break;
+        };
+        let chosen_with_implants = chosen.add(implant_bonus);
+        let chosen_effective = EffectiveAttributes::from_base_and_implants(
+            &chosen_with_implants,
+            active_implant_ids,
+            implants,
+        );
+
+        // Train to completion with this allocation (no time limit).
+        let epoch_result = simulate_epoch(sim_state.clone(), &chosen_effective, f64::INFINITY);
+
+        epochs.push(EpochPlan {
+            start_offset_secs: sim_state.elapsed_seconds,
+            attributes: chosen,
+            effective_attributes: chosen_effective,
+            completed_skills: epoch_result.completed,
+            projected_finish_secs: epoch_result.state_after.elapsed_seconds,
+            bonus_remaps_used: 1,
+        });
+
+        sim_state = epoch_result.state_after;
+        bonuses_left -= 1;
+    }
+
+    // If skills remain after all bonuses are spent, finish under last alloc.
+    if !sim_state.is_empty() && !epochs.is_empty() {
+        // Use the same allocation as the last bonus epoch for remaining skills.
+        let last_alloc = epochs.last().unwrap().attributes;
+        let last_eff = epochs.last().unwrap().effective_attributes.clone();
+        let epoch_result = simulate_epoch(sim_state.clone(), &last_eff, f64::INFINITY);
+        epochs.push(EpochPlan {
+            start_offset_secs: sim_state.elapsed_seconds,
+            attributes: last_alloc,
+            effective_attributes: last_eff,
+            completed_skills: epoch_result.completed,
+            projected_finish_secs: epoch_result.state_after.elapsed_seconds,
+            bonus_remaps_used: 0,
+        });
+    }
+
+    epochs
+}
+
+/// Try to decide whether spending bonus remaps now beats waiting for timed boundaries.
+/// Compares total finish time of "spend all N bonuses greedily" vs "wait for next timed remap".
+/// Returns Some(epochs) if bonus strategy is faster, None otherwise.
+fn try_bonus_remap_strategy(
+    mut sim_state: SimulationState,
+    allocations: &[BaseAttributes],
+    implants: &[ImplantRecord],
+    implant_bonus: &BaseAttributes,
+    active_implant_ids: &[u32],
+    num_bonuses: u32,
+) -> Option<Vec<EpochPlan>> {
+    if num_bonuses == 0 || sim_state.is_empty() {
+        return None;
+    }
+
+    // Strategy A: spend all bonuses greedily right now
+    let bonus_epochs = simulate_bonus_remaps(
+        sim_state.clone(),
+        allocations,
+        implants,
+        implant_bonus,
+        active_implant_ids,
+        num_bonuses,
+    );
+    let bonus_finish_time = bonus_epochs.last().map_or(f64::INFINITY, |e| e.projected_finish_secs);
+
+    // Strategy B: wait for the next timed remap boundary (one epoch only).
+    // We just need a rough comparison — one timed epoch vs immediate bonus.
+    let timed_finish_time = {
+        let Some(chosen) = choose_best_allocation(&sim_state, allocations, implants) else {
+            return None;
+        };
+        let chosen_with_implants = chosen.add(implant_bonus);
+        let chosen_effective = EffectiveAttributes::from_base_and_implants(
+            &chosen_with_implants,
+            active_implant_ids,
+            implants,
+        );
+        project_total_time(&sim_state, &chosen_effective) + sim_state.elapsed_seconds
+    };
+
+    if bonus_finish_time < timed_finish_time {
+        Some(bonus_epochs)
+    } else {
+        None
+    }
+}
 /// Run the greedy multi-epoch remap optimizer with sequential training.
 pub fn optimize(
     char_state: &CharacterState,
@@ -295,10 +403,14 @@ pub fn optimize(
         return OptimizationResult {
             epochs: Vec::new(),
             total_wall_clock_seconds: 0.0,
+            baseline_wall_clock_seconds: 0.0,
         };
     }
 
     let initial_effective = char_state.effective_attributes(implants);
+
+    // Baseline: total wall-clock seconds with current attrs, no remaps at all.
+    let baseline_secs = project_total_time(&sim_state, &initial_effective);
     let allocations = generate_allocations();
 
     eprintln!(
@@ -332,6 +444,7 @@ pub fn optimize(
             effective_attributes: initial_effective,
             completed_skills: epoch_result.completed.clone(),
             projected_finish_secs: epoch_result.state_after.elapsed_seconds,
+            bonus_remaps_used: 0,
         });
         eprintln!(
             "[+] Epoch 0 (current attrs): {} skills done, {:.1}s wall",
@@ -339,6 +452,34 @@ pub fn optimize(
             _timer.elapsed().as_secs_f64()
         );
         sim_state = epoch_result.state_after;
+    }
+
+    // -----------------------------------------------------------------------
+    // Bonus remap check: try spending available bonuses now vs waiting.
+    // -----------------------------------------------------------------------
+    let bonus_remaps_available = char_state.bonus_remaps.unwrap_or(0);
+    if !sim_state.is_empty() && bonus_remaps_available > 0 {
+        if let Some(bonus_epochs) = try_bonus_remap_strategy(
+            sim_state.clone(),
+            &allocations,
+            implants,
+            &char_state.implant_bonus,
+            &char_state.active_implant_ids,
+            bonus_remaps_available,
+        ) {
+            eprintln!(
+                "[+] Bonus remap strategy chosen over timed wait ({:.1}s wall)",
+                _timer.elapsed().as_secs_f64()
+            );
+            result_epochs.extend(bonus_epochs);
+            // Update sim_state from the last bonus epoch's finish point.
+            if let Some(last_epoch) = result_epochs.last() {
+                sim_state.elapsed_seconds = last_epoch.projected_finish_secs;
+                sim_state.entries.clear();
+            }
+        } else {
+            eprintln!("[+] Timed remap strategy preferred (no bonus advantage)");
+        }
     }
 
     // -----------------------------------------------------------------------
@@ -374,6 +515,7 @@ pub fn optimize(
             effective_attributes: chosen_effective,
             completed_skills: epoch_result.completed.clone(),
             projected_finish_secs: epoch_result.state_after.elapsed_seconds,
+            bonus_remaps_used: 0,
         });
 
         eprintln!(
@@ -396,7 +538,8 @@ pub fn optimize(
 
     OptimizationResult {
         epochs: result_epochs,
-                total_wall_clock_seconds: total_wall_clock,
+        total_wall_clock_seconds: total_wall_clock,
+        baseline_wall_clock_seconds: baseline_secs,
     }
 }
 

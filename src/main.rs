@@ -437,16 +437,15 @@ fn run_optimizer_from_queue_file(
     if queued_skills.is_empty() {
         anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>'.", path);
     }
-
-    println!(
-        "Queue file '{}' — {} skills, attributes INT={} CHA={} PER={} MEM={} WIL={}, bonus remaps={}",
+    eprintln!(
+        "Queue file '{}' — {} skills, attributes PER={} MEM={} WIL={} INT={} CHA={}, bonus remaps={}",
         path,
         queued_skills.len(),
-        base_attrs.intelligence as u32,
-        base_attrs.charisma as u32,
         base_attrs.perception as u32,
         base_attrs.memory as u32,
         base_attrs.willpower as u32,
+        base_attrs.intelligence as u32,
+        base_attrs.charisma as u32,
         bonus_remaps.map_or("not set".into(), |n| n.to_string()),
     );
 
@@ -480,10 +479,18 @@ fn print_table_output(result: &data::models::OptimizationResult) {
     }
 
     println!();
-    println!(
-        "═ Repaired Optimization Plan ({} total time)",
-        calculator::format_duration(result.total_wall_clock_seconds)
-    );
+
+    let optimized_days = result.total_wall_clock_seconds / 86_400.0;
+    let baseline_days = result.baseline_wall_clock_seconds / 86_400.0;
+    if (result.baseline_wall_clock_seconds - result.total_wall_clock_seconds).abs() < 1e-6 {
+        println!("═ Repaired Optimization Plan ({:.1}d total, no speedup from remapping)", optimized_days);
+    } else {
+        let speedup_pct = ((result.baseline_wall_clock_seconds - result.total_wall_clock_seconds) / result.baseline_wall_clock_seconds * 100.0).round();
+        println!(
+            "═ Repaired Optimization Plan ({:.1}d optimized, {:.1}d without remaps — {}% faster)",
+            optimized_days, baseline_days, speedup_pct
+        );
+    }
     println!();
 
     for (i, epoch) in result.epochs.iter().enumerate() {
@@ -499,13 +506,19 @@ fn print_table_output(result: &data::models::OptimizationResult) {
             calculator::format_duration(epoch.start_offset_secs)
         );
         println!(
-            "│ Effective:   INT={} CHA={} PER={} MEM={} WIL={}",
-            epoch.effective_attributes.intelligence as u32,
-            epoch.effective_attributes.charisma as u32,
+            "│ Effective:   PER={} MEM={} WIL={} INT={} CHA={}",
             epoch.effective_attributes.perception as u32,
             epoch.effective_attributes.memory as u32,
             epoch.effective_attributes.willpower as u32,
+            epoch.effective_attributes.intelligence as u32,
+            epoch.effective_attributes.charisma as u32,
         );
+        if epoch.bonus_remaps_used > 0 {
+            println!(
+                "│ Bonus remaps used: {}",
+                epoch.bonus_remaps_used
+            );
+        }
         if !epoch.completed_skills.is_empty() {
             println!("│ Skills completing this epoch:");
             for (id, name, secs) in &epoch.completed_skills {
@@ -558,13 +571,22 @@ fn print_json_output(result: &data::models::OptimizationResult) {
             "effective_attributes": attrs_map,
             "completed_skills": completed,
             "projected_finish_days": epoch.projected_finish_secs / 86_400.0,
+            "bonus_remaps_used": epoch.bonus_remaps_used,
         }));
     }
+
+    let speedup_pct = if (result.baseline_wall_clock_seconds - result.total_wall_clock_seconds).abs() < 1e-6 {
+        0.0
+    } else {
+        ((result.baseline_wall_clock_seconds - result.total_wall_clock_seconds) / result.baseline_wall_clock_seconds * 100.0)
+    };
 
     let output = serde_json::json!({
         "total_epochs": result.epochs.len(),
         "total_days": result.total_wall_clock_seconds / 86_400.0,
         "total_wall_clock_seconds": result.total_wall_clock_seconds,
+        "baseline_seconds": result.baseline_wall_clock_seconds,
+        "speedup_percent": (speedup_pct * 100.0).round() / 100.0,
         "epochs": epochs,
     });
 
