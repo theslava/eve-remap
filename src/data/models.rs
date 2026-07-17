@@ -14,6 +14,7 @@ pub enum Attribute {
 }
 
 impl Attribute {
+    #[allow(dead_code)]
     pub fn variants() -> [Attribute; 5] {
         [
             Attribute::Intelligence,
@@ -131,6 +132,8 @@ pub struct BaseAttributes {
 }
 
 impl BaseAttributes {
+
+    #[allow(dead_code)]
     /// Total points distributed across all attributes.
     pub fn total(&self) -> f64 {
         self.intelligence + self.charisma + self.perception + self.memory + self.willpower
@@ -158,10 +161,10 @@ impl BaseAttributes {
 pub struct QueuedSkill {
     pub id: u32,
     pub level: u8,         // current trained level (1-5)
-    pub sp: u64,           // SP earned so far toward next level
+    #[allow(dead_code)] pub sp: u64,           // SP earned so far toward next level
     pub duration: u64,     // total duration in seconds for this queue entry
     pub remaining_sec: u64, // seconds remaining until completion
-    pub is_active: bool,   // true if this is the currently training skill
+    #[allow(dead_code)] pub is_active: bool,   // true if this is the currently training skill
 }
 
 impl QueuedSkill {
@@ -173,6 +176,7 @@ impl QueuedSkill {
         1.0 - (self.remaining_sec as f64 / self.duration as f64)
     }
 
+    #[allow(dead_code)]
     /// Remaining SP needed to complete this queue entry.
     pub fn remaining_sp(&self) -> u64 {
         let progress = self.progress_fraction();
@@ -192,7 +196,8 @@ pub struct CharacterState {
     /// When non-zero, these are added back after each remap regardless of active_implant_ids.
     pub implant_bonus: BaseAttributes,
     /// Effective attributes after applying active implant bonuses.
-    pub effective_attributes: EffectiveAttributes,
+
+    #[allow(dead_code)] pub effective_attributes: EffectiveAttributes,
     /// Skills queued for training, ordered by position (first is active).
     pub queued_skills: Vec<QueuedSkill>,
     /// Number of bonus neural interface remaps available (timed cooldown separate).
@@ -201,6 +206,9 @@ pub struct CharacterState {
 
 impl CharacterState {
     /// Derive effective attributes from base values plus active implants.
+
+    #[allow(dead_code)]
+
     pub fn recompute_effective(&mut self, implants: &[ImplantRecord]) {
         self.effective_attributes = EffectiveAttributes::from_base_and_implants(
             &self.base_attributes,

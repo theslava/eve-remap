@@ -37,6 +37,7 @@ struct EsSkillRow {
 #[derive(Debug, Deserialize)]
 struct EsSkillQueueRow {
     #[serde(rename = "activity")]
+    #[allow(dead_code)]
     pub activity: Option<String>,
     /// ISO-8601 timestamp; may be null for the active training slot.
     #[serde(rename = "finish_date")]
@@ -47,6 +48,7 @@ struct EsSkillQueueRow {
     pub skill_id: u32,
     /// ISO-8601 timestamp; null while actively training.
     #[serde(rename = "start_date")]
+    #[allow(dead_code)]
     pub start_date: Option<String>,
     /// Level that will have been trained when this entry completes.
     #[serde(rename = "trained_skill_level")]
@@ -205,10 +207,11 @@ fn ymd_to_days(year: i32, month: i32, day: i32) -> Option<i64> {
 
 const SCOPE_SKILLS: &str = "esi-skills.read_skills.v1";
 const SCOPE_QUEUE: &str = "esi-skills.read_skillqueue.v1";
-const SCOPE_IMPLANTS: &str = "esi-clones.read_implants.v1";
+#[allow(dead_code)] const SCOPE_IMPLANTS: &str = "esi-clones.read_implants.v1";
 
 fn skills_scope() -> Vec<String> { vec![SCOPE_SKILLS.to_string()] }
 fn queue_scope() -> Vec<String> { vec![SCOPE_QUEUE.to_string()] }
+#[allow(dead_code)]
 fn implants_scope() -> Vec<String> { vec![SCOPE_IMPLANTS.to_string()] }
 
 // ── EsIClient backed by eve_esi ───────────────────────────────
@@ -294,6 +297,7 @@ impl EsIClient {
         Ok(rows.into_iter().map(|r| (r.skill_id, r.level, r.sp)).collect())
     }
 
+    #[allow(dead_code)]
     /// Fetch trained skills resolved against an SDE skill table.
     pub async fn fetch_skills(
         &self,
@@ -344,7 +348,7 @@ impl EsIClient {
             .get_active_implants(&self.token, char_id as i64)
             .await
             .context("Failed to fetch implants via eve_esi")?;
-        Ok(implants.into_iter().map(|id| (id as u32)).collect())
+        Ok(implants.into_iter().map(|id| id as u32).collect())
     }
 
     // ── Combined snapshot ───────────────────────────────────────────

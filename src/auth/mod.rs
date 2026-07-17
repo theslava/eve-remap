@@ -44,7 +44,7 @@ pub fn decode_jwt_token(token: &str) -> Option<JwtClaims> {
         /// Expiration timestamp (seconds since epoch)
         exp: u64,
         /// Issued-at timestamp
-        iat: u64,
+        #[allow(dead_code)] iat: u64,
     }
 
     let claims: RawClaims = serde_json::from_str(text).ok()?;
@@ -144,12 +144,6 @@ pub fn save_account(entry: StoredAccountEntry) -> Result<()> {
     accounts.retain(|a| a.character_id != entry.character_id);
     accounts.push(entry);
     save_accounts_inner(&accounts)
-}
-
-/// Get a single account by character ID.
-pub fn get_account(char_id: u64) -> Result<Option<StoredAccountEntry>> {
-    let accounts = load_accounts()?;
-    Ok(accounts.into_iter().find(|a| a.character_id == char_id))
 }
 
 /// Remove an account by character ID. Returns true if something was removed.

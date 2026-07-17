@@ -438,15 +438,14 @@ fn run_optimizer_from_queue_file(
         anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>'.", path);
     }
     eprintln!(
-        "Queue file '{}' — {} skills, attributes PER={} MEM={} WIL={} INT={} CHA={}, bonus remaps={}",
+        "Queue file '{}' — {} skills, effective PER={} MEM={} WIL={} INT={} CHA={}",
         path,
         queued_skills.len(),
-        base_attrs.perception as u32,
-        base_attrs.memory as u32,
-        base_attrs.willpower as u32,
-        base_attrs.intelligence as u32,
-        base_attrs.charisma as u32,
-        bonus_remaps.map_or("not set".into(), |n| n.to_string()),
+        (base_attrs.perception + implant_bonus.perception) as u32,
+        (base_attrs.memory + implant_bonus.memory) as u32,
+        (base_attrs.willpower + implant_bonus.willpower) as u32,
+        (base_attrs.intelligence + implant_bonus.intelligence) as u32,
+        (base_attrs.charisma + implant_bonus.charisma) as u32,
     );
 
     let char_state = data::models::CharacterState {
@@ -580,11 +579,11 @@ fn print_json_output(result: &data::models::OptimizationResult) {
             ("willpower".to_string(), epoch.effective_attributes.willpower),
         ]);
 
-        let completed: Vec<_> = epoch
+        let _completed = epoch
             .completed_skills
             .iter()
             .map(|(id, name, secs)| serde_json::json!({ "skill_id": id, "name": name, "training_seconds": *secs }))
-            .collect();
+            .collect::<Vec<_>>();
 
         epochs.push(serde_json::json!({
             "start_offset_days": epoch.start_offset_secs / 86_400.0,
@@ -606,7 +605,7 @@ fn print_json_output(result: &data::models::OptimizationResult) {
     let speedup_pct = if (result.baseline_wall_clock_seconds - result.total_wall_clock_seconds).abs() < 1e-6 {
         0.0
     } else {
-        ((result.baseline_wall_clock_seconds - result.total_wall_clock_seconds) / result.baseline_wall_clock_seconds * 100.0)
+        (result.baseline_wall_clock_seconds - result.total_wall_clock_seconds) / result.baseline_wall_clock_seconds * 100.0
     };
 
     let output = serde_json::json!({
