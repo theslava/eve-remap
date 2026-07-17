@@ -79,6 +79,12 @@ pub struct OptimizeArgs {
     #[arg(long)]
     pub bonus_remaps: Option<u32>,
 
+    /// When the normal neural interface remap becomes available.
+    /// '0d' means available now; '30d' means available 30 days from start of training.
+    /// Defaults to '0d'. Useful when your last remap was recent and you're waiting out cooldown.
+    #[arg(long, default_value = "0d")]
+    pub remap_available: String,
+
     /// Implant attribute bonuses that persist across remaps.
     /// Format: PER:MEM:WIL:INT:CHA (e.g., 0:1:2:0:1).
     /// If omitted, defaults to zero — meaning --attributes are treated as raw base values.

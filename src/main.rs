@@ -302,8 +302,20 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
     let skills_db = data::load_skills().context("Failed to load skill database")?;
     let implants = data::load_implants().context("Failed to load implant database")?;
 
+    // Parse --remap-available: "0d", "30d", etc. → seconds from now.
+    let remap_available_str = args.remap_available.trim();
+    let remap_available_secs = if let Some(num) = remap_available_str.strip_suffix('d') {
+        num.parse::<f64>()
+            .with_context(|| format!("Invalid --remap-available '{}': expected a number followed by 'd'", remap_available_str))?
+            * 86_400.0
+    } else {
+        anyhow::bail!(
+            "Invalid --remap-available '{}': expected a value like '0d' or '30d'",
+            remap_available_str
+        );
+    };
+
     let result = if let Some(queue_path) = &args.queue {
-        // Parse queue file locally — no ESI needed.
         run_optimizer_from_queue_file(
             &args.attributes,
             &args.implant_bonuses,
@@ -311,6 +323,7 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
             queue_path,
             &skills_db,
             &implants,
+            remap_available_secs,
         )?
     } else {
         match try_fetch_and_optimize(&skills_db, &implants).await {
@@ -322,7 +335,6 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
             }
         }
     };
-
     if args.json {
         print_json_output(&result);
     } else {
@@ -354,6 +366,7 @@ fn run_optimizer_from_queue_file(
     path: &str,
     skills_db: &[data::models::SkillRecord],
     implants: &[data::models::ImplantRecord],
+    remap_available_secs: f64,
 ) -> Result<data::models::OptimizationResult> {
     use data::models::{BaseAttributes, EffectiveAttributes, QueuedSkill};
 
@@ -455,6 +468,7 @@ fn run_optimizer_from_queue_file(
         queued_skills,
         effective_attributes: EffectiveAttributes::from(base_attrs),
         bonus_remaps,
+        normal_remap_available_in_secs: remap_available_secs,
     };
     run_optimizer_with_state(&char_state, skills_db, implants)
 }

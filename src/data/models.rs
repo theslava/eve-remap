@@ -202,8 +202,11 @@ pub struct CharacterState {
     pub queued_skills: Vec<QueuedSkill>,
     /// Number of bonus neural interface remaps available (timed cooldown separate).
     pub bonus_remaps: Option<u32>,
-}
+    /// Wall-clock seconds from training start when the normal remap becomes available.
+    /// Defaults to 0 (available immediately); set via --remap-available.
+    pub normal_remap_available_in_secs: f64,
 
+}
 impl CharacterState {
     /// Derive effective attributes from base values plus active implants.
 

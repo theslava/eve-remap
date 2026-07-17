@@ -519,10 +519,15 @@ pub fn optimize(
     }
 
     // ── Main optimization loop ───────────────────────────────────────────────
+    const REMAP_COOLDOWN_SECS: f64 = 365.0 * 86_400.0;
+
     let mut result_epochs = Vec::new();
     let mut current_effective = initial_effective;
     let mut current_base = char_state.base_attributes;
     let mut bonus_left = char_state.bonus_remaps.unwrap_or(0);
+    // Absolute wall-clock seconds from start when next normal remap is available.
+    let normal_available_from: f64 = char_state.normal_remap_available_in_secs;
+    let mut normal_available_at = normal_available_from; // mutable copy updated after each use
     let mut remaining_start = 0usize;
     let mut wall_clock = 0.0f64;
 
@@ -537,8 +542,10 @@ pub fn optimize(
         }
         let stay_finish = wall_clock + running_stay;
 
-        // No more bonus remaps — train to completion.
-        if bonus_left == 0 {
+        // Check if any remap can ever become beneficial before we finish.
+        // Normal remap available at normal_available_at; bonus remaps never replenish.
+        let normal_can_reach = normal_available_at <= stay_finish;
+        if !normal_can_reach && bonus_left == 0 {
             push_epoch_with_times(
                 &mut result_epochs,
                 remaining_start, n,
@@ -558,7 +565,8 @@ pub fn optimize(
 
         // ── Strategic cut-point search ──────────────────────────────────────
         // For each split point `cut` in (remaining_start+1 .. n):
-        //   before = cumsum of stay_times up to cut
+        //   epoch_end = wall_clock + cumsum of stay_times up to cut
+        //   Check if a remap is available at epoch_end (normal or bonus).
         //   after  = best suffix_sum[a][cut] across all allocations a
         // Pick whichever minimizes total finish time.
         let mut best_cut_info: Option<(usize, f64, usize)> = None; // (cut, total_finish, chosen_alloc_col)
@@ -567,6 +575,13 @@ pub fn optimize(
         for offset in 0..(n - remaining_start - 1) {
             cum_before += stay_times[offset];
             let cut = remaining_start + offset + 1;
+            let epoch_end = wall_clock + cum_before;
+
+            // Is any remap available at this candidate epoch end?
+            let normal_at_end = epoch_end >= normal_available_at;
+            if !normal_at_end && bonus_left == 0 {
+                continue; // No remap available yet — skip this cut point.
+            }
 
             let mut best_after = suffix_sum[0][cut];
             let mut best_a = 0usize;
@@ -594,6 +609,10 @@ pub fn optimize(
             // Recompute exact before time for the winning cut.
             let epoch_end = wall_clock + cum_before_for(&stay_times, cut - remaining_start);
 
+            // Determine which remap type to use: normal first (self-replenishing), then bonus.
+            let normal_at_end = epoch_end >= normal_available_at;
+            let uses_normal = normal_at_end;
+
             push_epoch_with_times(
                 &mut result_epochs,
                 remaining_start, cut,
@@ -601,19 +620,27 @@ pub fn optimize(
                 &current_base, &current_effective,
                 &entries, &stay_times,
             );
-            result_epochs.last_mut().unwrap().bonus_remaps_used += 1;
+
+            if uses_normal {
+                // Normal remap consumed — it replenishes after cooldown from this point.
+                normal_available_at = epoch_end + REMAP_COOLDOWN_SECS;
+            } else {
+                // Bonus remap consumed.
+                result_epochs.last_mut().unwrap().bonus_remaps_used += 1;
+                bonus_left -= 1;
+            }
 
             eprintln!(
-                "[+] Epoch {} (attrs {:?}): {} skills done, then remap — saves {:.1}s ({:.1}d) ({:.1}s wall)",
+                "[+] Epoch {} (attrs {:?}): {} skills done, then {} remap — saves {:.1}s ({:.1}d) ({:.1}s wall)",
                 result_epochs.len(),
                 format_attrs(&current_effective),
                 cut - remaining_start,
+                if uses_normal { "normal" } else { "bonus" },
                 stay_finish - total_finish,
                 (stay_finish - total_finish) / 86_400.0,
                 _timer.elapsed().as_secs_f64()
             );
 
-            bonus_left -= 1;
             current_base = allocations[chosen_a];
             current_effective = effective_for_alloc[chosen_a];
             wall_clock = epoch_end;
@@ -742,6 +769,7 @@ mod tests {
             implant_bonus: BaseAttributes { intelligence: 0., charisma: 0., perception: 0., memory: 0., willpower: 0. },
             effective_attributes: EffectiveAttributes::from(attrs),
             bonus_remaps,
+            normal_remap_available_in_secs: 0.0,
         }
     }
 

@@ -391,6 +391,7 @@ impl EsIClient {
             implant_bonus: BaseAttributes::zero(),
             effective_attributes: effective_attrs,
             bonus_remaps: None, // ESI doesn't expose this; user provides via --bonus-remaps
+            normal_remap_available_in_secs: 0.0, // assume available now when fetched from ESI
         })
     }
 }
