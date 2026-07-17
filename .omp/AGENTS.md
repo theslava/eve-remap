@@ -47,19 +47,22 @@ cargo test optimizer::tests         # only optimizer module
 - **No emojis**, no marketing language in prose
 
 ## Key Architecture Facts
-- **SP formula**: Cumulative table lookup — `(CUMULATIVE[to] - CUMULATIVE[from]) × skillTimeConstant`. Table (rank 1): L1=250, L2=1414, L3=8000, L4=45255, L5=256000. Replaced the incorrect multiplier×20000 approach.
-- **Rate formula**: `(effectivePrimary + effectiveSecondary / 2.0) / 60.0` SP/s. Primary points worth exactly 2× secondary.
-- **Optimizer**: greedy best-response per epoch. Epoch 0 fixed to current attributes; each subsequent epoch picks the allocation minimizing last-skill finish time across **2,886** valid distributions (base=17 + 14 free points, max +10/attr). Implant bonuses from `--implant-bonuses` are added back after each remap.
-- **Queue input**: two modes — ESI `/skillqueue` when authenticated, or `--queue FILE` for offline use. Queue files: one "Skill Name \<level>" per line; `#` comments and blank lines ignored; case-insensitive name matching against SDE data. Level N means train from (N-1) to N.
-- **Auth**: PKCE (`--sso`) requires port forwarding on WSL; implicit grant (`--browser`) works cross-platform. JWT claims differ from docs: `sub: "CHARACTER:EVE:<id>"`, `scp` array for scopes, `name` for character name.
-- **Token refresh**: currently a placeholder — `refresh_token` field stored but not yet wired to `/oauth/token` endpoint.
+
+Full specification is in [PLAN.md](../PLAN.md). Essentials:
+
+- **SP formula**: cumulative table lookup `(CUMULATIVE[to] - CUMULATIVE[from]) * STC`. See `calculator.rs:CUMULATIVE_SP`.
+- **Rate formula**: `(primary + secondary / 2.0) / 60.0` SP/s. Primary worth exactly 2x secondary.
+- **Optimizer**: greedy best-response per epoch over **2,885** valid allocations (base=17 + 14 free points, max +10/attr). Precomputed time caches and suffix sums accelerate evaluation.
+- **Queue input**: ESI `/skillqueue` when authenticated, or `--queue FILE` offline. Format: one "Skill Name \<level>" per line; `#` comments and blanks ignored; case-insensitive matching. Level N means train from (N-1) to N.
+- **Auth**: PKCE (`--sso`) needs port forwarding on WSL; implicit grant (`--browser`) works cross-platform. JWT claims: `sub: "CHARACTER:EVE:<id>"`, `scp` array, `name` string. Token refresh not yet wired.
+- **CLI flags on `optimize`**: `--queue`, `--attributes`, `--implant-bonuses`, `--bonus-remaps`, `--remap-available Dd`, `--json`.
 
 ## File Map
 
 ```
 src/
 ├── main.rs           — CLI entrypoint, command dispatch, output formatters, queue file parser
-├── cli.rs            — clap derive argument definitions (OptimizeArgs has --queue, --attributes, --implant-bonuses)
+├── cli.rs            — clap derive argument definitions (--queue, --attributes, --implant-bonuses, --remap-available, etc.)
 ├── calculator.rs     — SP formula, rate computation, duration helpers, format_duration
 ├── optimizer.rs      — multi-epoch allocation search with simulation engine
 ├── auth/
@@ -69,8 +72,8 @@ src/
     ├── mod.rs        — load_skills(), load_implants() facades
     ├── models.rs     — SkillRecord, QueuedSkill, CharacterState, EffectiveAttributes, etc.
     ├── esi.rs        — EsIClient: authenticated ESI requests, character state fetching
-    └── sde.rs        — SDE JSONL → skills.json parser (not yet implemented)
+    └── sde.rs        — SDE JSONL parser: extract_skills(), extract_implants(), download_sde()
 assets/
 ├── skills.json       — ~400 skill records from SDE
-└── implants.json     — implant type → attribute bonus mapping
+└── implants.json     — implant type -> attribute bonus mapping
 ```

@@ -42,11 +42,12 @@ Core command. Outputs a phased plan showing which allocation to set at each epoc
 | `--attributes PER:MEM:WIL:INT:CHA` | Effective attribute values for offline mode (default: `17:17:17:17:17`) |
 | `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses that persist across remaps (default: `0:0:0:0:0`) |
 | `--bonus-remaps N` | Number of bonus neural interface remaps available (optional) |
+| `--remap-available Dd` | When the normal remap cooldown expires (e.g., `0d` = now, `30d` = in 30 days; default: `0d`) |
 | `--json` | Output results as JSON instead of table |
 
 **How it works:** When authenticated, fetches your live character state from ESI (`/skillqueue`, `/attributes`, `/implants`). When using `--queue FILE`, runs entirely offline using the attributes you supply.
 
-If no token is available and no queue file is given, falls back to demo mode using sample SDE skills.
+If no token is available and no queue file is given, the command exits with a suggestion to use `--queue`.
 
 ### login
 
@@ -70,7 +71,7 @@ List authenticated characters. Use `--verbose` to show token expiry details.
 
 ### download
 
-Download and parse latest SDE data into `assets/`. Optionally specify output directory with `-d DIR`. Requires an active ESI token.
+Download and parse latest SDE data into `assets/`. Optionally specify output directory with `-d DIR`. **Not yet implemented** — assets are shipped with the repository.
 
 ### verify
 
@@ -134,7 +135,7 @@ Primary attribute points are worth exactly **twice** as much as secondary (`+1 p
 - Base attribute value: **17** (hard floor)
 - Free points per remap: **14** distributed above base
 - Per-attribute cap: maximum **+10** add (max value = 27)
-- Valid allocations: **2,886** distributions
+- Valid allocations: **2,885** distributions
 - Timed cooldown: every 365 days; bonus remaps usable anytime
 
 ## Output
@@ -164,6 +165,6 @@ Table output shows each epoch with effective attributes, skills completing durin
 CLI (clap) → Optimizer → Duration Calculator → Data Layer (JSON + ESI)
 ```
 
-- **Optimizer**: Greedy best-response per epoch. Epoch 0 fixed to current effective attributes; each subsequent epoch picks the allocation minimizing last-skill finish time across ~2,900 valid distributions.
+- **Optimizer**: Greedy best-response per epoch. Epoch 0 fixed to current effective attributes; each subsequent epoch picks the allocation minimizing last-skill finish time across 2,885 valid distributions.
 - **Training model**: Sequential — one skill at a time in queue order. Skills carry SP forward across remaps with no rollback.
 - **Data**: Flat JSON assets (`assets/skills.json`, `assets/implants.json`) loaded once at startup. Live character state fetched via authenticated ESI requests.

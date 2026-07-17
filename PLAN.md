@@ -15,7 +15,7 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 ### In Scope (MVP)
 
 1. **Interactive SSO authentication** — CLI opens browser for EVE login via implicit grant flow (works cross-platform including WSL). Supports multiple characters; token persistence with JWT introspection. Also supports pasting tokens directly (`login -t TOKEN`).
-2. **Skill duration calculator** — compute exact training time for any skill→level transition given an effective attribute allocation (base + implants), using SDE-derived skill data. Formula: `SP = (CUMULATIVE[to_level] − CUMULATIVE[from_level]) × skillTimeConstant`, rate = `(primary + secondary/2) / 60` SP/s. Cumulative SP table (rank 1): L1=250, L2=1414, L3=8000, L4=45255, L5=256000.
+2. **Skill duration calculator** — compute exact training time for any skill-to-level transition given effective attributes and SDE-derived skill data. See [Skill Duration Formula](#skill-duration-formula).
 3. **Multi-epoch optimizer** — simulate target skills training sequentially (one at a time, in queue order) under each epoch's allocation; find the allocation per epoch that minimizes total wall-clock time until everything finishes. Skills carry progress forward across epochs with no rollback. Lower skill levels must complete before higher ones of the same skill (e.g., Gunnery 1 before Gunnery 2), but cross-skill prerequisites are ignored for now. Target skills can come from ESI `/skillqueue` or a local queue file (`--queue FILE`).
 4. **Data layer** — flat JSON assets (`assets/skills.json`, `assets/implants.json`) loaded once at startup; query ESI for live character state (attributes, implant IDs, skill levels, queue) when authenticated.
 5. **CLI interface** — clap derive subcommands: `login`, `logout`, `accounts`, `download`, `verify`, `optimize`. Offline mode via `--queue FILE`, `--attributes PER:MEM:WIL:INT:CHA`, and `--implant-bonuses PER:MEM:WIL:INT:CHA` requires no authentication.
@@ -98,7 +98,7 @@ eve-remap/
 │       ├── mod.rs        — data layer facade (load_skills, load_implants)
 │       ├── models.rs     — shared domain types (SkillRecord, CharacterState, etc.)
 │       ├── esi.rs        — ESI client (reqwest wrapper, character state fetching)
-│       └── sde.rs        — SDE JSONL → skills.json parser (not yet implemented)
+│       └── sde.rs        — SDE JSONL parser: extract_skills(), extract_implants(), download_sde()
 ├── assets/
 │   ├── skills.json       — pre-parsed skill data (~400 entries from SDE)
 │   └── implants.json     — implant type → attribute bonus mapping
@@ -149,46 +149,17 @@ SDE needs to also store implant→attribute bonus mapping. This means `skills.js
 
 Skills train **sequentially** in queue order — only one skill earns SP at any given moment. On completion, the next queued skill starts. Skills keep their SP across remaps; only the future training rate changes. Lower levels of a skill must complete before higher ones (Gunnery 1 → Gunnery 2), but cross-skill prerequisites are ignored for now.
 
-#### SP Rate Formula
+Primary attribute points are worth exactly **twice** as much as secondary (`+1 primary = +2 secondary`), because the rate formula is linear.
 
-```text
-rate(SP/s) = (primary_attr + secondary_attr / 2) / 60
-```
+#### Greedy Best-Response per Epoch
 
-Primary attribute points are worth exactly **twice** as much as secondary attribute points: `+1 primary ≡ +2 secondary`. This equivalency is exact because the formula is linear.
+The optimizer uses a greedy approach: epoch 0 is fixed to current effective attributes, then each subsequent epoch picks the allocation that minimizes the projected finish time of the last queued skill. This avoids exhaustive search over `allocations^epochs`.
 
-#### Time-Bucket Grouping Strategy
-
-The optimizer groups skills into "time buckets" based on when they'll be training relative to remap boundaries:
-
-1. **Group skills by (primary, secondary) attribute pair.** There are only 15 unique pairs in the game (e.g., INT+MEM covers 149 skills). Skills sharing the same pair benefit from the same allocation.
-
-2. **Estimate each bucket's wall-clock duration** under current attributes to determine which remap window it falls in.
-
-3. **Cluster adjacent buckets with overlapping attributes.** If Bucket A (INT+MEM) trains for 200 days and Bucket B (MEM+INT) trains next for 50 days, they share Memory — one MEM-heavy allocation serves both efficiently rather than splitting across two epochs.
-
-4. **Assign the best allocation per cluster.** For each time-bounded cluster, search all valid allocations (2,886 distributions: base=17 + 14 free points, max +10 per attr) and pick the one minimizing that cluster's projected finish time.
-
-This produces a schedule like:
-```
-Epoch 0  [now → day 365]:   current attrs (fixed, no reason to waste a remap immediately)
-Epoch 1  [day 365 → day X]: allocation optimized for Bucket A+B (shared primary)
-Epoch 2  [day X → end]:     allocation optimized for remaining buckets
-```
+Precomputed time caches store training durations for every skill-allocation pair, enabling fast evaluation during the greedy search. Suffix sums accelerate multi-skill projections under each candidate allocation.
 
 #### Allocation Space
 
-A remap distributes **14** free points above a hard floor of **17** across 5 attributes. Per-attribute cap is **+10** (max value = 27). This yields **2,886 valid distributions**. No single-attribute dump is possible since 14 > 10.
-
-The greedy approach avoids exhaustive `allocations^epochs` by optimizing each bucket independently given its position in the timeline.
-
-### Character Attributes & Remap Constraints
-
-- **Base attribute value**: 17 for all five attributes (hard floor — cannot go lower via remap).
-- **Implant bonuses**: +1 to +5 per slot. SDE `implants.json` currently has talismans (+2 to +4); live ESI `/implants/` returns equipped implants and their exact bonuses. Effective attribute = 17 + implant bonus + remapped points.
-- **Remappable points**: **14** free points distributed above base during each neural interface remap.
-- **Per-attribute cap**: Maximum **+10** on any single attribute from a remap (i.e., one attribute can reach at most 17 + 10 = 27, leaving 4 points for others if fully dumped into two).
-- **Allocation space**: With base=17, sum of added points=14, max add per attr=10 → **2,886 valid distributions**. No single-attribute dump is possible (14 > 10), so every allocation touches at least 2 attributes. Distribution by boosted attr count: 2 attrs (70 combos), 3 attrs (690), 4 attrs (1,410), 5 attrs (715).
+A remap distributes **14** free points above a hard floor of **17** across 5 attributes. Per-attribute cap is **+10** (max value = 27). This yields **2,885 valid distributions**. No single-attribute dump is possible since 14 > 10, so every allocation touches at least 2 attributes. Distribution by boosted attribute count: 2 attrs (70), 3 attrs (690), 4 attrs (1,410), 5 attrs (715).
 
 
 ### SSO Authentication & Token Lifecycle
@@ -224,6 +195,7 @@ Token store maps character ID → credentials. When multiple characters are logg
 | `optimize` | `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses persisting across remaps (default: 0:0:0:0:0) |
 | `optimize` | `--bonus-remaps N` | Number of bonus neural interface remaps (optional — unlimited timed epochs if omitted) |
 | `optimize` | `--json` | Output results as JSON instead of human-readable table |
+| `optimize` | `--remap-available Dd` | When normal remap cooldown expires, e.g. `0d` = now, `30d` = in 30 days (default: 0d) |
 | `login` | `-t TOKEN` / `EVE_REMAP_TOKEN` env | Paste a JWT bearer token directly |
 | `login` | `--browser` | Open browser for authorization (implicit grant, cross-platform) |
 | `login` | `--sso` | PKCE server-based SSO flow (requires port forwarding on WSL) |
@@ -285,6 +257,7 @@ Drone Navigation 2
 - [x] ESI client: authenticated requests to `/attributes`, `/skills`, `/skillqueue`, `/implants`
 - [x] Domain models mapping API responses → internal types in `data/models.rs`
 - [x] Character state snapshot combining ESI data + assets lookups
+- [x] SDE JSONL parser (`sde.rs`): extract_skills(), extract_implants() from raw CCP data files
 - [ ] Token refresh via `/oauth/token` endpoint (placeholder pending implementation)
 
 ### Phase 3 — Multi-Epoch Optimizer ✅
@@ -312,17 +285,17 @@ Drone Navigation 2
 ## Key Decisions
 
 1. **Rust**: Fast computation for the optimizer's tight loop, native binary distribution, no venv or dependency hell. Edition pinned to 2021 for Rust 1.75 compatibility on WSL.
-3. **Time-bucket grouping over raw greedy**: Skills are grouped into clusters by shared attributes before allocation search. Adjacent buckets with overlapping primary/secondary attrs share one remap allocation rather than splitting across epochs. Primary points are worth exactly 2× secondary (+1 primary ≡ +2 secondary), making it straightforward to score allocations against bucket composition.
-2. **JSON files over SQLite**: Skill and implant data are ~400+ entries × 7 fields each. Flat JSON loads in microseconds with serde — no DB library needed.
 
-3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 12K allocations, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
+2. **JSON files over SQLite**: Skill and implant data are ~400+ entries x 7 fields each. Flat JSON loads in microseconds with serde — no DB library needed.
 
-4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count; user provides `--bonus-remaps N`. Optional — if omitted, optimizer runs unlimited timed epochs until queue empties.
+3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 2,885 allocations per epoch, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
+
+4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count; user provides `--bonus-remaps N` and `--remap-available Dd`. Optional — if omitted, optimizer runs unlimited timed epochs until queue empties.
 
 5. **Queue from file OR ESI**: Target skills can come from `--queue FILE` (offline, copy/paste friendly) or fetched live from ESI `/skillqueue/` when authenticated. This removes the authentication barrier for initial use and testing.
 
 6. **Browser login over PKCE for WSL**: Implicit grant flow avoids port forwarding issues between Windows host and WSL guest where `http://localhost:<port>` isn't routable. PKCE (`--sso`) still available as an option.
 
-7. **Cumulative SP table over multiplier formula**: Authoritative values from EVE Online forums archive: L1=250, L2=1414, L3=8000, L4=45255, L5=256000. SP for transition = `(CUMULATIVE[to] - CUMULATIVE[from]) × STC`. This replaced the incorrect LEVEL_MULTIPLIERS×BASE_SP approach.
+7. **Cumulative SP table over multiplier formula**: Authoritative values from EVE Online forums archive: L1=250, L2=1414, L3=8000, L4=45255, L5=256000. SP for transition = `(CUMULATIVE[to] - CUMULATIVE[from]) * STC`. This replaced the incorrect LEVEL_MULTIPLIERS*BASE_SP approach.
 
 8. **EsIClient uses immutable tokens**: Replaced `Arc<Mutex<String>>` with plain `String` to avoid holding locks across `.await` points, eliminating deadlock risk in async context.
