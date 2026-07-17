@@ -1,0 +1,31 @@
+# Long queue to test multi-epoch remap optimization
+# Mix of INT, MEM, PER, WIL primary skills to force allocation switches
+Gunnery 5
+Navigation 5
+Shield Operation 5
+Armor Repairer Operation 5
+Electronic Warfare Suite 5
+Shield Manipulator Extended Emission Projects 5
+Capital Ship Command 5
+Fleet Logistics 5
+Command Barge 5
+Rear Admiral 5
+Captain 5
+Command Center Augmentation 5
+Advanced Computer Assisted Surgery 5
+Advanced Bio Nano Engineering 5
+Advanced Genetics 5
+Advanced Cybernetics 5
+Vampires 5
+Nanite Isotope Weaving 5
+Ship Command Core 5
+Gang Leader 5
+Faction Warfare 5
+Reconnaissance 5
+Stealth 5
+Surgery 5
+Biomass Engineer 5
+Genetic Engineering 5
+Cybernetics 5
+Clone Infusion 5
+Cryogenic Stabilization 5

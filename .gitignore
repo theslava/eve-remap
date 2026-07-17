@@ -22,3 +22,4 @@ Thumbs.db
 # Added by cargo
 
 /target
+sde_raw/sde_full.zip

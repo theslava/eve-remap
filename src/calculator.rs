@@ -90,6 +90,7 @@ mod tests {
             primary_attribute: Attribute::Intelligence,
             secondary_attribute: Attribute::Memory,
             skill_time_constant: 1.0,
+            prerequisites: vec![],
         };
         let attrs = test_attrs(5.0, 1.0, 1.0, 3.0, 1.0);
         
@@ -106,6 +107,7 @@ mod tests {
             primary_attribute: Attribute::Intelligence,
             secondary_attribute: Attribute::Memory,
             skill_time_constant: 4.0,
+            prerequisites: vec![],
         };
         
         let sp = sp_for_level(&skill, 1, 2);
@@ -121,6 +123,7 @@ mod tests {
             primary_attribute: Attribute::Intelligence,
             secondary_attribute: Attribute::Perception,
             skill_time_constant: 3.0,
+            prerequisites: vec![],
         };
         
         let sp = sp_for_level(&skill, 3, 5);
@@ -135,6 +138,7 @@ mod tests {
             primary_attribute: Attribute::Intelligence,
             secondary_attribute: Attribute::Memory,
             skill_time_constant: 2.0,
+            prerequisites: vec![],
         };
         let attrs = test_attrs(10.0, 1.0, 1.0, 6.0, 1.0);
         

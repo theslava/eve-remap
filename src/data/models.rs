@@ -47,6 +47,10 @@ pub struct SkillRecord {
     pub secondary_attribute: Attribute,
     #[serde(rename = "skillTimeConstant")]
     pub skill_time_constant: f64,
+    /// Direct prerequisite skills: (skill_id, required_level).
+    /// Level is 1-indexed (1..=5). Empty if no prerequisites.
+    #[serde(default)]
+    pub prerequisites: Vec<(u32, u8)>,
 }
 
 /// An implant with attribute bonuses (pre-parsed from SDE).

@@ -14,6 +14,1597 @@
     }
   },
   {
+    "typeId": 2838,
+    "name": "Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 3077,
+    "name": "Zainou 'Gnome' Shield Upgrades SU-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3078,
+    "name": "Zainou 'Gnome' Shield Upgrades SU-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3079,
+    "name": "Zainou 'Gnome' Shield Upgrades SU-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3080,
+    "name": "Zainou 'Gnome' Shield Management SM-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3081,
+    "name": "Zainou 'Gnome' Shield Management SM-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3084,
+    "name": "Zainou 'Gnome' Shield Management SM-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3085,
+    "name": "Zainou 'Gnome' Shield Emission Systems SE-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3086,
+    "name": "Zainou 'Gnome' Shield Emission Systems SE-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3087,
+    "name": "Zainou 'Gnome' Shield Emission Systems SE-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3088,
+    "name": "Zainou 'Gnome' Shield Operation SP-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3089,
+    "name": "Zainou 'Gnome' Shield Operation SP-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3092,
+    "name": "Zainou 'Gnome' Shield Operation SP-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3093,
+    "name": "Eifyr and Co. 'Rogue' Evasive Maneuvering EM-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3094,
+    "name": "Eifyr and Co. 'Rogue' Evasive Maneuvering EM-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3095,
+    "name": "Eifyr and Co. 'Rogue' Evasive Maneuvering EM-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3096,
+    "name": "Eifyr and Co. 'Rogue' Navigation NN-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3097,
+    "name": "Eifyr and Co. 'Rogue' Navigation NN-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3100,
+    "name": "Eifyr and Co. 'Rogue' Navigation NN-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3101,
+    "name": "Eifyr and Co. 'Rogue' Fuel Conservation FC-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3102,
+    "name": "Eifyr and Co. 'Rogue' Fuel Conservation FC-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3103,
+    "name": "Eifyr and Co. 'Rogue' Fuel Conservation FC-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3104,
+    "name": "Eifyr and Co. 'Rogue' Afterburner AB-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3105,
+    "name": "Eifyr and Co. 'Rogue' Afterburner AB-608",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3108,
+    "name": "Eifyr and Co. 'Rogue' Afterburner AB-612",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3109,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Operation WD-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3110,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Operation WD-608",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3111,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Operation WD-612",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3112,
+    "name": "Eifyr and Co. 'Rogue' High Speed Maneuvering HS-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3113,
+    "name": "Eifyr and Co. 'Rogue' High Speed Maneuvering HS-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3116,
+    "name": "Eifyr and Co. 'Rogue' High Speed Maneuvering HS-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3117,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Speed WS-608",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3118,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Speed WS-613",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3119,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Speed WS-618",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3120,
+    "name": "Eifyr and Co. 'Rogue' Acceleration Control AC-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3121,
+    "name": "Eifyr and Co. 'Rogue' Acceleration Control AC-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3124,
+    "name": "Eifyr and Co. 'Rogue' Acceleration Control AC-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3125,
+    "name": "Zainou 'Deadeye' Guided Missile Precision GP-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3126,
+    "name": "Zainou 'Deadeye' Guided Missile Precision GP-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3127,
+    "name": "Zainou 'Deadeye' Guided Missile Precision GP-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3128,
+    "name": "Zainou 'Deadeye' Missile Bombardment MB-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3129,
+    "name": "Zainou 'Deadeye' Missile Bombardment MB-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3132,
+    "name": "Zainou 'Deadeye' Missile Bombardment MB-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3133,
+    "name": "Zainou 'Deadeye' Missile Projection MP-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3134,
+    "name": "Zainou 'Deadeye' Missile Projection MP-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3135,
+    "name": "Zainou 'Deadeye' Missile Projection MP-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3136,
+    "name": "Zainou 'Deadeye' Rapid Launch RL-1002",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3137,
+    "name": "Zainou 'Deadeye' Rapid Launch RL-1004",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3140,
+    "name": "Zainou 'Deadeye' Rapid Launch RL-1006",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3141,
+    "name": "Zainou 'Deadeye' Target Navigation Prediction TN-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3142,
+    "name": "Zainou 'Deadeye' Target Navigation Prediction TN-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3143,
+    "name": "Zainou 'Deadeye' Target Navigation Prediction TN-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3144,
+    "name": "Zainou 'Gnome' Launcher CPU Efficiency LE-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3145,
+    "name": "Zainou 'Gnome' Launcher CPU Efficiency LE-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3148,
+    "name": "Zainou 'Gnome' Launcher CPU Efficiency LE-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3149,
+    "name": "Hardwiring - Zainou 'Sharpshooter' ZMX11",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3150,
+    "name": "Hardwiring - Zainou 'Sharpshooter' ZMX110",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3151,
+    "name": "Hardwiring - Zainou 'Sharpshooter' ZMX1100",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3152,
+    "name": "Zainou 'Snapshot' Defender Missiles DM-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3153,
+    "name": "Zainou 'Snapshot' Defender Missiles DM-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3156,
+    "name": "Zainou 'Snapshot' Defender Missiles DM-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3157,
+    "name": "Zainou 'Snapshot' Heavy Assault Missiles AM-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3158,
+    "name": "Zainou 'Snapshot' Heavy Assault Missiles AM-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3159,
+    "name": "Zainou 'Snapshot' Heavy Assault Missiles AM-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3160,
+    "name": "Zainou 'Snapshot' Auto-Targeting Explosion Radius FR-1002",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3161,
+    "name": "Zainou 'Snapshot' Auto-Targeting Explosion Radius FR-1004",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3164,
+    "name": "Zainou 'Snapshot' Auto-Targeting Explosion Radius FR-1006",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3165,
+    "name": "Zainou 'Snapshot' Heavy Missiles HM-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3166,
+    "name": "Zainou 'Snapshot' Heavy Missiles HM-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3167,
+    "name": "Zainou 'Snapshot' Heavy Missiles HM-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3168,
+    "name": "Zainou 'Snapshot' Light Missiles LM-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3169,
+    "name": "Zainou 'Snapshot' Light Missiles LM-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3172,
+    "name": "Zainou 'Snapshot' Light Missiles LM-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3173,
+    "name": "Zainou 'Snapshot' Rockets RD-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3174,
+    "name": "Zainou 'Snapshot' Rockets RD-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3175,
+    "name": "Zainou 'Snapshot' Rockets RD-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3176,
+    "name": "Zainou 'Snapshot' Torpedoes TD-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3177,
+    "name": "Zainou 'Snapshot' Torpedoes TD-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3180,
+    "name": "Zainou 'Snapshot' Torpedoes TD-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3181,
+    "name": "Zainou 'Snapshot' Cruise Missiles CM-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3182,
+    "name": "Zainou 'Snapshot' Cruise Missiles CM-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3183,
+    "name": "Zainou 'Snapshot' Cruise Missiles CM-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3185,
+    "name": "Eifyr and Co. 'Gunslinger' Medium Projectile Turret MP-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3188,
+    "name": "Eifyr and Co. 'Gunslinger' Medium Projectile Turret MP-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3189,
+    "name": "Eifyr and Co. 'Gunslinger' Medium Projectile Turret MP-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3190,
+    "name": "Eifyr and Co. 'Gunslinger' Motion Prediction MR-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3191,
+    "name": "Eifyr and Co. 'Gunslinger' Motion Prediction MR-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3192,
+    "name": "Eifyr and Co. 'Gunslinger' Motion Prediction MR-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3193,
+    "name": "Eifyr and Co. 'Gunslinger' Surgical Strike SS-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3194,
+    "name": "Eifyr and Co. 'Gunslinger' Surgical Strike SS-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3195,
+    "name": "Eifyr and Co. 'Gunslinger' Surgical Strike SS-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3196,
+    "name": "Eifyr and Co. 'Gunslinger' Large Projectile Turret LP-1002",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3197,
+    "name": "Eifyr and Co. 'Gunslinger' Large Projectile Turret LP-1004",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3198,
+    "name": "Eifyr and Co. 'Gunslinger' Large Projectile Turret LP-1006",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3199,
+    "name": "Eifyr and Co. 'Gunslinger' Small Projectile Turret SP-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3200,
+    "name": "Eifyr and Co. 'Gunslinger' Small Projectile Turret SP-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3201,
+    "name": "Eifyr and Co. 'Gunslinger' Small Projectile Turret SP-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3202,
+    "name": "Inherent Implants 'Lancer' Small Energy Turret SE-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3203,
+    "name": "Inherent Implants 'Lancer' Controlled Bursts CB-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3204,
+    "name": "Inherent Implants 'Lancer' Gunnery RF-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3205,
+    "name": "Inherent Implants 'Lancer' Large Energy Turret LE-1002",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3206,
+    "name": "Inherent Implants 'Lancer' Medium Energy Turret ME-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3207,
+    "name": "Inherent Implants 'Lancer' Small Energy Turret SE-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3208,
+    "name": "Inherent Implants 'Lancer' Controlled Bursts CB-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3209,
+    "name": "Inherent Implants 'Lancer' Gunnery RF-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3210,
+    "name": "Inherent Implants 'Lancer' Large Energy Turret LE-1004",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3211,
+    "name": "Inherent Implants 'Lancer' Medium Energy Turret ME-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3212,
+    "name": "Inherent Implants 'Lancer' Small Energy Turret SE-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3213,
+    "name": "Inherent Implants 'Lancer' Controlled Bursts CB-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3214,
+    "name": "Inherent Implants 'Lancer' Gunnery RF-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3215,
+    "name": "Inherent Implants 'Lancer' Large Energy Turret LE-1006",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3216,
+    "name": "Inherent Implants 'Lancer' Medium Energy Turret ME-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3217,
+    "name": "Zainou 'Deadeye' Sharpshooter ST-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3220,
+    "name": "Zainou 'Deadeye' Trajectory Analysis TA-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3221,
+    "name": "Zainou 'Deadeye' Trajectory Analysis TA-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3222,
+    "name": "Zainou 'Deadeye' Large Hybrid Turret LH-1002",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3223,
+    "name": "Zainou 'Deadeye' Large Hybrid Turret LH-1004",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3224,
+    "name": "Zainou 'Deadeye' Large Hybrid Turret LH-1006",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3225,
+    "name": "Zainou 'Deadeye' Small Hybrid Turret SH-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3226,
+    "name": "Zainou 'Deadeye' Small Hybrid Turret SH-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3227,
+    "name": "Zainou 'Deadeye' Small Hybrid Turret SH-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3228,
+    "name": "Zainou 'Gnome' Weapon Upgrades WU-1002",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3229,
+    "name": "Zainou 'Gnome' Weapon Upgrades WU-1004",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3230,
+    "name": "Zainou 'Gnome' Weapon Upgrades WU-1006",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3231,
+    "name": "Zainou 'Deadeye' Medium Hybrid Turret MH-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3232,
+    "name": "Zainou 'Deadeye' Medium Hybrid Turret MH-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3233,
+    "name": "Zainou 'Deadeye' Medium Hybrid Turret MH-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3234,
+    "name": "Zainou 'Deadeye' Sharpshooter ST-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3235,
+    "name": "Zainou 'Deadeye' Sharpshooter ST-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3236,
+    "name": "Zainou 'Deadeye' Trajectory Analysis TA-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3237,
+    "name": "Inherent Implants 'Squire' Capacitor Management EM-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3238,
+    "name": "Inherent Implants 'Squire' Capacitor Management EM-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3239,
+    "name": "Inherent Implants 'Squire' Capacitor Management EM-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3240,
+    "name": "Inherent Implants 'Squire' Capacitor Systems Operation EO-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3241,
+    "name": "Inherent Implants 'Squire' Capacitor Systems Operation EO-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3246,
+    "name": "Inherent Implants 'Squire' Capacitor Systems Operation EO-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3247,
+    "name": "Inherent Implants 'Squire' Capacitor Emission Systems ES-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3248,
+    "name": "Inherent Implants 'Squire' Capacitor Emission Systems ES-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3249,
+    "name": "Inherent Implants 'Squire' Capacitor Emission Systems ES-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3250,
+    "name": "Inherent Implants 'Squire' Energy Pulse Weapons EP-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3251,
+    "name": "Inherent Implants 'Squire' Energy Pulse Weapons EP-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3252,
+    "name": "Inherent Implants 'Squire' Energy Pulse Weapons EP-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3253,
+    "name": "Inherent Implants 'Squire' Energy Grid Upgrades EU-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3254,
+    "name": "Inherent Implants 'Squire' Energy Grid Upgrades EU-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3255,
+    "name": "Inherent Implants 'Squire' Energy Grid Upgrades EU-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3256,
+    "name": "Inherent Implants 'Squire' Power Grid Management EG-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3257,
+    "name": "Inherent Implants 'Squire' Power Grid Management EG-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3258,
+    "name": "Inherent Implants 'Squire' Power Grid Management EG-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3262,
+    "name": "Zainou 'Gypsy' Electronics Upgrades EU-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3263,
+    "name": "Zainou 'Gypsy' Electronics Upgrades EU-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3264,
+    "name": "Zainou 'Gypsy' Electronics Upgrades EU-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3265,
+    "name": "Zainou 'Gypsy' CPU Management EE-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3266,
+    "name": "Zainou 'Gypsy' CPU Management EE-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3267,
+    "name": "Zainou 'Gypsy' CPU Management EE-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3268,
+    "name": "Zainou 'Gypsy' Signature Analysis SA-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3269,
+    "name": "Zainou 'Gypsy' Signature Analysis SA-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3270,
+    "name": "Zainou 'Gypsy' Signature Analysis SA-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3271,
+    "name": "Zainou 'Gypsy' Electronic Warfare EW-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3272,
+    "name": "Zainou 'Gypsy' Electronic Warfare EW-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3273,
+    "name": "Zainou 'Gypsy' Electronic Warfare EW-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3274,
+    "name": "Zainou 'Gypsy' Long Range Targeting LT-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3275,
+    "name": "Zainou 'Gypsy' Long Range Targeting LT-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3276,
+    "name": "Zainou 'Gypsy' Long Range Targeting LT-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3277,
+    "name": "Zainou 'Gypsy' Propulsion Jamming PJ-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3278,
+    "name": "Zainou 'Gypsy' Propulsion Jamming PJ-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3279,
+    "name": "Zainou 'Gypsy' Propulsion Jamming PJ-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3280,
+    "name": "Zainou 'Gypsy' Sensor Linking SL-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3281,
+    "name": "Zainou 'Gypsy' Sensor Linking SL-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3282,
+    "name": "Zainou 'Gypsy' Sensor Linking SL-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3283,
+    "name": "Zainou 'Gypsy' Weapon Disruption WD-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3284,
+    "name": "Zainou 'Gypsy' Weapon Disruption WD-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3287,
+    "name": "Zainou 'Gypsy' Weapon Disruption WD-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3288,
+    "name": "Zainou 'Gypsy' Target Painting TG-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3289,
+    "name": "Zainou 'Gypsy' Target Painting TG-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3290,
+    "name": "Zainou 'Gypsy' Target Painting TG-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3291,
+    "name": "Inherent Implants 'Noble' Repair Systems RS-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3292,
+    "name": "Inherent Implants 'Noble' Repair Systems RS-604",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3299,
+    "name": "Inherent Implants 'Noble' Repair Systems RS-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3414,
+    "name": "Inherent Implants 'Noble' Remote Armor Repair Systems RA-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3415,
+    "name": "Inherent Implants 'Noble' Remote Armor Repair Systems RA-704",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3470,
+    "name": "Inherent Implants 'Noble' Remote Armor Repair Systems RA-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3471,
+    "name": "Inherent Implants 'Noble' Mechanic MC-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3474,
+    "name": "Inherent Implants 'Noble' Mechanic MC-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3475,
+    "name": "Inherent Implants 'Noble' Mechanic MC-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3476,
+    "name": "Inherent Implants 'Noble' Repair Proficiency RP-902",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3477,
+    "name": "Inherent Implants 'Noble' Repair Proficiency RP-904",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3478,
+    "name": "Inherent Implants 'Noble' Repair Proficiency RP-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3479,
+    "name": "Inherent Implants 'Noble' Hull Upgrades HG-1002",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3481,
+    "name": "Inherent Implants 'Noble' Hull Upgrades HG-1004",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3482,
+    "name": "Inherent Implants 'Noble' Hull Upgrades HG-1006",
+    "bonuses": {}
+  },
+  {
+    "typeId": 3898,
+    "name": "Quafe Zero Classic",
+    "bonuses": {}
+  },
+  {
+    "typeId": 9899,
+    "name": "Ocular Filter - Basic",
+    "bonuses": {
+      "perception": 3
+    }
+  },
+  {
+    "typeId": 9941,
+    "name": "Memory Augmentation - Basic",
+    "bonuses": {
+      "memory": 3
+    }
+  },
+  {
+    "typeId": 9942,
+    "name": "Neural Boost - Basic",
+    "bonuses": {
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 9943,
+    "name": "Cybernetic Subprocessor - Basic",
+    "bonuses": {
+      "intelligence": 3
+    }
+  },
+  {
+    "typeId": 9947,
+    "name": "Standard Crash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 9950,
+    "name": "Standard Blue Pill Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 9956,
+    "name": "Social Adaptation Chip - Basic",
+    "bonuses": {
+      "charisma": 3
+    }
+  },
+  {
+    "typeId": 9957,
+    "name": "Eifyr and Co. 'Gunslinger' Motion Prediction MR-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10151,
+    "name": "Improved Crash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10152,
+    "name": "Strong Crash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10155,
+    "name": "Improved Blue Pill Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10156,
+    "name": "Strong Blue Pill Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10164,
+    "name": "Standard Sooth Sayer Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10165,
+    "name": "Improved Sooth Sayer Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10166,
+    "name": "Strong Sooth Sayer Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10204,
+    "name": "Zainou 'Deadeye' Sharpshooter ST-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10208,
+    "name": "Memory Augmentation - Standard",
+    "bonuses": {
+      "memory": 4
+    }
+  },
+  {
+    "typeId": 10209,
+    "name": "Memory Augmentation - Improved",
+    "bonuses": {
+      "memory": 5
+    }
+  },
+  {
+    "typeId": 10212,
+    "name": "Neural Boost - Standard",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 10213,
+    "name": "Neural Boost - Improved",
+    "bonuses": {
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 10216,
+    "name": "Ocular Filter - Standard",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 10217,
+    "name": "Ocular Filter - Improved",
+    "bonuses": {
+      "perception": 5
+    }
+  },
+  {
+    "typeId": 10221,
+    "name": "Cybernetic Subprocessor - Standard",
+    "bonuses": {
+      "intelligence": 4
+    }
+  },
+  {
+    "typeId": 10222,
+    "name": "Cybernetic Subprocessor - Improved",
+    "bonuses": {
+      "intelligence": 5
+    }
+  },
+  {
+    "typeId": 10225,
+    "name": "Social Adaptation Chip - Standard",
+    "bonuses": {
+      "charisma": 4
+    }
+  },
+  {
+    "typeId": 10226,
+    "name": "Social Adaptation Chip - Improved",
+    "bonuses": {
+      "charisma": 5
+    }
+  },
+  {
+    "typeId": 10228,
+    "name": "Zainou 'Gnome' Shield Management SM-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 10244,
+    "name": "Zainou 'Gypsy' Signature Analysis SA-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13166,
+    "name": "Inherent Implants 'Lancer' Gunnery RF-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13209,
+    "name": "Armored Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13216,
+    "name": "Zainou 'Gypsy' CPU Management EE-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13217,
+    "name": "Inherent Implants 'Lancer' Large Energy Turret LE-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13218,
+    "name": "Zainou 'Deadeye' Large Hybrid Turret LH-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13219,
+    "name": "Eifyr and Co. 'Gunslinger' Large Projectile Turret LP-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13220,
+    "name": "Inherent Implants 'Lancer' Medium Energy Turret ME-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13221,
+    "name": "Zainou 'Deadeye' Medium Hybrid Turret MH-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13222,
+    "name": "Eifyr and Co. 'Gunslinger' Medium Projectile Turret MP-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13223,
+    "name": "Inherent Implants 'Lancer' Small Energy Turret SE-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13224,
+    "name": "Zainou 'Deadeye' Small Hybrid Turret SH-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13225,
+    "name": "Eifyr and Co. 'Gunslinger' Small Projectile Turret SP-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13226,
+    "name": "Zainou 'Snapshot' Cruise Missiles CM-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13227,
+    "name": "Zainou 'Snapshot' Defender Missiles DM-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13228,
+    "name": "Zainou 'Snapshot' Auto-Targeting Explosion Radius FR-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13229,
+    "name": "Zainou 'Snapshot' Heavy Missiles HM-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13230,
+    "name": "Zainou 'Snapshot' Rockets RD-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13231,
+    "name": "Zainou 'Snapshot' Torpedoes TD-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13232,
+    "name": "Zainou 'Gypsy' Electronic Warfare EW-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13233,
+    "name": "Zainou 'Gypsy' Long Range Targeting LT-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13234,
+    "name": "Zainou 'Gypsy' Propulsion Jamming PJ-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13235,
+    "name": "Zainou 'Gypsy' Sensor Linking SL-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13236,
+    "name": "Zainou 'Gypsy' Weapon Disruption WD-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13237,
+    "name": "Eifyr and Co. 'Rogue' Navigation NN-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13238,
+    "name": "Eifyr and Co. 'Rogue' Fuel Conservation FC-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13239,
+    "name": "Eifyr and Co. 'Rogue' Afterburner AB-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13240,
+    "name": "Eifyr and Co. 'Rogue' Evasive Maneuvering EM-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13241,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Operation WD-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13242,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Speed WS-610",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13243,
+    "name": "Eifyr and Co. 'Rogue' High Speed Maneuvering HS-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13244,
+    "name": "Eifyr and Co. 'Gunslinger' Surgical Strike SS-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13245,
+    "name": "Zainou 'Deadeye' Trajectory Analysis TA-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13246,
+    "name": "Inherent Implants 'Lancer' Controlled Bursts CB-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13247,
+    "name": "Zainou 'Deadeye' Missile Bombardment MB-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13248,
+    "name": "Zainou 'Deadeye' Missile Projection MP-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13249,
+    "name": "Zainou 'Deadeye' Rapid Launch RL-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13250,
+    "name": "Zainou 'Deadeye' Target Navigation Prediction TN-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13251,
+    "name": "Inherent Implants 'Squire' Energy Pulse Weapons EP-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13252,
+    "name": "Zainou 'Gnome' Weapon Upgrades WU-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13253,
+    "name": "Zainou 'Gnome' Shield Upgrades SU-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13254,
+    "name": "Zainou 'Gypsy' Electronics Upgrades EU-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13255,
+    "name": "Inherent Implants 'Squire' Energy Grid Upgrades EU-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13256,
+    "name": "Inherent Implants 'Noble' Hull Upgrades HG-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13257,
+    "name": "Inherent Implants 'Noble' Mechanic MC-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13258,
+    "name": "Inherent Implants 'Noble' Repair Systems RS-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13259,
+    "name": "Inherent Implants 'Squire' Capacitor Management EM-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13260,
+    "name": "Inherent Implants 'Squire' Capacitor Systems Operation EO-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13261,
+    "name": "Inherent Implants 'Squire' Power Grid Management EG-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13262,
+    "name": "Zainou 'Gnome' Shield Emission Systems SE-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13263,
+    "name": "Zainou 'Gnome' Shield Operation SP-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13265,
+    "name": "Inherent Implants 'Squire' Capacitor Emission Systems ES-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 13283,
+    "name": "Limited Ocular Filter",
+    "bonuses": {
+      "perception": 1
+    }
+  },
+  {
+    "typeId": 13284,
+    "name": "Limited Memory Augmentation",
+    "bonuses": {
+      "memory": 1
+    }
+  },
+  {
+    "typeId": 13285,
+    "name": "Limited Neural Boost",
+    "bonuses": {
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 13286,
+    "name": "Limited Social Adaptation Chip",
+    "bonuses": {
+      "charisma": 1
+    }
+  },
+  {
+    "typeId": 13287,
+    "name": "Limited Cybernetic Subprocessor",
+    "bonuses": {
+      "intelligence": 1
+    }
+  },
+  {
+    "typeId": 14295,
+    "name": "Limited Ocular Filter - Beta",
+    "bonuses": {
+      "perception": 2
+    }
+  },
+  {
+    "typeId": 14296,
+    "name": "Limited Neural Boost - Beta",
+    "bonuses": {
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 14297,
+    "name": "Limited Memory Augmentation - Beta",
+    "bonuses": {
+      "memory": 2
+    }
+  },
+  {
+    "typeId": 14298,
+    "name": "Limited Cybernetic Subprocessor - Beta",
+    "bonuses": {
+      "intelligence": 2
+    }
+  },
+  {
+    "typeId": 14299,
+    "name": "Limited Social Adaptation Chip - Beta",
+    "bonuses": {
+      "charisma": 2
+    }
+  },
+  {
+    "typeId": 15457,
+    "name": "Standard X-Instinct Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15458,
+    "name": "Improved X-Instinct Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15459,
+    "name": "Strong X-Instinct Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15460,
+    "name": "Standard Frentix Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15461,
+    "name": "Improved Frentix Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15462,
+    "name": "Strong Frentix Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15463,
+    "name": "Standard Mindflood Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15464,
+    "name": "Improved Mindflood Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15465,
+    "name": "Strong Mindflood Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15466,
+    "name": "Standard Drop Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15477,
+    "name": "Improved Drop Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15478,
+    "name": "Strong Drop Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15479,
+    "name": "Standard Exile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 15480,
+    "name": "Improved Exile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16003,
+    "name": "Eifyr and Co. 'Rogue' Navigation NN-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16004,
+    "name": "Eifyr and Co. 'Rogue' Evasive Maneuvering EM-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16005,
+    "name": "Eifyr and Co. 'Rogue' Fuel Conservation FC-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16006,
+    "name": "Eifyr and Co. 'Rogue' High Speed Maneuvering HS-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16008,
+    "name": "Eifyr and Co. 'Rogue' Acceleration Control AC-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16009,
+    "name": "Eifyr and Co. 'Rogue' Acceleration Control AC-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16245,
+    "name": "Zainou 'Gnome' Shield Upgrades SU-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16246,
+    "name": "Zainou 'Gnome' Shield Management SM-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16247,
+    "name": "Zainou 'Gnome' Shield Emission Systems SE-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16248,
+    "name": "Zainou 'Gnome' Shield Operation SP-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 16249,
+    "name": "Zainou 'Gnome' Weapon Upgrades WU-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 17871,
+    "name": "Inherent Implants 'Noble' Remote Armor Repair Systems RA-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19500,
+    "name": "Zor's Custom Navigation Link",
+    "bonuses": {}
+  },
+  {
     "typeId": 19534,
     "name": "High-grade Talisman Alpha",
     "bonuses": {
@@ -49,11 +1640,36 @@
     }
   },
   {
+    "typeId": 19539,
+    "name": "High-grade Talisman Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 19540,
     "name": "High-grade Snake Alpha",
     "bonuses": {
       "perception": 4
     }
+  },
+  {
+    "typeId": 19547,
+    "name": "Inherent Implants 'Noble' Repair Systems RS-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19548,
+    "name": "Inherent Implants 'Noble' Remote Armor Repair Systems RA-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19549,
+    "name": "Inherent Implants 'Noble' Mechanic MC-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19550,
+    "name": "Inherent Implants 'Noble' Hull Upgrades HG-1005",
+    "bonuses": {}
   },
   {
     "typeId": 19551,
@@ -82,6 +1698,96 @@
     "bonuses": {
       "charisma": 4
     }
+  },
+  {
+    "typeId": 19556,
+    "name": "High-grade Snake Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19684,
+    "name": "Inherent Implants 'Noble' Repair Proficiency RP-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19685,
+    "name": "Inherent Implants 'Noble' Repair Proficiency RP-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19686,
+    "name": "Eifyr and Co. 'Gunslinger' Motion Prediction MR-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19687,
+    "name": "Eifyr and Co. 'Gunslinger' Surgical Strike SS-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19688,
+    "name": "Eifyr and Co. 'Gunslinger' Large Projectile Turret LP-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19689,
+    "name": "Eifyr and Co. 'Gunslinger' Medium Projectile Turret MP-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19690,
+    "name": "Eifyr and Co. 'Gunslinger' Small Projectile Turret SP-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19691,
+    "name": "Inherent Implants 'Lancer' Small Energy Turret SE-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19692,
+    "name": "Inherent Implants 'Lancer' Controlled Bursts CB-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19693,
+    "name": "Inherent Implants 'Lancer' Gunnery RF-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19694,
+    "name": "Inherent Implants 'Lancer' Large Energy Turret LE-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19695,
+    "name": "Inherent Implants 'Lancer' Medium Energy Turret ME-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19696,
+    "name": "Zainou 'Deadeye' Sharpshooter ST-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19697,
+    "name": "Zainou 'Deadeye' Trajectory Analysis TA-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19698,
+    "name": "Zainou 'Deadeye' Large Hybrid Turret LH-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19699,
+    "name": "Zainou 'Deadeye' Medium Hybrid Turret MH-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 19700,
+    "name": "Zainou 'Deadeye' Small Hybrid Turret SH-605",
+    "bonuses": {}
   },
   {
     "typeId": 20121,
@@ -117,6 +1823,26 @@
     "bonuses": {
       "charisma": 4
     }
+  },
+  {
+    "typeId": 20161,
+    "name": "High-grade Crystal Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 20358,
+    "name": "Numon Family Heirloom",
+    "bonuses": {}
+  },
+  {
+    "typeId": 20371,
+    "name": "Whelan Machorin's Ballistic Smartlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 20443,
+    "name": "Ogdin's Eye Coordination Enhancer",
+    "bonuses": {}
   },
   {
     "typeId": 20498,
@@ -189,6 +1915,41 @@
     }
   },
   {
+    "typeId": 20508,
+    "name": "High-grade Halo Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 20509,
+    "name": "High-grade Amulet Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 20700,
+    "name": "Michi's Excavation Augmentor",
+    "bonuses": {}
+  },
+  {
+    "typeId": 21606,
+    "name": "Inherent Implants 'Noble' Hull Upgrades HG-1008",
+    "bonuses": {}
+  },
+  {
+    "typeId": 21888,
+    "name": "Shield Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 21889,
+    "name": "Information Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 21890,
+    "name": "Skirmish Command Mindlink",
+    "bonuses": {}
+  },
+  {
     "typeId": 22107,
     "name": "Mid-grade Crystal Alpha",
     "bonuses": {
@@ -222,6 +1983,11 @@
     "bonuses": {
       "willpower": 3
     }
+  },
+  {
+    "typeId": 22112,
+    "name": "Mid-grade Crystal Omega",
+    "bonuses": {}
   },
   {
     "typeId": 22113,
@@ -259,6 +2025,11 @@
     }
   },
   {
+    "typeId": 22118,
+    "name": "Mid-grade Halo Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 22119,
     "name": "Mid-grade Amulet Alpha",
     "bonuses": {
@@ -292,6 +2063,11 @@
     "bonuses": {
       "willpower": 3
     }
+  },
+  {
+    "typeId": 22124,
+    "name": "Mid-grade Amulet Omega",
+    "bonuses": {}
   },
   {
     "typeId": 22125,
@@ -329,6 +2105,11 @@
     }
   },
   {
+    "typeId": 22130,
+    "name": "Mid-grade Snake Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 22131,
     "name": "Mid-grade Talisman Alpha",
     "bonuses": {
@@ -362,6 +2143,835 @@
     "bonuses": {
       "willpower": 3
     }
+  },
+  {
+    "typeId": 22137,
+    "name": "Mid-grade Talisman Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 22534,
+    "name": "Inherent Implants 'Highwall' Mining MX-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 22535,
+    "name": "Inherent Implants 'Highwall' Mining MX-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 22559,
+    "name": "Mining Foreman Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 22570,
+    "name": "Inherent Implants 'Yeti' Ice Harvesting IH-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 22571,
+    "name": "Inherent Implants 'Yeti' Ice Harvesting IH-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 22715,
+    "name": "Republic Special Ops Field Enhancer - Gamma",
+    "bonuses": {
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 22760,
+    "name": "Imperial Special Ops Field Enhancer - Standard",
+    "bonuses": {
+      "perception": 4
+    }
+  },
+  {
+    "typeId": 24632,
+    "name": "Zainou 'Deadeye' Guided Missile Precision GP-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24636,
+    "name": "Zainou 'Deadeye' Missile Bombardment MB-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24637,
+    "name": "Zainou 'Deadeye' Missile Projection MP-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24638,
+    "name": "Zainou 'Deadeye' Rapid Launch RL-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24639,
+    "name": "Zainou 'Deadeye' Target Navigation Prediction TN-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24640,
+    "name": "Zainou 'Deadeye' Guided Missile Precision GP-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24641,
+    "name": "Zainou 'Gnome' Launcher CPU Efficiency LE-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24642,
+    "name": "Zainou 'Gnome' Launcher CPU Efficiency LE-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24663,
+    "name": "Zor's Custom Navigation Hyper-Link",
+    "bonuses": {}
+  },
+  {
+    "typeId": 24669,
+    "name": "Shaqil's Speed Enhancer",
+    "bonuses": {}
+  },
+  {
+    "typeId": 25349,
+    "name": "Strong Exile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 25545,
+    "name": "Eifyr and Co. 'Alchemist' Neurotoxin Control NC-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 25546,
+    "name": "Eifyr and Co. 'Alchemist' Neurotoxin Control NC-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 25547,
+    "name": "Eifyr and Co. 'Alchemist' Neurotoxin Recovery NR-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 25548,
+    "name": "Eifyr and Co. 'Alchemist' Neurotoxin Recovery NR-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 25867,
+    "name": "Pashan's Turret Handling Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 25868,
+    "name": "Pashan's Turret Customization Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27070,
+    "name": "Inherent Implants 'Noble' Repair Systems RS-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27071,
+    "name": "Inherent Implants 'Noble' Remote Armor Repair Systems RA-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27072,
+    "name": "Inherent Implants 'Noble' Mechanic MC-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27073,
+    "name": "Inherent Implants 'Noble' Repair Proficiency RP-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27074,
+    "name": "Inherent Implants 'Noble' Hull Upgrades HG-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27075,
+    "name": "Eifyr and Co. 'Gunslinger' Motion Prediction MR-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27076,
+    "name": "Zainou 'Deadeye' Sharpshooter ST-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27077,
+    "name": "Inherent Implants 'Lancer' Gunnery RF-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27078,
+    "name": "Zainou 'Deadeye' Trajectory Analysis TA-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27079,
+    "name": "Inherent Implants 'Lancer' Controlled Bursts CB-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27080,
+    "name": "Zainou 'Gnome' Weapon Upgrades WU-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27081,
+    "name": "Eifyr and Co. 'Gunslinger' Surgical Strike SS-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27082,
+    "name": "Inherent Implants 'Lancer' Small Energy Turret SE-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27083,
+    "name": "Zainou 'Deadeye' Small Hybrid Turret SH-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27084,
+    "name": "Eifyr and Co. 'Gunslinger' Small Projectile Turret SP-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27085,
+    "name": "Inherent Implants 'Lancer' Medium Energy Turret ME-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27086,
+    "name": "Zainou 'Deadeye' Medium Hybrid Turret MH-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27087,
+    "name": "Eifyr and Co. 'Gunslinger' Medium Projectile Turret MP-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27088,
+    "name": "Inherent Implants 'Lancer' Large Energy Turret LE-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27089,
+    "name": "Zainou 'Deadeye' Large Hybrid Turret LH-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27090,
+    "name": "Eifyr and Co. 'Gunslinger' Large Projectile Turret LP-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27091,
+    "name": "Zainou 'Gnome' Launcher CPU Efficiency LE-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27092,
+    "name": "Zainou 'Deadeye' Missile Bombardment MB-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27093,
+    "name": "Zainou 'Deadeye' Missile Projection MP-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27094,
+    "name": "Zainou 'Deadeye' Guided Missile Precision GP-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27095,
+    "name": "Zainou 'Deadeye' Target Navigation Prediction TN-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27096,
+    "name": "Zainou 'Deadeye' Rapid Launch RL-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27097,
+    "name": "Eifyr and Co. 'Rogue' Navigation NN-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27098,
+    "name": "Eifyr and Co. 'Rogue' Fuel Conservation FC-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27099,
+    "name": "Eifyr and Co. 'Rogue' Evasive Maneuvering EM-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27100,
+    "name": "Eifyr and Co. 'Rogue' High Speed Maneuvering HS-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27101,
+    "name": "Eifyr and Co. 'Rogue' Acceleration Control AC-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27102,
+    "name": "Inherent Implants 'Highwall' Mining MX-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27103,
+    "name": "Inherent Implants 'Yeti' Ice Harvesting IH-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27104,
+    "name": "Zainou 'Gnome' Shield Upgrades SU-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27105,
+    "name": "Zainou 'Gnome' Shield Management SM-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27106,
+    "name": "Zainou 'Gnome' Shield Emission Systems SE-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27107,
+    "name": "Zainou 'Gnome' Shield Operation SP-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27108,
+    "name": "Zainou 'Snapshot' Light Missiles LM-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27109,
+    "name": "Zainou 'Snapshot' Heavy Assault Missiles AM-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27110,
+    "name": "Eifyr and Co. 'Rogue' Afterburner AB-610",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27111,
+    "name": "Eifyr and Co. 'Rogue' Afterburner AB-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27112,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Operation WD-610",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27113,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Operation WD-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27114,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Speed WS-615",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27115,
+    "name": "Eifyr and Co. 'Rogue' Warp Drive Speed WS-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27116,
+    "name": "Inherent Implants 'Squire' Capacitor Management EM-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27117,
+    "name": "Inherent Implants 'Squire' Capacitor Management EM-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27118,
+    "name": "Inherent Implants 'Squire' Capacitor Systems Operation EO-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27119,
+    "name": "Inherent Implants 'Squire' Capacitor Systems Operation EO-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27120,
+    "name": "Inherent Implants 'Squire' Capacitor Emission Systems ES-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27121,
+    "name": "Inherent Implants 'Squire' Capacitor Emission Systems ES-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27122,
+    "name": "Inherent Implants 'Squire' Energy Pulse Weapons EP-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27123,
+    "name": "Inherent Implants 'Squire' Energy Pulse Weapons EP-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27124,
+    "name": "Inherent Implants 'Squire' Energy Grid Upgrades EU-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27125,
+    "name": "Inherent Implants 'Squire' Energy Grid Upgrades EU-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27126,
+    "name": "Inherent Implants 'Squire' Power Grid Management EG-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27127,
+    "name": "Inherent Implants 'Squire' Power Grid Management EG-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27128,
+    "name": "Zainou 'Gypsy' Electronics Upgrades EU-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27129,
+    "name": "Zainou 'Gypsy' Electronics Upgrades EU-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27130,
+    "name": "Zainou 'Gypsy' Signature Analysis SA-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27131,
+    "name": "Zainou 'Gypsy' Signature Analysis SA-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27142,
+    "name": "Zainou 'Gypsy' CPU Management EE-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27143,
+    "name": "Zainou 'Gypsy' CPU Management EE-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27147,
+    "name": "Eifyr and Co. 'Alchemist' Biology BY-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27148,
+    "name": "Eifyr and Co. 'Alchemist' Biology BY-810",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27149,
+    "name": "Inherent Implants 'Highwall' Mining Upgrades MU-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27150,
+    "name": "Inherent Implants 'Highwall' Mining Upgrades MU-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27151,
+    "name": "Inherent Implants 'Highwall' Mining Upgrades MU-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27167,
+    "name": "Zainou 'Beancounter' Industry BX-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27169,
+    "name": "Zainou 'Beancounter' Reprocessing RX-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27170,
+    "name": "Zainou 'Beancounter' Industry BX-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27171,
+    "name": "Zainou 'Beancounter' Industry BX-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27174,
+    "name": "Zainou 'Beancounter' Reprocessing RX-804",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27175,
+    "name": "Zainou 'Beancounter' Reprocessing RX-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27176,
+    "name": "Zainou 'Beancounter' Metallurgy MY-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27177,
+    "name": "Zainou 'Beancounter' Research RR-603",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27178,
+    "name": "Zainou 'Beancounter' Science SC-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27179,
+    "name": "Zainou 'Beancounter' Research RR-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27180,
+    "name": "Zainou 'Beancounter' Research RR-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27181,
+    "name": "Zainou 'Beancounter' Metallurgy MY-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27182,
+    "name": "Zainou 'Beancounter' Metallurgy MY-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27184,
+    "name": "Zainou 'Beancounter' Science SC-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27185,
+    "name": "Zainou 'Beancounter' Science SC-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27186,
+    "name": "Poteque 'Prospector' Astrometric Pinpointing AP-606",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27187,
+    "name": "Poteque 'Prospector' Astrometric Acquisition AQ-706",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27188,
+    "name": "Poteque 'Prospector' Astrometric Rangefinding AR-806",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27190,
+    "name": "Poteque 'Prospector' Astrometric Pinpointing AP-610",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27191,
+    "name": "Poteque 'Prospector' Astrometric Pinpointing AP-602",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27192,
+    "name": "Poteque 'Prospector' Astrometric Acquisition AQ-710",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27193,
+    "name": "Poteque 'Prospector' Astrometric Acquisition AQ-702",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27194,
+    "name": "Poteque 'Prospector' Astrometric Rangefinding AR-810",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27195,
+    "name": "Poteque 'Prospector' Astrometric Rangefinding AR-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27196,
+    "name": "Poteque 'Prospector' Archaeology AC-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27197,
+    "name": "Poteque 'Prospector' Hacking HC-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27198,
+    "name": "Poteque 'Prospector' Salvaging SV-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27204,
+    "name": "Hardwiring - Zainou 'Sharpshooter' ZMX100",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27205,
+    "name": "Hardwiring - Zainou 'Sharpshooter' ZMX1000",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27206,
+    "name": "Hardwiring - Zainou 'Sharpshooter' ZMX10",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27224,
+    "name": "Zainou 'Gypsy' Target Painting TG-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27225,
+    "name": "Zainou 'Gypsy' Electronic Warfare EW-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27226,
+    "name": "Zainou 'Gypsy' Electronic Warfare EW-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27227,
+    "name": "Zainou 'Gypsy' Long Range Targeting LT-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27229,
+    "name": "Zainou 'Gypsy' Long Range Targeting LT-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27230,
+    "name": "Zainou 'Gypsy' Propulsion Jamming PJ-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27231,
+    "name": "Zainou 'Gypsy' Propulsion Jamming PJ-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27232,
+    "name": "Zainou 'Gypsy' Sensor Linking SL-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27233,
+    "name": "Zainou 'Gypsy' Sensor Linking SL-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27234,
+    "name": "Zainou 'Gypsy' Weapon Disruption WD-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27235,
+    "name": "Zainou 'Gypsy' Weapon Disruption WD-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27236,
+    "name": "Zainou 'Gypsy' Target Painting TG-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27237,
+    "name": "Zainou 'Gypsy' Target Painting TG-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27238,
+    "name": "Eifyr and Co. 'Alchemist' Gas Harvesting GH-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27239,
+    "name": "Eifyr and Co. 'Alchemist' Gas Harvesting GH-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27240,
+    "name": "Eifyr and Co. 'Alchemist' Gas Harvesting GH-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27243,
+    "name": "Zainou 'Snapshot' Defender Missiles DM-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27244,
+    "name": "Zainou 'Snapshot' Defender Missiles DM-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27245,
+    "name": "Zainou 'Snapshot' Heavy Assault Missiles AM-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27246,
+    "name": "Zainou 'Snapshot' Heavy Assault Missiles AM-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27247,
+    "name": "Zainou 'Snapshot' Auto-Targeting Explosion Radius FR-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27249,
+    "name": "Zainou 'Snapshot' Auto-Targeting Explosion Radius FR-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27250,
+    "name": "Zainou 'Snapshot' Heavy Missiles HM-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27251,
+    "name": "Zainou 'Snapshot' Heavy Missiles HM-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27252,
+    "name": "Zainou 'Snapshot' Light Missiles LM-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27253,
+    "name": "Zainou 'Snapshot' Light Missiles LM-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27254,
+    "name": "Zainou 'Snapshot' Rockets RD-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27255,
+    "name": "Zainou 'Snapshot' Rockets RD-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27256,
+    "name": "Zainou 'Snapshot' Torpedoes TD-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27257,
+    "name": "Zainou 'Snapshot' Torpedoes TD-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27258,
+    "name": "Zainou 'Snapshot' Cruise Missiles CM-605",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27259,
+    "name": "Zainou 'Snapshot' Cruise Missiles CM-601",
+    "bonuses": {}
+  },
+  {
+    "typeId": 27260,
+    "name": "Poteque 'Prospector' Environmental Analysis EY-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28670,
+    "name": "Synth Blue Pill Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28672,
+    "name": "Synth Crash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28674,
+    "name": "Synth Drop Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28676,
+    "name": "Synth Exile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28678,
+    "name": "Synth Frentix Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28680,
+    "name": "Synth Mindflood Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28682,
+    "name": "Synth X-Instinct Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 28684,
+    "name": "Synth Sooth Sayer Booster",
+    "bonuses": {}
   },
   {
     "typeId": 28790,
@@ -399,6 +3009,11 @@
     }
   },
   {
+    "typeId": 28795,
+    "name": "Mid-grade Centurion Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 28796,
     "name": "Mid-grade Nomad Alpha",
     "bonuses": {
@@ -432,6 +3047,11 @@
     "bonuses": {
       "willpower": 3
     }
+  },
+  {
+    "typeId": 28801,
+    "name": "Mid-grade Nomad Omega",
+    "bonuses": {}
   },
   {
     "typeId": 28802,
@@ -469,6 +3089,11 @@
     }
   },
   {
+    "typeId": 28807,
+    "name": "Mid-grade Harvest Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 28808,
     "name": "Mid-grade Virtue Alpha",
     "bonuses": {
@@ -502,6 +3127,11 @@
     "bonuses": {
       "willpower": 3
     }
+  },
+  {
+    "typeId": 28813,
+    "name": "Mid-grade Virtue Omega",
+    "bonuses": {}
   },
   {
     "typeId": 28814,
@@ -539,6 +3169,11 @@
     }
   },
   {
+    "typeId": 28819,
+    "name": "Mid-grade Edge Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 31954,
     "name": "High-grade Grail Alpha",
     "bonuses": {
@@ -572,6 +3207,11 @@
     "bonuses": {
       "willpower": 4
     }
+  },
+  {
+    "typeId": 31959,
+    "name": "High-grade Grail Omega",
+    "bonuses": {}
   },
   {
     "typeId": 31962,
@@ -609,6 +3249,11 @@
     }
   },
   {
+    "typeId": 31967,
+    "name": "High-grade Talon Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 31968,
     "name": "High-grade Spur Alpha",
     "bonuses": {
@@ -644,6 +3289,11 @@
     }
   },
   {
+    "typeId": 31973,
+    "name": "High-grade Spur Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 31974,
     "name": "High-grade Jackal Alpha",
     "bonuses": {
@@ -677,6 +3327,11 @@
     "bonuses": {
       "willpower": 4
     }
+  },
+  {
+    "typeId": 31979,
+    "name": "High-grade Jackal Omega",
+    "bonuses": {}
   },
   {
     "typeId": 32101,
@@ -819,6 +3474,56 @@
     }
   },
   {
+    "typeId": 32122,
+    "name": "Low-grade Grail Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 32123,
+    "name": "Low-grade Jackal Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 32124,
+    "name": "Low-grade Spur Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 32125,
+    "name": "Low-grade Talon Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 32248,
+    "name": "Nugoehuvi Synth Blue Pill Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 32254,
+    "name": "Imperial Navy Modified 'Noble' Implant",
+    "bonuses": {}
+  },
+  {
+    "typeId": 32255,
+    "name": "Sansha Modified 'Gnome' Implant",
+    "bonuses": {}
+  },
+  {
+    "typeId": 33087,
+    "name": "Advanced Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 33111,
+    "name": "Prototype Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 33329,
+    "name": "Genolution 'Auroral' AU-79",
+    "bonuses": {}
+  },
+  {
     "typeId": 33393,
     "name": "Genolution Core Augmentation CA-3",
     "bonuses": {
@@ -831,6 +3536,26 @@
     "bonuses": {
       "memory": 3
     }
+  },
+  {
+    "typeId": 33403,
+    "name": "Imperial Navy Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 33404,
+    "name": "Federation Navy Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 33405,
+    "name": "Republic Fleet Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 33406,
+    "name": "Caldari Navy Command Mindlink",
+    "bonuses": {}
   },
   {
     "typeId": 33516,
@@ -868,6 +3593,11 @@
     }
   },
   {
+    "typeId": 33529,
+    "name": "High-grade Ascendancy Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 33555,
     "name": "Mid-grade Ascendancy Alpha",
     "bonuses": {
@@ -901,6 +3631,11 @@
     "bonuses": {
       "willpower": 3
     }
+  },
+  {
+    "typeId": 33565,
+    "name": "Mid-grade Ascendancy Omega",
+    "bonuses": {}
   },
   {
     "typeId": 33807,
@@ -952,6 +3687,11 @@
     }
   },
   {
+    "typeId": 33922,
+    "name": "Low-grade Centurion Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 33923,
     "name": "Low-grade Crystal Alpha",
     "bonuses": {
@@ -985,6 +3725,11 @@
     "bonuses": {
       "willpower": 2
     }
+  },
+  {
+    "typeId": 33928,
+    "name": "Low-grade Crystal Omega",
+    "bonuses": {}
   },
   {
     "typeId": 33929,
@@ -1022,6 +3767,11 @@
     }
   },
   {
+    "typeId": 33934,
+    "name": "Low-grade Edge Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 33935,
     "name": "Low-grade Halo Alpha",
     "bonuses": {
@@ -1055,6 +3805,11 @@
     "bonuses": {
       "willpower": 2
     }
+  },
+  {
+    "typeId": 33940,
+    "name": "Low-grade Halo Omega",
+    "bonuses": {}
   },
   {
     "typeId": 33941,
@@ -1092,6 +3847,11 @@
     }
   },
   {
+    "typeId": 33946,
+    "name": "Low-grade Harvest Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 33947,
     "name": "Low-grade Nomad Alpha",
     "bonuses": {
@@ -1125,6 +3885,11 @@
     "bonuses": {
       "willpower": 2
     }
+  },
+  {
+    "typeId": 33952,
+    "name": "Low-grade Nomad Omega",
+    "bonuses": {}
   },
   {
     "typeId": 33953,
@@ -1162,6 +3927,11 @@
     }
   },
   {
+    "typeId": 33958,
+    "name": "Low-grade Amulet Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 33959,
     "name": "Low-grade Snake Alpha",
     "bonuses": {
@@ -1195,6 +3965,11 @@
     "bonuses": {
       "willpower": 2
     }
+  },
+  {
+    "typeId": 33964,
+    "name": "Low-grade Snake Omega",
+    "bonuses": {}
   },
   {
     "typeId": 33965,
@@ -1232,6 +4007,11 @@
     }
   },
   {
+    "typeId": 33970,
+    "name": "Low-grade Talisman Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 33971,
     "name": "Low-grade Virtue Alpha",
     "bonuses": {
@@ -1265,6 +4045,36 @@
     "bonuses": {
       "willpower": 2
     }
+  },
+  {
+    "typeId": 33976,
+    "name": "Low-grade Virtue Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 36908,
+    "name": "Antipharmakon Thureo",
+    "bonuses": {}
+  },
+  {
+    "typeId": 36909,
+    "name": "Antipharmakon Kosybo",
+    "bonuses": {}
+  },
+  {
+    "typeId": 36910,
+    "name": "Antipharmakon Iokira",
+    "bonuses": {}
+  },
+  {
+    "typeId": 36911,
+    "name": "Antipharmakon Toxot",
+    "bonuses": {}
+  },
+  {
+    "typeId": 36912,
+    "name": "Antipharmakon Aeolis",
+    "bonuses": {}
   },
   {
     "typeId": 42145,
@@ -1302,6 +4112,11 @@
     }
   },
   {
+    "typeId": 42203,
+    "name": "Low-grade Asklepian Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 42204,
     "name": "Mid-grade Asklepian Alpha",
     "bonuses": {
@@ -1335,6 +4150,11 @@
     "bonuses": {
       "charisma": 3
     }
+  },
+  {
+    "typeId": 42209,
+    "name": "Mid-grade Asklepian Omega",
+    "bonuses": {}
   },
   {
     "typeId": 42210,
@@ -1372,6 +4192,181 @@
     }
   },
   {
+    "typeId": 42215,
+    "name": "High-grade Asklepian Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 43775,
+    "name": "ORE Mining Director Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 45998,
+    "name": "Agency 'Pyrolancea' DB3 Dose I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 45999,
+    "name": "Agency 'Pyrolancea' DB5 Dose II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 46000,
+    "name": "Agency 'Pyrolancea' DB7 Dose III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 46001,
+    "name": "Agency 'Hardshell' TB3 Dose I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 46002,
+    "name": "Agency 'Hardshell' TB5 Dose II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 46003,
+    "name": "Agency 'Hardshell' TB7 Dose III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 46004,
+    "name": "Agency 'Overclocker' SB3 Dose I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 46005,
+    "name": "Agency 'Overclocker' SB5 Dose II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 46006,
+    "name": "Agency 'Overclocker' SB7 Dose III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47028,
+    "name": "Neural Lace 'Blackglass' Net Intrusion 920-40",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47261,
+    "name": "Inquest 'Eros' Stasis Webifier MR-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47262,
+    "name": "Inquest 'Eros' Stasis Webifier MR-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47263,
+    "name": "Inquest 'Eros' Stasis Webifier MR-807",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47265,
+    "name": "Expired Guardian Angels 'Standard' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47266,
+    "name": "Expired Guardian Angels 'Advanced' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47267,
+    "name": "Expired Serpentis Inquest 'Dripfeed' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47395,
+    "name": "Expired Standard 'Guri Hivaa' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47396,
+    "name": "Expired Advanced 'Guri Hivaa' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47397,
+    "name": "Expired Extended 'Guri Hivaa' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 47481,
+    "name": "Expired CDIA SPACE Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48113,
+    "name": "Agency 'Hardshell' TB9 Dose IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48114,
+    "name": "Agency 'Overclocker' SB9 Dose IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48115,
+    "name": "Agency 'Pyrolancea' DB9 Dose IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48148,
+    "name": "CreoDron 'Yellowjacket' Drone Tuner D5-10T",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48149,
+    "name": "CreoDron 'Bumblebee' Drone Tuner T10-5D",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48582,
+    "name": "Master-at-Arms Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48746,
+    "name": "Overmind 'Goliath' Drone Tuner T25-10S",
+    "bonuses": {}
+  },
+  {
+    "typeId": 48747,
+    "name": "Overmind 'Hawkmoth' Drone Tuner S10-25T",
+    "bonuses": {}
+  },
+  {
+    "typeId": 49753,
+    "name": "Onslaught Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 49979,
+    "name": "Expired 'Absolute' Injection Augmentor",
+    "bonuses": {}
+  },
+  {
+    "typeId": 50053,
+    "name": "Inquest 'Hedone' Entanglement Optimizer WS-802",
+    "bonuses": {}
+  },
+  {
+    "typeId": 50066,
+    "name": "Inquest 'Hedone' Entanglement Optimizer WS-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 50067,
+    "name": "Inquest 'Hedone' Entanglement Optimizer WS-804",
+    "bonuses": {}
+  },
+  {
     "typeId": 52674,
     "name": "Low-grade Mimesis Alpha",
     "bonuses": {
@@ -1405,6 +4400,11 @@
     "bonuses": {
       "charisma": 2
     }
+  },
+  {
+    "typeId": 52683,
+    "name": "Low-grade Mimesis Omega",
+    "bonuses": {}
   },
   {
     "typeId": 52785,
@@ -1442,6 +4442,11 @@
     }
   },
   {
+    "typeId": 52790,
+    "name": "Mid-grade Mimesis Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 52917,
     "name": "High-grade Mimesis Alpha",
     "bonuses": {
@@ -1475,6 +4480,11 @@
     "bonuses": {
       "willpower": 4
     }
+  },
+  {
+    "typeId": 52922,
+    "name": "High-grade Mimesis Omega",
+    "bonuses": {}
   },
   {
     "typeId": 53704,
@@ -1512,6 +4522,11 @@
     }
   },
   {
+    "typeId": 53709,
+    "name": "Mid-grade Nirvana Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 53710,
     "name": "High-grade Nirvana Alpha",
     "bonuses": {
@@ -1540,11 +4555,21 @@
     }
   },
   {
+    "typeId": 53714,
+    "name": "High-grade Nirvana Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 53715,
     "name": "High-grade Nirvana Gamma",
     "bonuses": {
       "willpower": 4
     }
+  },
+  {
+    "typeId": 53839,
+    "name": "Low-grade Nirvana Omega",
+    "bonuses": {}
   },
   {
     "typeId": 53853,
@@ -1617,6 +4642,11 @@
     }
   },
   {
+    "typeId": 53895,
+    "name": "High-grade Savior Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 53896,
     "name": "Mid-grade Savior Alpha",
     "bonuses": {
@@ -1650,6 +4680,11 @@
     "bonuses": {
       "charisma": 3
     }
+  },
+  {
+    "typeId": 53901,
+    "name": "Mid-grade Savior Omega",
+    "bonuses": {}
   },
   {
     "typeId": 53902,
@@ -1687,6 +4722,11 @@
     }
   },
   {
+    "typeId": 53907,
+    "name": "Low-grade Savior Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 54392,
     "name": "High-grade Hydra Alpha",
     "bonuses": {
@@ -1720,6 +4760,11 @@
     "bonuses": {
       "charisma": 4
     }
+  },
+  {
+    "typeId": 54397,
+    "name": "High-grade Hydra Omega",
+    "bonuses": {}
   },
   {
     "typeId": 54398,
@@ -1757,6 +4802,11 @@
     }
   },
   {
+    "typeId": 54403,
+    "name": "Mid-grade Hydra Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 54404,
     "name": "Low-grade Hydra Alpha",
     "bonuses": {
@@ -1789,6 +4839,911 @@
     "name": "Low-grade Hydra Epsilon",
     "bonuses": {
       "charisma": 2
+    }
+  },
+  {
+    "typeId": 54409,
+    "name": "Low-grade Hydra Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54534,
+    "name": "Black Market 'Valdimar' Drone Navigation DN-701",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54535,
+    "name": "Black Market 'Valdimar' Drone Navigation DN-703",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54536,
+    "name": "Black Market 'Valdimar' Drone Navigation DN-705",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54537,
+    "name": "Black Market 'Valdimar' Drone Sharpshooting DS-801",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54538,
+    "name": "Black Market 'Valdimar' Drone Sharpshooting DS-803",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54539,
+    "name": "Black Market 'Valdimar' Drone Sharpshooting DS-805",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54540,
+    "name": "Black Market 'Valdimar' Repair Drone Operation DR-901",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54541,
+    "name": "Black Market 'Valdimar' Repair Drone Operation DR-903",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54542,
+    "name": "Black Market 'Valdimar' Repair Drone Operation DR-905",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54543,
+    "name": "Black Market 'Valdimar' Drone Durability DD-1001",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54544,
+    "name": "Black Market 'Valdimar' Drone Durability DD-1003",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54545,
+    "name": "Black Market 'Valdimar' Drone Durability DD-1005",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54587,
+    "name": "Limited Synth Blue Pill Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54588,
+    "name": "Limited Synth Blue Pill Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54589,
+    "name": "Limited Synth Blue Pill Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54590,
+    "name": "Limited Synth Blue Pill Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54591,
+    "name": "Limited Synth Blue Pill Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54592,
+    "name": "Limited Synth Exile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54593,
+    "name": "Limited Synth Exile Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54594,
+    "name": "Limited Synth Exile Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54595,
+    "name": "Limited Synth Exile Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54596,
+    "name": "Limited Synth Exile Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54597,
+    "name": "Limited Synth Mindflood Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54598,
+    "name": "Limited Synth Mindflood Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54599,
+    "name": "Limited Synth Mindflood Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54600,
+    "name": "Limited Synth Mindflood Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54601,
+    "name": "Limited Synth Mindflood Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54602,
+    "name": "Limited Synth X-Instinct Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54603,
+    "name": "Limited Synth X-Instinct Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54604,
+    "name": "Limited Synth X-Instinct Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54605,
+    "name": "Limited Synth X-Instinct Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54606,
+    "name": "Limited Synth X-Instinct Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54607,
+    "name": "Limited Synth Drop Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54610,
+    "name": "Limited Synth Drop Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54611,
+    "name": "Limited Synth Drop Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54612,
+    "name": "Limited Synth Drop Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54613,
+    "name": "Limited Synth Drop Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54614,
+    "name": "Limited Synth Frentix Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54615,
+    "name": "Limited Synth Frentix Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54616,
+    "name": "Limited Synth Frentix Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54617,
+    "name": "Limited Synth Frentix Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54618,
+    "name": "Limited Synth Frentix Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54619,
+    "name": "Limited Synth Sooth Sayer Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54620,
+    "name": "Limited Synth Sooth Sayer Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54621,
+    "name": "Limited Synth Sooth Sayer Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54622,
+    "name": "Limited Synth Sooth Sayer Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54623,
+    "name": "Limited Synth Sooth Sayer Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54624,
+    "name": "Limited Synth Crash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54625,
+    "name": "Limited Synth Crash Booster Mk II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54626,
+    "name": "Limited Synth Crash Booster Mk III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54627,
+    "name": "Limited Synth Crash Booster Mk IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 54628,
+    "name": "Limited Synth Crash Booster Mk V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 55826,
+    "name": "Expert Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 55927,
+    "name": "Serenity Monthly Cerebral Accelerator - 2020.8",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 55928,
+    "name": "Serenity August Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 55929,
+    "name": "Serenity August Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 55942,
+    "name": "Standard Armor Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 55943,
+    "name": "Elite Armor Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 55944,
+    "name": "Standard Shield Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 55945,
+    "name": "Elite Shield Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 55946,
+    "name": "Standard Engineering Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 55947,
+    "name": "Elite Engineering Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 55977,
+    "name": "Serenity August Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56125,
+    "name": "Serenity YC122.9 Season Booster - Max Velocity",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56128,
+    "name": "Serenity Monthly Cerebral Accelerator - 2020.9",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56129,
+    "name": "Serenity September Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56130,
+    "name": "Serenity September Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56153,
+    "name": "Serenity YC122.9 Season Booster - Warp Speed",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56154,
+    "name": "Serenity YC122.9 Season Booster - Agility",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56155,
+    "name": "Serenity YC122.9 Season Booster - Signature Radius",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56156,
+    "name": "Serenity YC122.9 Season Booster - Probe Scanning Strength",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56157,
+    "name": "Serenity YC122.9 Season Booster - Mining Range",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56158,
+    "name": "Serenity YC122.9 Season Booster - EW Range",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56179,
+    "name": "Serenity September Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56180,
+    "name": "Standard gunnery skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56181,
+    "name": "Advanced gunnery Skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56182,
+    "name": "Standard missile skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56183,
+    "name": "Advanced missile skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56184,
+    "name": "Standard drone skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56185,
+    "name": "Advanced drone skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56186,
+    "name": "Standard ore processing skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56187,
+    "name": "Advanced ore processing skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56619,
+    "name": "Serenity Monthly Cerebral Accelerator - 2020.10",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56620,
+    "name": "Serenity October Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56621,
+    "name": "Serenity October Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56640,
+    "name": "Serenity October Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56659,
+    "name": "Festival-only New Eden Vanguard Pack",
+    "bonuses": {
+      "charisma": 3,
+      "intelligence": 3,
+      "memory": 3,
+      "perception": 3,
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 56661,
+    "name": "Festival-only New Eden Commander Pack",
+    "bonuses": {}
+  },
+  {
+    "typeId": 56662,
+    "name": "Festival-only New Eden Marshal Pack",
+    "bonuses": {}
+  },
+  {
+    "typeId": 56733,
+    "name": "Nanoheuristic Clone Mapper",
+    "bonuses": {}
+  },
+  {
+    "typeId": 56823,
+    "name": "Serenity Monthly Cerebral Accelerator - 2020.11",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56833,
+    "name": "Serenity November Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56834,
+    "name": "Serenity November Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56835,
+    "name": "Serenity November Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56875,
+    "name": "Eifyr and Co. 'Rogue' Agility 11-11",
+    "bonuses": {}
+  },
+  {
+    "typeId": 56876,
+    "name": "Poteque 'Prospector' Sharpeye 11-11",
+    "bonuses": {}
+  },
+  {
+    "typeId": 56877,
+    "name": "ORE 'Harvester' Efficiency 11-11",
+    "bonuses": {}
+  },
+  {
+    "typeId": 56893,
+    "name": "Concord Fiesta 11-11",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56970,
+    "name": "Serenity Monthly Cerebral Accelerator - 2020.12",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 56984,
+    "name": "Standard projectile turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56985,
+    "name": "Standard energy turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56986,
+    "name": "Standard hybrid turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56987,
+    "name": "Standard missile launcher skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56988,
+    "name": "Advanced projectile turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56989,
+    "name": "Advanced energy turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56990,
+    "name": "Advanced hybrid turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56991,
+    "name": "Advanced missile launcher skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56992,
+    "name": "Elite projectile turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56993,
+    "name": "Elite energy turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56994,
+    "name": "Elite hybrid turret skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 56995,
+    "name": "Elite missile launcher skill accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57035,
+    "name": "Serenity December Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57036,
+    "name": "Serenity December Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57037,
+    "name": "Serenity December Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
     }
   },
   {
@@ -1827,6 +5782,11 @@
     }
   },
   {
+    "typeId": 57116,
+    "name": "Low-grade Rapture Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 57117,
     "name": "Mid-grade Rapture Alpha",
     "bonuses": {
@@ -1860,6 +5820,11 @@
     "bonuses": {
       "charisma": 3
     }
+  },
+  {
+    "typeId": 57122,
+    "name": "Mid-grade Rapture Omega",
+    "bonuses": {}
   },
   {
     "typeId": 57123,
@@ -1897,6 +5862,1711 @@
     }
   },
   {
+    "typeId": 57128,
+    "name": "High-grade Rapture Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57201,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.1",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57209,
+    "name": "Serenity YC123.1 Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57210,
+    "name": "Serenity YC123.1 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57211,
+    "name": "Serenity YC123.1 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57226,
+    "name": "Festival-only 'Rock' HH6 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57227,
+    "name": "Festival-only 'Rock' AH6 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57228,
+    "name": "Festival-only 'Rock' SH6 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57229,
+    "name": "Festival-only 'Longbow' MD6 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57230,
+    "name": "Festival-only 'Longbow' HD6 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57231,
+    "name": "Festival-only 'Longbow' PD6 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57232,
+    "name": "Festival-only 'Longbow' ED6 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57242,
+    "name": "Festival-only Outpost Cerebral Accelerator I",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57243,
+    "name": "Festival-only Outpost Cerebral Accelerator III",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57244,
+    "name": "Festival-only Outpost Cerebral Accelerator VII",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57245,
+    "name": "Festival-only Vanguard Cerebral Accelerator I",
+    "bonuses": {
+      "charisma": 3,
+      "intelligence": 3,
+      "memory": 3,
+      "perception": 3,
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 57246,
+    "name": "Festival-only Vanguard Cerebral Accelerator III",
+    "bonuses": {
+      "charisma": 3,
+      "intelligence": 3,
+      "memory": 3,
+      "perception": 3,
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 57247,
+    "name": "Festival-only Vanguard Cerebral Accelerator VII",
+    "bonuses": {
+      "charisma": 3,
+      "intelligence": 3,
+      "memory": 3,
+      "perception": 3,
+      "willpower": 3
+    }
+  },
+  {
+    "typeId": 57248,
+    "name": "Festival-only Commander Cerebral Accelerator I",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57249,
+    "name": "Festival-only Commander Cerebral Accelerator III",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57250,
+    "name": "Festival-only Commander Cerebral Accelerator VII",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57251,
+    "name": "Festival-only Marshal Cerebral Accelerator I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57252,
+    "name": "Festival-only Marshal Cerebral Accelerator III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57253,
+    "name": "Festival-only Marshal Cerebral Accelerator VII",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57254,
+    "name": "Festival-only 'Longbow' ED2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57255,
+    "name": "Festival-only 'Longbow' PD2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57256,
+    "name": "Festival-only 'Longbow' HD2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57257,
+    "name": "Festival-only 'Longbow' RD2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57258,
+    "name": "Festival-only 'Longbow' MD2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57259,
+    "name": "Festival-only 'Rock' HH2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57260,
+    "name": "Festival-only 'Rock' SH2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57261,
+    "name": "Festival-only 'Rock' AH2 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57262,
+    "name": "Festival-only 'Longbow' ED3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57263,
+    "name": "Festival-only 'Longbow' PD3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57264,
+    "name": "Festival-only 'Longbow' HD3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57265,
+    "name": "Festival-only 'Longbow' CM3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57266,
+    "name": "Festival-only 'Longbow' TP3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57267,
+    "name": "Festival-only 'Rock' HH3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57268,
+    "name": "Festival-only 'Rock' SH3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57269,
+    "name": "Festival-only 'Rock' AH3 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57270,
+    "name": "Festival-only 'Longbow' ED4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57271,
+    "name": "Festival-only 'Longbow' PD4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57272,
+    "name": "Festival-only 'Longbow' HD4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57273,
+    "name": "Festival-only 'Longbow' HM4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57274,
+    "name": "Festival-only 'Longbow' HAM4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57275,
+    "name": "Festival-only 'Rock' HH4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57276,
+    "name": "Festival-only 'Rock' SH4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57277,
+    "name": "Festival-only 'Rock' AH4 Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57282,
+    "name": "Basic Capsuleer Defense Augmentation Chip",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57283,
+    "name": "Basic Capsuleer Engineering Augmentation Chip",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57284,
+    "name": "Standard Capsuleer Defense Augmentation Chip",
+    "bonuses": {
+      "charisma": 2,
+      "intelligence": 2,
+      "memory": 2,
+      "perception": 2,
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 57285,
+    "name": "Advanced Capsuleer Defense Augmentation Chip",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57287,
+    "name": "Large Projectile Turret Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57288,
+    "name": "Large Hybrid Turret Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57289,
+    "name": "Large Energy Turret Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57290,
+    "name": "Cruise Missile/Torpedo Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57291,
+    "name": "Projectile Turret Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57292,
+    "name": "Energy Turret Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57293,
+    "name": "Hybrid Turret Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57294,
+    "name": "Cruise Missile/Torpedo Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57295,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.2",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57296,
+    "name": "Serenity Spring Festival Cerebral Accelerator I",
+    "bonuses": {
+      "charisma": 2,
+      "intelligence": 2,
+      "memory": 2,
+      "perception": 2,
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 57297,
+    "name": "Serenity Spring Festival Cerebral Accelerator II",
+    "bonuses": {
+      "charisma": 4,
+      "intelligence": 4,
+      "memory": 4,
+      "perception": 4,
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 57298,
+    "name": "Serenity Spring Festival Cerebral Accelerator III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57299,
+    "name": "Serenity Spring Festival Cerebral Accelerator IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57300,
+    "name": "Serenity Spring Festival Cerebral Accelerator V",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57301,
+    "name": "Serenity Spring Festival Cerebral Accelerator VI",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57311,
+    "name": "Serenity YC123.2 Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57312,
+    "name": "Serenity YC123.2 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57313,
+    "name": "Serenity YC123.2 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57323,
+    "name": "Serenity ZhenNiu Cerebral Accelerator Type-A",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57324,
+    "name": "Serenity ZhenNiu Cerebral Accelerator Type-B",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57325,
+    "name": "Serenity ZhenNiu Cerebral Accelerator Type-C",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57326,
+    "name": "Serenity ZhenNiu Cerebral Accelerator Type-X",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57327,
+    "name": "Eifyr and Co. 'Rogue' Agility ZhenNiu",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57328,
+    "name": "Poteque 'Prospector' Sharpeye ZhenNiu",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57329,
+    "name": "ORE 'Harvester' Efficiency ZhenNiu",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57423,
+    "name": "Grand Prix Velocity Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57424,
+    "name": "Grand Prix Warp Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57428,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.3",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57430,
+    "name": "Serenity YC123.3 Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57431,
+    "name": "Serenity YC123.3 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57432,
+    "name": "Serenity YC123.3 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57722,
+    "name": "Gallente Drones Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57723,
+    "name": "Amarr Drones Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57724,
+    "name": "Caldari Drones Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57725,
+    "name": "Minmatar Drones Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57726,
+    "name": "Mining Drones Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57727,
+    "name": "Support Drones Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57728,
+    "name": "Heavy Drones Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 57763,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.4",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57765,
+    "name": "Serenity Anniversary Cerebral Accelerator I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57766,
+    "name": "Serenity Anniversary Cerebral Accelerator II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57767,
+    "name": "Serenity Anniversary Cerebral Accelerator III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57768,
+    "name": "Serenity Anniversary Cerebral Accelerator IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57769,
+    "name": "Serenity Anniversary Limited 'Overclocker' Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57770,
+    "name": "Serenity Anniversary Limited 'Hardshell' Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57771,
+    "name": "Serenity Anniversary Limited 'Pyrolancea' Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57772,
+    "name": "Serenity Anniversary Limited 'Efficiency' Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57773,
+    "name": "Serenity Anniversary Limited 'Sharpeye' Dose",
+    "bonuses": {}
+  },
+  {
+    "typeId": 57821,
+    "name": "Serenity YC123.4 Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57822,
+    "name": "Serenity YC123.4 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 57823,
+    "name": "Serenity YC123.4 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 58727,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.5",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 58758,
+    "name": "Serenity YC123.5 Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 58759,
+    "name": "Serenity YC123.5 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 58760,
+    "name": "Serenity YC123.5 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 58770,
+    "name": "Serenity The Hunt Accelerator Bronze",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 58771,
+    "name": "Serenity The Hunt Accelerator Silver",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 58772,
+    "name": "Serenity The Hunt Accelerator Gold",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59177,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.6",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 59189,
+    "name": "Mining Blitz Range Booster Dose I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59190,
+    "name": "Mining Blitz Range Booster Dose II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59191,
+    "name": "Mining Blitz Range Booster Dose III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59192,
+    "name": "Mining Blitz Yield Booster Dose I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59193,
+    "name": "Mining Blitz Yield Booster Dose II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59194,
+    "name": "Mining Blitz Yield Booster Dose III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59197,
+    "name": "Neo Serenity Special Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59294,
+    "name": "Serenity YC123.6 Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 59295,
+    "name": "Serenity YC123.6 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 59296,
+    "name": "Serenity YC123.6 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59297,
+    "name": "Serenity EoM Season Accelerator Bronze",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59298,
+    "name": "Serenity EoM Season Accelerator Silver",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59299,
+    "name": "Serenity EoM Season Accelerator Gold",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59301,
+    "name": "Serenity Extended Capsuleer Day Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59302,
+    "name": "Serenity Potent Capsuleer Day Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59303,
+    "name": "Serenity Basic Capsuleer Day Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 4,
+      "intelligence": 4,
+      "memory": 4,
+      "perception": 4,
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 59304,
+    "name": "Serenity Potent Capsuleer Day Glamourex Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59305,
+    "name": "Serenity Extended Capsuleer Day Glamourex Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59306,
+    "name": "Serenity Basic Capsuleer Day Glamourex Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59620,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.7",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 59633,
+    "name": "Strong Veilguard Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59756,
+    "name": "Serenity YC123.7 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 59757,
+    "name": "Serenity YC123.7 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59758,
+    "name": "Command Center Upgrades Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59759,
+    "name": "Planetology Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59760,
+    "name": "Interplanetary Consolidation Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59761,
+    "name": "Trade Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59762,
+    "name": "Advanced Planetology Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59763,
+    "name": "Daytrading Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59764,
+    "name": "Broker Relations Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59765,
+    "name": "Customs Code Expertise Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59766,
+    "name": "Advanced Broker Relations Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59767,
+    "name": "Astrogeology Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59768,
+    "name": "Mining Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59797,
+    "name": "Serenity Zainou 'Beancounter' Manufacturing RP-108",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59798,
+    "name": "Serenity Poteque 'Prospector' Harvesting MC-108",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59799,
+    "name": "Serenity Zainou 'Beancounter' Manufacturing RP-308",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59800,
+    "name": "Serenity Poteque 'Prospector' Harvesting MC-308",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59801,
+    "name": "Serenity Zainou 'Beancounter' Manufacturing RP-708",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59802,
+    "name": "Serenity Poteque 'Prospector' Harvesting MC-708",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59803,
+    "name": "Serenity YC123.7 Cerebral Accelerator I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59804,
+    "name": "Serenity YC123.7 Cerebral Accelerator II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59805,
+    "name": "Serenity YC123.7 Cerebral Accelerator III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59806,
+    "name": "Serenity YC123.7 Cerebral Accelerator IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 59960,
+    "name": "Precursor Cruiser Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59961,
+    "name": "Medium Precursor Weapon Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59962,
+    "name": "Medium Disintegrator Specialization Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 59964,
+    "name": "Tiamat Prremium Insurance",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60023,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.8",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 60068,
+    "name": "Serenity Rookie Exclusive Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60091,
+    "name": "Serenity YC123.8 Season Standard Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 60092,
+    "name": "Serenity YC123.8 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 60093,
+    "name": "Serenity YC123.8 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 60172,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.9",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 60177,
+    "name": "Serenity Autumn Limited 'Overclocker' Dose Type-A",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60178,
+    "name": "Serenity Autumn Limited 'Hardshell' Dose Type-A",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60179,
+    "name": "Serenity Autumn Limited 'Pyrolancea' Dose Type-A",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60180,
+    "name": "Serenity Autumn Limited 'Efficiency' Dose Type-A",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60181,
+    "name": "Serenity Autumn Limited 'Sharpeye' Dose Type-A",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60182,
+    "name": "Serenity Autumn Limited 'Overclocker' Dose Type-B",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60183,
+    "name": "Serenity Autumn Limited 'Hardshell' Dose Type-B",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60184,
+    "name": "Serenity Autumn Limited 'Pyrolancea' Dose Type-B",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60185,
+    "name": "Serenity Autumn Limited 'Efficiency' Dose Type-B",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60186,
+    "name": "Serenity Autumn Limited 'Sharpeye' Dose Type-B",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60187,
+    "name": "Serenity Autumn Limited Cerebral Accelerator I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60188,
+    "name": "Serenity Autumn Limited Cerebral Accelerator II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60189,
+    "name": "Serenity Autumn Limited Cerebral Accelerator III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60190,
+    "name": "Serenity Autumn Limited Cerebral Accelerator IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60250,
+    "name": "Serenity YC123.9 Season Advanced Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 60251,
+    "name": "Serenity YC123.9 Season Pass",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 60269,
+    "name": "Amarr Battleship Operation Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 60270,
+    "name": "Caldari Battleship Operation Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 60271,
+    "name": "Gallente Battleship Operation Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 60272,
+    "name": "Minmatar Battleship Operation Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 60273,
+    "name": "Advanced Weapons Upgrade Skill Accelerator",
+    "bonuses": {
+      "charisma": 1,
+      "intelligence": 1,
+      "memory": 1,
+      "perception": 1,
+      "willpower": 1
+    }
+  },
+  {
+    "typeId": 60485,
+    "name": "Serenity Monthly Cerebral Accelerator - 2021.10",
+    "bonuses": {
+      "charisma": 5,
+      "intelligence": 5,
+      "memory": 5,
+      "perception": 5,
+      "willpower": 5
+    }
+  },
+  {
+    "typeId": 60487,
+    "name": "Serenity Special Cruisers Insurance",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60488,
+    "name": "Serenity Special Frigates Insurance",
+    "bonuses": {}
+  },
+  {
+    "typeId": 60575,
+    "name": "Quafe Zero Green Apple",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63596,
+    "name": "Halcyon R-1 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63597,
+    "name": "Halcyon R-2 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63598,
+    "name": "Halcyon R-3 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63599,
+    "name": "Halcyon R-4 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63600,
+    "name": "Halcyon R-5 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63601,
+    "name": "Halcyon B-1 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63602,
+    "name": "Halcyon B-2 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63603,
+    "name": "Halcyon B-3 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63604,
+    "name": "Halcyon B-4 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63605,
+    "name": "Halcyon B-5 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63606,
+    "name": "Halcyon G-1 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63607,
+    "name": "Halcyon G-2 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63608,
+    "name": "Halcyon G-3 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63609,
+    "name": "Halcyon G-4 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63610,
+    "name": "Halcyon G-5 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63611,
+    "name": "Halcyon Y-1 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63612,
+    "name": "Halcyon Y-2 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63613,
+    "name": "Halcyon Y-3 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63614,
+    "name": "Halcyon Y-4 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 63615,
+    "name": "Halcyon Y-5 Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 64373,
+    "name": "Grand Prix Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 64374,
+    "name": "Grand Prix Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 64375,
+    "name": "Grand Prix Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 64376,
+    "name": "Grand Prix Booster IV",
+    "bonuses": {}
+  },
+  {
+    "typeId": 64724,
+    "name": "Basic Glamourex Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 72238,
+    "name": "Basic 'Boost' Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 2,
+      "intelligence": 2,
+      "memory": 2,
+      "perception": 2,
+      "willpower": 2
+    }
+  },
+  {
+    "typeId": 72239,
+    "name": "Standard 'Boost' Cerebral Accelerator",
+    "bonuses": {
+      "charisma": 4,
+      "intelligence": 4,
+      "memory": 4,
+      "perception": 4,
+      "willpower": 4
+    }
+  },
+  {
+    "typeId": 72240,
+    "name": "Advanced 'Boost' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 72241,
+    "name": "Specialist 'Boost' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 72242,
+    "name": "Expert 'Boost' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 77919,
+    "name": "Genius 'Boost' Cerebral Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 77934,
+    "name": "Heimatar Rise Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 78358,
+    "name": "Wisdom of Gheinok",
+    "bonuses": {}
+  },
+  {
+    "typeId": 81083,
+    "name": "Starsi Blast! Classic",
+    "bonuses": {}
+  },
+  {
+    "typeId": 81084,
+    "name": "Starsi Blast! Orange",
+    "bonuses": {}
+  },
+  {
+    "typeId": 83642,
+    "name": "Guri Malakim Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 85279,
+    "name": "Totality Day Accelerator",
+    "bonuses": {}
+  },
+  {
+    "typeId": 85748,
+    "name": "Neural Lace 'Bluefire' Net Ablation 960-10",
+    "bonuses": {}
+  },
+  {
+    "typeId": 87711,
+    "name": "Expired Aegytica Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 87726,
+    "name": "Expired Vis Vitalis Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 87727,
+    "name": "Expired Balneum Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 87728,
+    "name": "Expired Theriac Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 87729,
+    "name": "Expired Mithridate Volatile Booster",
+    "bonuses": {}
+  },
+  {
     "typeId": 88119,
     "name": "Low-grade Wedge Alpha",
     "bonuses": {
@@ -1932,6 +7602,11 @@
     }
   },
   {
+    "typeId": 88124,
+    "name": "Low-grade Wedge Omega",
+    "bonuses": {}
+  },
+  {
     "typeId": 88125,
     "name": "Mid-grade Wedge Alpha",
     "bonuses": {
@@ -1965,5 +7640,360 @@
     "bonuses": {
       "charisma": 3
     }
+  },
+  {
+    "typeId": 88130,
+    "name": "Mid-grade Wedge Omega",
+    "bonuses": {}
+  },
+  {
+    "typeId": 89617,
+    "name": "Expedition Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 89618,
+    "name": "Sisters Expedition Command Mindlink",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91916,
+    "name": "Imperial Electronics Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91920,
+    "name": "State Electronics Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91921,
+    "name": "Federation Electronics Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91922,
+    "name": "Republic Electronics Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91923,
+    "name": "Republic Electronics Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91924,
+    "name": "Republic Electronics Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91925,
+    "name": "Federation Electronics Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91926,
+    "name": "Federation Electronics Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91927,
+    "name": "State Electronics Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91928,
+    "name": "State Electronics Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91929,
+    "name": "Imperial Electronics Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91930,
+    "name": "Imperial Electronics Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91932,
+    "name": "Imperial Defense Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91934,
+    "name": "State Defense Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91935,
+    "name": "Federation Defense Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91936,
+    "name": "Republic Defense Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91939,
+    "name": "Imperial Defense Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91940,
+    "name": "Imperial Defense Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91941,
+    "name": "State Defense Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91942,
+    "name": "State Defense Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91943,
+    "name": "Federation Defense Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91944,
+    "name": "Federation Defense Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91945,
+    "name": "Republic Defense Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91946,
+    "name": "Republic Defense Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91947,
+    "name": "Imperial Mobility Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91948,
+    "name": "State Mobility Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91949,
+    "name": "Federation Mobility Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91950,
+    "name": "Republic Mobility Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91951,
+    "name": "Imperial Mobility Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91952,
+    "name": "Imperial Mobility Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91953,
+    "name": "State Mobility Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91954,
+    "name": "State Mobility Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91958,
+    "name": "Federation Mobility Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91959,
+    "name": "Federation Mobility Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91960,
+    "name": "Republic Mobility Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91961,
+    "name": "Republic Mobility Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91962,
+    "name": "Imperial Hardpoint Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91963,
+    "name": "State Hardpoint Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91964,
+    "name": "Federation Hardpoint Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91965,
+    "name": "Republic Hardpoint Booster I",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91970,
+    "name": "Imperial Hardpoint Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91971,
+    "name": "Imperial Hardpoint Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91972,
+    "name": "State Hardpoint Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91973,
+    "name": "State Hardpoint Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91974,
+    "name": "Federation Hardpoint Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91975,
+    "name": "Federation Hardpoint Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91976,
+    "name": "Republic Hardpoint Booster II",
+    "bonuses": {}
+  },
+  {
+    "typeId": 91977,
+    "name": "Republic Hardpoint Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 93260,
+    "name": "Guristas Damage Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94039,
+    "name": "Haven Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94040,
+    "name": "Haven Booster VI",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94043,
+    "name": "Crucible Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94044,
+    "name": "Crucible Booster VI",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94045,
+    "name": "Free-Zone Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94046,
+    "name": "Free-Zone Booster VI",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94047,
+    "name": "Strokar Booster III",
+    "bonuses": {}
+  },
+  {
+    "typeId": 94048,
+    "name": "Strokar Booster VI",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95529,
+    "name": "Poteque 'Prospector' Salvaging SV-906",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95532,
+    "name": "Cavalry Clash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95533,
+    "name": "Astrograph Clash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95534,
+    "name": "SITREP Clash Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95537,
+    "name": "Coherence Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95538,
+    "name": "Upcycle Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95539,
+    "name": "Requisition Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95540,
+    "name": "Zero-In Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95541,
+    "name": "Soaring Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95542,
+    "name": "Hallowed Volatile Booster",
+    "bonuses": {}
+  },
+  {
+    "typeId": 95543,
+    "name": "Tenacious Volatile Booster",
+    "bonuses": {}
   }
 ]

@@ -123,12 +123,24 @@ impl SdeParser {
                 None => anyhow::bail!("Unknown secondary attribute dogma ID value: {}", secondary_attr_id),
             };
 
+            // Extract prerequisite skills (dogma 182/277, 183/278, 184/279).
+            let mut prerequisites = Vec::new();
+            for (&skill_id_attr, &level_attr) in &[(182u64, 277u64), (183u64, 278u64), (184u64, 279u64)] {
+                if let Some(&req_skill_id) = dogma_map.get(&skill_id_attr) {
+                    let req_level = *dogma_map.get(&level_attr).unwrap_or(&1.0);
+                    if req_skill_id > 0.0 && req_level >= 1.0 {
+                        prerequisites.push((req_skill_id as u32, req_level as u8));
+                    }
+                }
+            }
+
             skills.push(SkillRecord {
                 id: *tid as u32,
                 name,
                 primary_attribute: primary,
                 secondary_attribute: secondary,
                 skill_time_constant: time_constant,
+                prerequisites,
             });
         }
 
