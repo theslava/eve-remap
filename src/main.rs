@@ -472,6 +472,16 @@ fn run_optimizer_with_state(
 
 // ── Output formatters ────────────────────────────────────────────────────
 
+/// Format SP value as a human-readable string (e.g., "1,234" or "1.2k").
+fn format_sp(sp: f64) -> String {
+    let sp = sp.round();
+    match sp {
+        x if x >= 1_000_000.0 => format!("{:.1}M", x / 1_000_000.0),
+        x if x >= 10_000.0 => format!("{:.1}K", x / 1_000.0),
+        _ => format!("{:.0}", sp),
+    }
+}
+
 fn print_table_output(result: &data::models::OptimizationResult) {
     if result.epochs.is_empty() {
         println!("No skills to optimize — queue is empty or all at max level.");
@@ -525,8 +535,25 @@ fn print_table_output(result: &data::models::OptimizationResult) {
                 let label = calculator::format_duration(*secs);
                 println!("│   • {} [{}] — {}", name, id, label);
             }
-        } else {
-            println!("│ No skills completed in this epoch.");
+        }
+
+        // Print SP breakdown table if there's data.
+        let has_sp_data = !epoch.sp_summary.primary.is_empty() || !epoch.sp_summary.secondary.is_empty();
+        if has_sp_data {
+            println!("│ SP by role / attribute:");
+            // Header — build with same cell width/separator as body rows, prefixed with blank role slot.
+            let header_cells = ["PER", "MEM", "WIL", "INT", "CHA"].map(|h| format!("{:>7}", h));
+            println!("│ {:11} {}", "", header_cells.join("   "));
+            for (role, map) in [("Primary", &epoch.sp_summary.primary), ("Secondary", &epoch.sp_summary.secondary)] {
+                let cells: Vec<String> = ["perception", "memory", "willpower", "intelligence", "charisma"]
+                    .iter()
+                    .map(|a| {
+                        let val = map.get(*a).copied().unwrap_or(0.0);
+                        format!("{:>7}", format_sp(val))
+                    })
+                    .collect();
+                println!("│ {:11} {}", role, cells.join("   "));
+            }
         }
 
         println!(
@@ -569,9 +596,10 @@ fn print_json_output(result: &data::models::OptimizationResult) {
                 "willpower": epoch.attributes.willpower as u32,
             },
             "effective_attributes": attrs_map,
-            "completed_skills": completed,
             "projected_finish_days": epoch.projected_finish_secs / 86_400.0,
             "bonus_remaps_used": epoch.bonus_remaps_used,
+            "sp_primary": &epoch.sp_summary.primary,
+            "sp_secondary": &epoch.sp_summary.secondary,
         }));
     }
 

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 
 /// The five EVE Online character attributes.
@@ -204,6 +206,15 @@ impl CharacterState {
     }
 }
 
+/// SP accumulated per (role × attribute) pair for one epoch.
+#[derive(Debug, Clone, Default, Serialize)]
+pub struct AttributeSpSummary {
+    /// SP earned while attributes served as **primary** for completed skills.
+    pub primary: HashMap<String, f64>,
+    /// SP earned while attributes served as **secondary** for completed skills.
+    pub secondary: HashMap<String, f64>,
+}
+
 /// A single epoch in the optimizer plan.
 #[derive(Debug, Clone)]
 pub struct EpochPlan {
@@ -211,6 +222,8 @@ pub struct EpochPlan {
     pub attributes: BaseAttributes,
     pub effective_attributes: EffectiveAttributes,
     pub completed_skills: Vec<(u32, String, f64)>, // (skill_id, skill_name, train_seconds)
+    /// Total SP per (role × attribute) pair for skills completed this epoch.
+    pub sp_summary: AttributeSpSummary,
     pub projected_finish_secs: f64,  // seconds from now when this epoch ends
     /// Number of bonus neural interface remaps consumed for this epoch.
     pub bonus_remaps_used: u32,

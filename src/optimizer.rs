@@ -197,7 +197,8 @@ pub fn simulate_epoch(
     let start_elapsed = state.elapsed_seconds;
     let mut completed = Vec::new();
     let mut time_remaining = duration_secs;
-
+    // Track total SP earned per (role × attribute) for this epoch.
+    let mut sp_summary = AttributeSpSummary::default();
     while !state.is_empty() && time_remaining > 0.0 {
         // Ensure active_index is valid
         if state.active_index >= state.len() {
@@ -213,7 +214,14 @@ pub fn simulate_epoch(
             time_remaining -= secs_needed;
 
             let finished = state.entries.remove(state.active_index);
-            completed.push((finished.skill_id, finished.name, secs_needed));
+            let sp_earned = finished.remaining_sp;
+            completed.push((finished.skill_id, finished.name.clone(), secs_needed));
+
+            // Accumulate SP into primary/secondary buckets.
+            let pri_key = finished.record.primary_attribute.to_string();
+            *sp_summary.primary.entry(pri_key).or_insert(0.0) += sp_earned;
+            let sec_key = finished.record.secondary_attribute.to_string();
+            *sp_summary.secondary.entry(sec_key).or_insert(0.0) += sp_earned;
 
             // Don't advance active_index — remove shifts later entries down.
         } else {
@@ -232,16 +240,18 @@ pub fn simulate_epoch(
         completed,
         state_after: state,
         seconds_used,
+        sp_summary,
     }
 }
 
 /// Outcome from simulating one epoch under a fixed allocation.
-#[derive(Debug, Clone)]
 struct EpochResult {
     /// Skills that fully completed during this epoch (in order of completion).
     completed: Vec<(u32, String, f64)>, // (skill_id, name, seconds_to_train)
     state_after: SimulationState,
     seconds_used: f64,
+    /// Total SP per (role × attribute) pair for completed skills.
+    sp_summary: AttributeSpSummary,
 }
 
 // ---------------------------------------------------------------------------
@@ -315,6 +325,7 @@ fn simulate_bonus_remaps(
             completed_skills: epoch_result.completed,
             projected_finish_secs: epoch_result.state_after.elapsed_seconds,
             bonus_remaps_used: 1,
+            sp_summary: epoch_result.sp_summary,
         });
 
         sim_state = epoch_result.state_after;
@@ -334,6 +345,7 @@ fn simulate_bonus_remaps(
             completed_skills: epoch_result.completed,
             projected_finish_secs: epoch_result.state_after.elapsed_seconds,
             bonus_remaps_used: 0,
+            sp_summary: epoch_result.sp_summary,
         });
     }
 
@@ -437,7 +449,6 @@ pub fn optimize(
             f64::INFINITY // already past cooldown — treat as free remap window
         };
         let epoch_result = simulate_epoch(sim_state.clone(), &initial_effective, epoch_duration);
-
         result_epochs.push(EpochPlan {
             start_offset_secs: sim_state.elapsed_seconds,
             attributes: char_state.base_attributes,
@@ -445,6 +456,7 @@ pub fn optimize(
             completed_skills: epoch_result.completed.clone(),
             projected_finish_secs: epoch_result.state_after.elapsed_seconds,
             bonus_remaps_used: 0,
+            sp_summary: epoch_result.sp_summary,
         });
         eprintln!(
             "[+] Epoch 0 (current attrs): {} skills done, {:.1}s wall",
@@ -516,6 +528,7 @@ pub fn optimize(
             completed_skills: epoch_result.completed.clone(),
             projected_finish_secs: epoch_result.state_after.elapsed_seconds,
             bonus_remaps_used: 0,
+            sp_summary: epoch_result.sp_summary,
         });
 
         eprintln!(
