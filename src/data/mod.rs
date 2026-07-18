@@ -1,5 +1,4 @@
 pub mod models;
-pub mod esi;
 
 use std::path::PathBuf;
 use anyhow::{Context, Result};

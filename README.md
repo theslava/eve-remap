@@ -5,7 +5,6 @@ EVE Online skill queue remap optimizer. Determines the best attribute allocation
 ## Quick Start
 
 ```bash
-# Offline mode — no authentication needed
 echo -e "Gunnery 3\nNavigation 5" > my_queue.txt
 cargo run --release -- optimize -q my_queue.txt --attributes 22:17:17:17:17
 
@@ -13,14 +12,13 @@ cargo run --release -- optimize -q my_queue.txt --attributes 22:17:17:17:17
 cargo run --release -- optimize -q my_queue.txt \
   --attributes 22:17:17:17:17 --implant-bonuses 5:0:0:0:0
 
-# Authenticate and fetch live character data
-cargo run --release -- login --browser
-cargo run --release -- optimize
+# JSON output for scripting
+cargo run --release -- optimize -q my_queue.txt --json
 ```
 
 ## Installation
 
-Requires Rust 1.75+ (edition 2021).
+Requires Rust 1.75+ (edition 2021). Zero system dependencies — no OpenSSL, pkg-config, or other C libraries needed.
 
 ```bash
 git clone https://github.com/<your>/eve-remap.git
@@ -34,48 +32,16 @@ The binary is at `target/release/eve-remap`.
 
 ### optimize
 
-Core command. Outputs a phased plan showing which allocation to set at each epoch, which skills complete, and projected finish times.
+Single command. Outputs a phased plan showing which allocation to set at each epoch, which skills complete, and projected finish times.
 
 | Flag | Description |
-|------|-------------|
-| `-q FILE`, `--queue FILE` | Path to queue file (see format below) |
-| `--attributes PER:MEM:WIL:INT:CHA` | Effective attribute values for offline mode (default: `17:17:17:17:17`) |
+|---|---|
+| `-q FILE`, `--queue FILE` | Path to queue file (required; see format below) |
+| `--attributes PER:MEM:WIL:INT:CHA` | Effective attribute values including implants (default: `17:17:17:17:17`) |
 | `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses that persist across remaps (default: `0:0:0:0:0`) |
 | `--bonus-remaps N` | Number of bonus neural interface remaps available (optional) |
 | `--remap-available Dd` | When the normal remap cooldown expires (e.g., `0d` = now, `30d` = in 30 days; default: `0d`) |
 | `--json` | Output results as JSON instead of table |
-
-**How it works:** When authenticated, fetches your live character state from ESI (`/skillqueue`, `/attributes`, `/implants`). When using `--queue FILE`, runs entirely offline using the attributes you supply.
-
-If no token is available and no queue file is given, the command exits with a suggestion to use `--queue`.
-
-### login
-
-Authenticate with EVE Single Sign-On.
-
-| Flag | Description |
-|------|-------------|
-| `-t TOKEN` | Paste a JWT bearer token directly (also via `EVE_REMAP_TOKEN` env var) |
-| `--sso` | Interactive PKCE flow — opens browser, catches localhost callback (requires port forwarding on WSL) |
-| `--browser` | Opens browser for authorization; paste the redirected URL back into terminal. Works cross-platform without port forwarding |
-
-Tokens are stored at `~/.config/eve-remap/accounts.json`. Multiple characters can be logged in simultaneously.
-
-### logout
-
-Remove all stored authentication tokens.
-
-### accounts
-
-List authenticated characters. Use `--verbose` to show token expiry details.
-
-### download
-
-Download and parse latest SDE data into `assets/`. Optionally specify output directory with `-d DIR`. **Not yet implemented** — assets are shipped with the repository.
-
-### verify
-
-Verify that local asset files (`assets/skills.json`, `assets/implants.json`) are present and valid.
 
 ## Queue File Format
 
@@ -117,7 +83,7 @@ Without `--implant-bonuses`, every post-remap epoch resets to base=17 and loses 
 Uses the authoritative EVE Online cumulative SP table (rank 1):
 
 | Level | Cumulative SP | Incremental SP |
-|-------|--------------|----------------|
+|---|---|---|
 | L1    | 250          | 250            |
 | L2    | 1,414        | 1,164          |
 | L3    | 8,000        | 6,586          |
@@ -138,33 +104,12 @@ Primary attribute points are worth exactly **twice** as much as secondary (`+1 p
 - Valid allocations: **2,885** distributions
 - Timed cooldown: every 365 days; bonus remaps usable anytime
 
-## Output
-
-Table output shows each epoch with effective attributes, skills completing during that period, and projected finish times. JSON output is available via `--json` for scripting.
-
-```
-═ Repaired Optimization Plan (313.8d total time)
-
-┌─ Current ──────────────
-│ Start: 0s from now
-│ Effective:   INT=17 CHA=17 PER=22 MEM=17 WIL=17
-│ Skills completing this epoch:
-│   • Gunnery [3300] — 5h
-│ Projected finish: 5h from now
-└──────────────────
-
-┌─ Epoch 1 ──────────────
-│ Start: 365.0d from now
-│ Effective:   INT=17 CHA=17 PER=32 MEM=18 WIL=20
-│ ...
-```
-
 ## Architecture
 
 ```
-CLI (clap) → Optimizer → Duration Calculator → Data Layer (JSON + ESI)
+CLI (clap) -> Optimizer -> Duration Calculator -> Data Layer (JSON)
 ```
 
 - **Optimizer**: Greedy best-response per epoch. Epoch 0 fixed to current effective attributes; each subsequent epoch picks the allocation minimizing last-skill finish time across 2,885 valid distributions.
 - **Training model**: Sequential — one skill at a time in queue order. Skills carry SP forward across remaps with no rollback.
-- **Data**: Flat JSON assets (`assets/skills.json`, `assets/implants.json`) loaded once at startup. Live character state fetched via authenticated ESI requests.
+- **Data**: Flat JSON assets (`assets/skills.json`, `assets/implants.json`) loaded once at startup.

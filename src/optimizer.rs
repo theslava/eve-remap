@@ -29,7 +29,7 @@ const MAX_ATTR_AFTER_REMAP: u32 = BASE_ATTR_VAL + MAX_ADD_PER_ATTR; // 27
 
 /// Single skill being trained, tracking remaining SP toward its level transition.
 #[derive(Debug, Clone)]
-struct SkillSimEntry {
+pub(crate) struct SkillSimEntry {
     skill_id: u32,
     name: String,
     #[allow(dead_code)]
@@ -249,7 +249,7 @@ pub fn simulate_epoch(
 
 /// Outcome from simulating one epoch under a fixed allocation.
 #[allow(dead_code)]
-struct EpochResult {
+pub(crate) struct EpochResult {
     /// Skills that fully completed during this epoch (in order of completion).
     completed: Vec<(u32, String, f64)>, // (skill_id, name, seconds_to_train)
     state_after: SimulationState,
@@ -709,7 +709,7 @@ fn push_epoch_with_times(
     for (local_i, global_i) in (start..end).enumerate() {
         let entry = &entries[global_i];
         let secs = train_times[local_i];
-        completed_skills.push((entry.skill_id, entry.name.clone(), secs));
+        completed_skills.push((entry.skill_id, entry.name.clone(), entry.target_level, secs));
 
         let sp_earned = entry.remaining_sp;
         let pri_key = entry.record.primary_attribute.to_string();

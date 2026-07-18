@@ -1,304 +1,22 @@
 mod calculator;
 mod cli;
-mod auth;
 mod data;
 mod optimizer;
 
 use anyhow::{Context, Result};
 use clap::Parser;
-use std::collections::HashMap;
-use std::io::{self, Write};
 
 fn main() -> Result<()> {
     let cli = cli::Cli::parse();
 
     match &cli.command {
-        cli::Commands::Login(args) => cmd_login(args),
-        cli::Commands::Logout => cmd_logout(),
-        cli::Commands::Accounts(args) => cmd_accounts(args),
-        cli::Commands::Download(args) => tokio::runtime::Runtime::new()?.block_on(cmd_download(args)),
-        cli::Commands::Verify => cmd_verify(),
-        cli::Commands::Optimize(args) => tokio::runtime::Runtime::new()?.block_on(cmd_optimize(args)),
+        cli::Commands::Optimize(args) => cmd_optimize(&args),
     }
-}
-
-// ── Login ────────────────────────────────────────────────────────────────
-
-fn cmd_login(args: &cli::LoginArgs) -> Result<()> {
-    if args.browser {
-        return cmd_login_browser();
-    }
-    if args.sso {
-        eprintln!("Note: PKCE server-based SSO (--sso) requires port forwarding from WSL.");
-        eprintln!("Use '--browser' instead for a simpler flow that works cross-platform.\n");
-        return tokio::runtime::Runtime::new()?.block_on(async {
-            let entry = auth::run_pkce_flow().await?;
-            auth::save_account(entry.clone())?;
-            println!("\nAuthenticated as {} (ID: {}).", entry.character_name, entry.character_id);
-            Ok::<_, anyhow::Error>(())
-        });
-    }
-
-    let token = if let Some(t) = &args.token {
-        t.clone()
-    } else {
-        print!("Enter EVE SSO bearer token: ");
-        io::stdout().flush()?;
-        let mut input = String::new();
-        io::stdin().read_line(&mut input)?;
-        let trimmed = input.trim().to_string();
-        if trimmed.is_empty() {
-            anyhow::bail!("No token provided. Aborting.");
-        }
-        trimmed
-    };
-
-    match auth::decode_jwt_token(&token) {
-        Some(claims) => {
-            let entry = auth::StoredAccountEntry {
-                character_id: claims.owner_character_id,
-                character_name: claims.character_name.clone(),
-                access_token: token.clone(),
-                refresh_token: String::new(),
-                expires_at: claims.expires_at,
-                scopes: claims.scopes,
-                created_at: std::time::SystemTime::now()
-                    .duration_since(std::time::UNIX_EPOCH)
-                    .unwrap_or_default()
-                    .as_secs(),
-            };
-
-            auth::save_account(entry)?;
-            println!("\nToken saved for {} (ID: {}).", claims.character_name, claims.owner_character_id);
-        }
-        None => {
-            data::esi::save_tokens(&token)?;
-            println!("\nToken saved (could not decode JWT — use --browser next time for full info).");
-        }
-    }
-
-    println!("Run 'eve-remap optimize' to start optimizing your skill queue.");
-    Ok(())
-}
-
-// ── Browser login (implicit grant — no port forwarding) ────────────────────
-
-fn cmd_login_browser() -> Result<()> {
-    let client_id = std::env::var("ESI_CLIENT_ID").context(
-        "ESI_CLIENT_ID not set.\n\
-         Register an app at https://developers.eveonline.com/applications/\n\
-         Then export ESI_CLIENT_ID=<your-client-id>"
-    )?;
-
-    let redirect_uri = "https://127.0.0.1/callback";
-    let state = rand::random::<u64>().to_string();
-    let scopes = "esi-skills.read_skills.v1 esi-skills.read_skillqueue.v1 esi-clones.read_implants.v1";
-
-    let auth_url = format!(
-        "https://login.eveonline.com/v2/oauth/authorize?\
-         response_type=token&\
-         client_id={}&\
-         redirect_uri={}&\
-         state={}&\
-         scope={}",
-        urlencoding::encode(&client_id),
-        urlencoding::encode(redirect_uri),
-        urlencoding::encode(&state),
-        urlencoding::encode(scopes),
-    );
-
-    println!("Opening browser for EVE SSO authorization...");
-    println!("If it doesn't open, visit:\n{}\n", auth_url);
-
-    let _ = open_browser(&auth_url);
-
-    print!("Paste the redirected URL from your browser: ");
-    io::stdout().flush()?;
-    let mut input = String::new();
-    io::stdin().read_line(&mut input)?;
-    let callback_url = input.trim().to_string();
-
-    if callback_url.is_empty() {
-        anyhow::bail!("No URL provided. Aborting.");
-    }
-
-    let token = parse_implicit_grant_callback(&callback_url, &state)?;
-
-    match auth::decode_jwt_token(&token) {
-        Some(claims) => {
-            let entry = auth::StoredAccountEntry {
-                character_id: claims.owner_character_id,
-                character_name: claims.character_name.clone(),
-                access_token: token,
-                refresh_token: String::new(),
-                expires_at: claims.expires_at,
-                scopes: claims.scopes,
-                created_at: std::time::SystemTime::now()
-                    .duration_since(std::time::UNIX_EPOCH)
-                    .unwrap_or_default()
-                    .as_secs(),
-            };
-
-            auth::save_account(entry)?;
-            println!("\nToken saved for {} (ID: {}).", claims.character_name, claims.owner_character_id);
-        }
-        None => {
-            data::esi::save_tokens(&token)?;
-            println!("\nToken saved (could not decode JWT).");
-        }
-    }
-
-    println!("Run 'eve-remap optimize' to start optimizing your skill queue.");
-    Ok(())
-}
-
-fn open_browser(url: &str) -> std::io::Result<()> {
-    #[cfg(target_os = "linux")]
-    std::process::Command::new("xdg-open").arg(url).spawn()?;
-    #[cfg(target_os = "macos")]
-    std::process::Command::new("open").arg(url).spawn()?;
-    #[cfg(target_os = "windows")]
-    std::process::Command::new("cmd")
-        .args(["/C", "start"])
-        .arg(url)
-        .spawn()?;
-    Ok(())
-}
-
-/// Parse the callback URL from an implicit grant flow and extract the access token.
-fn parse_implicit_grant_callback(callback_url: &str, expected_state: &str) -> Result<String> {
-    let fragment_start = callback_url.find('#')
-        .ok_or_else(|| anyhow::anyhow!("No fragment (#) in callback URL"))?;
-
-    for param in callback_url[fragment_start + 1..].split('&') {
-        if param.starts_with("error=") {
-            return Err(anyhow::anyhow!(
-                "Authorization error: {}",
-                param.trim_start_matches("error=")
-            ));
-        }
-    }
-
-    let has_valid_state = callback_url.contains(&format!("state={}", expected_state));
-    if !has_valid_state {
-        return Err(anyhow::anyhow!(
-            "State mismatch — this might be a CSRF attempt or the wrong auth URL.\n\
-             Make sure you used the URL printed above."
-        ));
-    }
-
-    for param in callback_url[fragment_start + 1..].split('&') {
-        if let Some((key, value)) = param.split_once('=') {
-            if key == "access_token" && !value.is_empty() {
-                return Ok(value.to_string());
-            }
-        }
-    }
-
-    Err(anyhow::anyhow!(
-        "No access_token found in callback URL fragment.\n\
-         The browser may have shown an error page."
-    ))
-}
-
-// ── Logout ───────────────────────────────────────────────────────────────
-
-fn cmd_logout() -> Result<()> {
-    let accounts = auth::load_accounts()?;
-    if accounts.is_empty() {
-        let path = data::esi::token_path();
-        if path.exists() {
-            std::fs::remove_file(&path)?;
-        }
-        println!("No stored accounts found (already logged out).");
-    } else {
-        for acct in &accounts {
-            auth::remove_account(acct.character_id)?;
-        }
-        let path = data::esi::token_path();
-        if path.exists() {
-            std::fs::remove_file(&path).ok();
-        }
-        println!("Logged out {} account(s).", accounts.len());
-    }
-    Ok(())
-}
-
-// ── Accounts ─────────────────────────────────────────────────────────────
-
-fn cmd_accounts(args: &cli::AccountsArgs) -> Result<()> {
-    let accounts = auth::load_accounts()?;
-    let chars = auth::list_characters()?;
-
-    if chars.is_empty() {
-        match data::esi::load_saved_token() {
-            Some(_) => {
-                println!("Status: authenticated (legacy token — run 'login' again to migrate)");
-            }
-            None => {
-                println!("No authenticated accounts.");
-                println!("Run 'eve-remap login --sso' or 'eve-remap login -t TOKEN' to authenticate.");
-            }
-        }
-        return Ok(());
-    }
-
-    println!("Authenticated accounts:");
-    let now = std::time::SystemTime::now()
-        .duration_since(std::time::UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_secs();
-
-    for acct in &accounts {
-        let expired = acct.expires_at <= now;
-        let status = if expired { "[expired]" } else { "[active]" };
-        println!(
-            "  {} - {} ({}) {}",
-            status,
-            acct.character_name,
-            acct.character_id,
-            if args.verbose {
-                format!("expires in {} min", ((acct.expires_at as i64 - now as i64).max(0)) / 60)
-            } else {
-                String::new()
-            }
-        );
-    }
-    Ok(())
-}
-
-// ── Download ─────────────────────────────────────────────────────────────
-
-async fn cmd_download(_args: &cli::DownloadArgs) -> Result<()> {
-    println!("SDE download not yet implemented. Assets already in repo.");
-    Ok(())
-}
-
-// ── Verify ───────────────────────────────────────────────────────────────
-
-fn cmd_verify() -> Result<()> {
-    let skills = data::load_skills()?;
-    let implants = data::load_implants()?;
-
-    println!("Assets verified:");
-    println!("  Skills: {} entries", skills.len());
-    println!("  Implants: {} entries with attribute bonuses", implants.len());
-
-    if let Some(skill) = skills.first() {
-        println!(
-            "  Sample: {} (primary={}, secondary={}, tc={})",
-            skill.name,
-            skill.primary_attribute,
-            skill.secondary_attribute,
-            skill.skill_time_constant
-        );
-    }
-    Ok(())
 }
 
 // ── Optimize ─────────────────────────────────────────────────────────────
 
-async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
+fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
     let skills_db = data::load_skills().context("Failed to load skill database")?;
     let implants = data::load_implants().context("Failed to load implant database")?;
 
@@ -315,47 +33,27 @@ async fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
         );
     };
 
-    let result = if let Some(queue_path) = &args.queue {
-        run_optimizer_from_queue_file(
-            &args.attributes,
-            &args.implant_bonuses,
-            args.bonus_remaps,
-            queue_path,
-            &skills_db,
-            &implants,
-            remap_available_secs,
-        )?
-    } else {
-        match try_fetch_and_optimize(&skills_db, &implants).await {
-            Ok(r) => r,
-            Err(e) => {
-                eprintln!("\nNote: could not fetch character data:\n  {}", e);
-                println!("Use '--queue FILE' with a list of 'Skill Name <level>' lines instead.\n");
-                return Ok(());
-            }
-        }
-    };
+    let result = run_optimizer_from_queue_file(
+        &args.attributes,
+        &args.implant_bonuses,
+        args.bonus_remaps,
+        &args.queue,
+        &skills_db,
+        &implants,
+        remap_available_secs,
+    )?;
+
     if args.json {
         print_json_output(&result);
     } else {
         print_table_output(&result);
     }
 
-    Ok(())
-}
-/// Attempt to fetch real character state via ESI and optimize.
-async fn try_fetch_and_optimize(
-    skills_db: &[data::models::SkillRecord],
-    implants: &[data::models::ImplantRecord],
-) -> anyhow::Result<data::models::OptimizationResult> {
-    let (_token, char_id) = auth::find_valid_token()?.ok_or_else(|| anyhow::anyhow!(
-        "No authenticated accounts found.\n\
-         Run 'eve-remap login --browser' or pass --queue."
-    ))?;
+    if let Some(out_path) = &args.queue_out {
+        write_queue_file(out_path, &result)?;
+    }
 
-    let client = data::esi::EsIClient::from_env()?;
-    let char_state = client.fetch_character_state(char_id, skills_db, implants).await?;
-    run_optimizer_with_state(&char_state, skills_db, implants)
+    Ok(())
 }
 
 /// Parse a queue file and optimize directly without ESI.
@@ -485,151 +183,107 @@ fn run_optimizer_with_state(
 
 // ── Output formatters ────────────────────────────────────────────────────
 
-/// Format SP value as a human-readable string (e.g., "1,234" or "1.2k").
-fn format_sp(sp: f64) -> String {
-    let sp = sp.round();
-    match sp {
-        x if x >= 1_000_000.0 => format!("{:.1}M", x / 1_000_000.0),
-        x if x >= 10_000.0 => format!("{:.1}K", x / 1_000.0),
-        _ => format!("{:.0}", sp),
-    }
-}
-
 fn print_table_output(result: &data::models::OptimizationResult) {
-    if result.epochs.is_empty() {
-        println!("No skills to optimize — queue is empty or all at max level.");
-        return;
-    }
+    println!("\n{}", "=".repeat(72));
+    println!("REMAP OPTIMIZATION PLAN");
+    println!("{}\n", "-".repeat(72));
 
-    println!();
-
-    let optimized_days = result.total_wall_clock_seconds / 86_400.0;
-    let baseline_days = result.baseline_wall_clock_seconds / 86_400.0;
-    if (result.baseline_wall_clock_seconds - result.total_wall_clock_seconds).abs() < 1e-6 {
-        println!("═ Repaired Optimization Plan ({:.1}d total, no speedup from remapping)", optimized_days);
-    } else {
-        let speedup_pct = ((result.baseline_wall_clock_seconds - result.total_wall_clock_seconds) / result.baseline_wall_clock_seconds * 100.0).round();
-        println!(
-            "═ Repaired Optimization Plan ({:.1}d optimized, {:.1}d without remaps — {}% faster)",
-            optimized_days, baseline_days, speedup_pct
-        );
-    }
-    println!();
+    // Attribute key order matches display elsewhere (PER:MEM:WIL:INT:CHA).
+    const ATTR_KEYS: [&str; 5] = ["perception", "memory", "willpower", "intelligence", "charisma"];
 
     for (i, epoch) in result.epochs.iter().enumerate() {
-        let label = if i == 0 {
-            "Current"
-        } else {
-            format!("Epoch {}", i).leak() // safe: only printed immediately
+        let epoch_type = match i {
+            0 => "Initial allocation",
+            _ => "Remap",
         };
+        println!("Epoch {}: {}", i + 1, epoch_type);
+        println!(
+            "  Attributes: PER={} MEM={} WIL={} INT={} CHA={}",
+            epoch.effective_attributes.perception,
+            epoch.effective_attributes.memory,
+            epoch.effective_attributes.willpower,
+            epoch.effective_attributes.intelligence,
+            epoch.effective_attributes.charisma,
+        );
+        println!(
+            "  Duration: {} ({:.1} days)",
+            calculator::format_duration(epoch.projected_finish_secs - epoch.start_offset_secs),
+            (epoch.projected_finish_secs - epoch.start_offset_secs) / 86_400.0,
+        );
 
-        println!("┌─ {} ──────────────", label);
-        println!(
-            "│ Start: {} from now",
-            calculator::format_duration(epoch.start_offset_secs)
-        );
-        println!(
-            "│ Effective:   PER={} MEM={} WIL={} INT={} CHA={}",
-            epoch.effective_attributes.perception as u32,
-            epoch.effective_attributes.memory as u32,
-            epoch.effective_attributes.willpower as u32,
-            epoch.effective_attributes.intelligence as u32,
-            epoch.effective_attributes.charisma as u32,
-        );
-        if epoch.bonus_remaps_used > 0 {
+        for (_skill_id, skill_name, _target_level, train_secs) in &epoch.completed_skills {
             println!(
-                "│ Bonus remaps used: {}",
-                epoch.bonus_remaps_used
+                "    - {} ({})",
+                skill_name,
+                calculator::format_duration(*train_secs),
             );
         }
-        if !epoch.completed_skills.is_empty() {
-            println!("│ Skills completing this epoch:");
-            for (id, name, secs) in &epoch.completed_skills {
-                let label = calculator::format_duration(*secs);
-                println!("│   • {} [{}] — {}", name, id, label);
-            }
-        }
 
-        // Print SP breakdown table if there's data.
-        let has_sp_data = !epoch.sp_summary.primary.is_empty() || !epoch.sp_summary.secondary.is_empty();
-        if has_sp_data {
-            println!("│ SP by role / attribute:");
-            // Header — build with same cell width/separator as body rows, prefixed with blank role slot.
-            let header_cells = ["PER", "MEM", "WIL", "INT", "CHA"].map(|h| format!("{:>7}", h));
-            println!("│ {:11} {}", "", header_cells.join("   "));
-            for (role, map) in [("Primary", &epoch.sp_summary.primary), ("Secondary", &epoch.sp_summary.secondary)] {
-                let cells: Vec<String> = ["perception", "memory", "willpower", "intelligence", "charisma"]
-                    .iter()
-                    .map(|a| {
-                        let val = map.get(*a).copied().unwrap_or(0.0);
-                        format!("{:>7}", format_sp(val))
-                    })
-                    .collect();
-                println!("│ {:11} {}", role, cells.join("   "));
-            }
-        }
+        // SP breakdown by role and attribute
+        let pri_vals: Vec<f64> = ATTR_KEYS.iter()
+            .map(|k| epoch.sp_summary.primary.get(*k).copied().unwrap_or(0.0))
+            .collect();
+        let sec_vals: Vec<f64> = ATTR_KEYS.iter()
+            .map(|k| epoch.sp_summary.secondary.get(*k).copied().unwrap_or(0.0))
+            .collect();
 
-        println!(
-            "│ Projected finish: {} from now",
-            calculator::format_duration(epoch.projected_finish_secs)
-        );
-        println!("└──────────────────\n");
+        if pri_vals.iter().sum::<f64>() > 0.0 || sec_vals.iter().sum::<f64>() > 0.0 {
+            println!("  {:<12} {:>8} {:>8} {:>8} {:>8} {:>8}", "", "PER", "MEM", "WIL", "INT", "CHA");
+            println!(
+                "  {:<12} {:>8.0} {:>8.0} {:>8.0} {:>8.0} {:>8.0}",
+                "Primary:",
+                pri_vals[0], pri_vals[1], pri_vals[2], pri_vals[3], pri_vals[4]
+            );
+            println!(
+                "  {:<12} {:>8.0} {:>8.0} {:>8.0} {:>8.0} {:>8.0}",
+                "Secondary:",
+                sec_vals[0], sec_vals[1], sec_vals[2], sec_vals[3], sec_vals[4]
+            );
+        }
+        println!();
     }
 
-    println!(
-        "Total training time: {}",
-        calculator::format_duration(result.total_wall_clock_seconds)
-    );
+    let total_days = result.total_wall_clock_seconds / 86_400.0;
+    println!("{}", "-".repeat(72));
+    println!("Total training time: {:.1} days", total_days);
+    println!("Epochs: {}", result.epochs.len());
+    if result.baseline_wall_clock_seconds > 0.0 {
+        let baseline_days = result.baseline_wall_clock_seconds / 86_400.0;
+        println!("Baseline (no remaps): {:.1} days", baseline_days);
+    }
+    println!();
 }
 
 fn print_json_output(result: &data::models::OptimizationResult) {
-    let mut epochs = Vec::new();
+    let json = serde_json::to_string_pretty(result).expect("Failed to serialize result");
+    println!("{}", json);
+}
+
+/// Write the optimized skill queue order to a file in "Skill Name <level>" format.
+fn write_queue_file(
+    path: &str,
+    result: &data::models::OptimizationResult,
+) -> Result<()> {
+    let mut seen = std::collections::HashSet::<u32>::new();
+    let mut lines = Vec::new();
     for epoch in &result.epochs {
-        let attrs_map: HashMap<String, f64> = HashMap::from([
-            ("intelligence".to_string(), epoch.effective_attributes.intelligence),
-            ("charisma".to_string(), epoch.effective_attributes.charisma),
-            ("perception".to_string(), epoch.effective_attributes.perception),
-            ("memory".to_string(), epoch.effective_attributes.memory),
-            ("willpower".to_string(), epoch.effective_attributes.willpower),
-        ]);
-
-        let _completed = epoch
-            .completed_skills
-            .iter()
-            .map(|(id, name, secs)| serde_json::json!({ "skill_id": id, "name": name, "training_seconds": *secs }))
-            .collect::<Vec<_>>();
-
-        epochs.push(serde_json::json!({
-            "start_offset_days": epoch.start_offset_secs / 86_400.0,
-            "base_attributes": {
-                "intelligence": epoch.attributes.intelligence as u32,
-                "charisma": epoch.attributes.charisma as u32,
-                "perception": epoch.attributes.perception as u32,
-                "memory": epoch.attributes.memory as u32,
-                "willpower": epoch.attributes.willpower as u32,
-            },
-            "effective_attributes": attrs_map,
-            "projected_finish_days": epoch.projected_finish_secs / 86_400.0,
-            "bonus_remaps_used": epoch.bonus_remaps_used,
-            "sp_primary": &epoch.sp_summary.primary,
-            "sp_secondary": &epoch.sp_summary.secondary,
-        }));
+        for (skill_id, skill_name, target_level, _train_secs) in &epoch.completed_skills {
+            if seen.insert(*skill_id) {
+                lines.push(format!("{} {}", skill_name, target_level));
+            }
+        }
     }
 
-    let speedup_pct = if (result.baseline_wall_clock_seconds - result.total_wall_clock_seconds).abs() < 1e-6 {
-        0.0
-    } else {
-        (result.baseline_wall_clock_seconds - result.total_wall_clock_seconds) / result.baseline_wall_clock_seconds * 100.0
-    };
+    use std::io::Write;
+    let content = lines.join("\n") + "\n";
+    let mut file = std::fs::File::create(path).context("Failed to create output queue file")?;
+    file.write_all(content.as_bytes())
+        .context("Failed to write output queue file")?;
 
-    let output = serde_json::json!({
-        "total_epochs": result.epochs.len(),
-        "total_days": result.total_wall_clock_seconds / 86_400.0,
-        "total_wall_clock_seconds": result.total_wall_clock_seconds,
-        "baseline_seconds": result.baseline_wall_clock_seconds,
-        "speedup_percent": (speedup_pct * 100.0).round() / 100.0,
-        "epochs": epochs,
-    });
-
-    println!("{}", serde_json::to_string_pretty(&output).unwrap());
+    eprintln!(
+        "[+] Optimized queue written to '{}' ({} skills)",
+        path,
+        lines.len()
+    );
+    Ok(())
 }

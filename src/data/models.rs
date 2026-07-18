@@ -64,7 +64,7 @@ pub struct ImplantRecord {
 }
 
 /// Effective attributes after combining remapped base values with active implants.
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub struct EffectiveAttributes {
     pub intelligence: f64,
     pub charisma: f64,
@@ -121,8 +121,7 @@ impl From<BaseAttributes> for EffectiveAttributes {
     }
 }
 
-/// Base remapped attribute values from the neural interface (stored as f64 for arithmetic).
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize)]
 pub struct BaseAttributes {
     pub intelligence: f64,
     pub charisma: f64,
@@ -138,6 +137,7 @@ impl BaseAttributes {
     pub fn total(&self) -> f64 {
         self.intelligence + self.charisma + self.perception + self.memory + self.willpower
     }
+    #[allow(dead_code)]
 
     /// Create a zeroed-out attribute set (useful as default/empty value).
     pub const fn zero() -> Self {
@@ -230,13 +230,12 @@ pub struct AttributeSpSummary {
     pub secondary: HashMap<String, f64>,
 }
 
-/// A single epoch in the optimizer plan.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct EpochPlan {
     pub start_offset_secs: f64,  // seconds from now when this epoch starts
     pub attributes: BaseAttributes,
     pub effective_attributes: EffectiveAttributes,
-    pub completed_skills: Vec<(u32, String, f64)>, // (skill_id, skill_name, train_seconds)
+    pub completed_skills: Vec<(u32, String, u8, f64)>, // (skill_id, skill_name, target_level, train_seconds)
     /// Total SP per (role × attribute) pair for skills completed this epoch.
     pub sp_summary: AttributeSpSummary,
     pub projected_finish_secs: f64,  // seconds from now when this epoch ends
@@ -244,8 +243,7 @@ pub struct EpochPlan {
     pub bonus_remaps_used: u32,
 }
 
-/// Full optimization result across all epochs.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize)]
 pub struct OptimizationResult {
     pub epochs: Vec<EpochPlan>,
     pub total_wall_clock_seconds: f64,
