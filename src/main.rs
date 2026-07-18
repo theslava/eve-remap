@@ -262,7 +262,7 @@ fn print_table_output(result: &data::models::OptimizationResult) {
 
         for (_skill_id, skill_name, target_level, train_secs) in &epoch.completed_skills {
             println!(
-                "    - {} Lv{} ({})",
+                "    - {} {} - {}",
                 skill_name,
                 target_level,
                 calculator::format_duration(*train_secs),
