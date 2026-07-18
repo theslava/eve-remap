@@ -292,13 +292,10 @@ fn write_queue_file(
     path: &str,
     result: &data::models::OptimizationResult,
 ) -> Result<()> {
-    let mut seen = std::collections::HashSet::<u32>::new();
     let mut lines = Vec::new();
     for epoch in &result.epochs {
-        for (skill_id, skill_name, target_level, _train_secs) in &epoch.completed_skills {
-            if seen.insert(*skill_id) {
-                lines.push(format!("{} {}", skill_name, target_level));
-            }
+        for (_skill_id, skill_name, target_level, _train_secs) in &epoch.completed_skills {
+            lines.push(format!("{} {}", skill_name, target_level));
         }
     }
 
