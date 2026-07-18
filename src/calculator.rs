@@ -47,24 +47,43 @@ pub fn duration_seconds(
     sp_needed / rate
 }
 
-/// Format seconds into a human-readable duration string, capped at days.
+/// Format seconds as the two most significant time units (e.g., "5d 13h").
+/// Rounds at the boundary of the second unit — sub-units push it up to the next integer.
 pub fn format_duration(seconds: f64) -> String {
-    let days = seconds / 86_400.0;
-    if days >= 1.0 {
-        format!("{:.1}d", days)
-    } else {
-        let hours = days * 24.0;
-        if hours >= 1.0 {
-            format!("{:.0}h", hours)
-        } else {
-            let minutes = hours * 60.0;
-            if minutes >= 1.0 {
-                format!("{:.0}m", minutes)
-            } else {
-                format!("{:.0}s", seconds)
-            }
-        }
+    let mut secs = seconds.max(0.0);
+    let days = (secs / 86_400.0) as u64;
+    secs -= days as f64 * 86_400.0;
+    let hours = (secs / 3_600.0) as u64;
+    secs -= hours as f64 * 3_600.0;
+    let minutes = (secs / 60.0) as u64;
+    secs -= minutes as f64 * 60.0;
+    let remaining_secs = secs.ceil() as u64;
+
+    // Collect non-zero components in order of significance.
+    let units = [
+        ("d", days),
+        ("h", hours),
+        ("m", minutes),
+        ("s", remaining_secs),
+    ];
+
+    let entries: Vec<(&str, u64)> = units.iter().filter(|(_, v)| *v > 0).copied().collect();
+
+    if entries.is_empty() {
+        return "0s".to_string();
     }
+
+    // If we only have one unit, show it alone.
+    if entries.len() == 1 {
+        return format!("{}{}", entries[0].1, entries[0].0);
+    }
+
+    // Show top-2 units. The second unit already absorbed lower remainders via ceil().
+    format!(
+        "{}{} {}{}",
+        entries[0].1, entries[0].0,
+        entries[1].1, entries[1].0
+    )
 }
 
 #[cfg(test)]
