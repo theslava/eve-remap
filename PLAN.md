@@ -141,12 +141,13 @@ A remap distributes **14** free points above a hard floor of **17** across 5 att
 
 | Flag | Description |
 |---|---|
-| `-q FILE`, `--queue FILE` | Path to queue file with target skills (required; one per line as "Skill Name \<level>") |
-| `--attributes PER:MEM:WIL:INT:CHA` | Effective attribute values including implants (default: 17:17:17:17:17) |
+| `-q FILE`, `--queue FILE` | Path to queue file (required). Use `-` to read from stdin |
+| `--attributes PER:MEM:WIL:INT:CHA` | Base remapped attribute values excluding implants (default: 17:17:17:17:17) |
 | `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses persisting across remaps (default: 0:0:0:0:0) |
 | `--bonus-remaps N` | Number of bonus neural interface remaps (optional — unlimited timed epochs if omitted) |
 | `--remap-available Dd` | When normal remap cooldown expires, e.g. `0d` = now, `30d` = in 30 days (default: 0d) |
 | `--json` | Output results as JSON instead of human-readable table |
+| `--queue-out FILE` | Write optimized skill order to a file. Use `-` for stdout |
 
 ### Queue File Format
 

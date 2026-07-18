@@ -4,6 +4,7 @@ mod data;
 mod optimizer;
 
 use anyhow::{Context, Result};
+use std::io::{self, Read};
 use clap::Parser;
 
 fn main() -> Result<()> {
@@ -56,6 +57,18 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
     Ok(())
 }
 
+/// Read content from a file or stdin (when path is "-").
+fn read_queue_content(path: &str) -> Result<String> {
+    if path == "-" {
+        let mut buf = io::BufReader::new(io::stdin());
+        let mut s = String::new();
+        buf.read_to_string(&mut s)?;
+        Ok(s)
+    } else {
+        std::fs::read_to_string(path).context(format!("Failed to read queue file '{}'", path))
+    }
+}
+
 /// Parse a queue file and optimize directly without ESI.
 fn run_optimizer_from_queue_file(
     attrs_str: &str,
@@ -98,8 +111,8 @@ fn run_optimizer_from_queue_file(
         charisma: ib_parts[4],
     };
 
-    // Read and parse queue file.
-    let content = std::fs::read_to_string(path).context("Failed to read queue file")?;
+    // Read from file or stdin (when path is "-").
+    let content = read_queue_content(path)?;
     let mut queued_skills = Vec::new();
     for (line_num, line) in content.lines().enumerate() {
         let trimmed = line.trim();
@@ -183,12 +196,22 @@ fn run_optimizer_with_state(
 
 // ── Output formatters ────────────────────────────────────────────────────
 
+/// Format an SP value using SI-style suffixes (K, M).
+fn format_sp(sp: f64) -> String {
+    if sp >= 1_000_000.0 {
+        format!("{:.1}M", sp / 1_000_000.0)
+    } else if sp >= 1_000.0 {
+        format!("{:.1}K", sp / 1_000.0)
+    } else {
+        format!("{:.0}", sp)
+    }
+}
+
 fn print_table_output(result: &data::models::OptimizationResult) {
     println!("\n{}", "=".repeat(72));
     println!("REMAP OPTIMIZATION PLAN");
     println!("{}\n", "-".repeat(72));
 
-    // Attribute key order matches display elsewhere (PER:MEM:WIL:INT:CHA).
     const ATTR_KEYS: [&str; 5] = ["perception", "memory", "willpower", "intelligence", "charisma"];
 
     for (i, epoch) in result.epochs.iter().enumerate() {
@@ -211,15 +234,7 @@ fn print_table_output(result: &data::models::OptimizationResult) {
             (epoch.projected_finish_secs - epoch.start_offset_secs) / 86_400.0,
         );
 
-        for (_skill_id, skill_name, _target_level, train_secs) in &epoch.completed_skills {
-            println!(
-                "    - {} ({})",
-                skill_name,
-                calculator::format_duration(*train_secs),
-            );
-        }
-
-        // SP breakdown by role and attribute
+        // SP summary as an attribute matrix table
         let pri_vals: Vec<f64> = ATTR_KEYS.iter()
             .map(|k| epoch.sp_summary.primary.get(*k).copied().unwrap_or(0.0))
             .collect();
@@ -228,16 +243,28 @@ fn print_table_output(result: &data::models::OptimizationResult) {
             .collect();
 
         if pri_vals.iter().sum::<f64>() > 0.0 || sec_vals.iter().sum::<f64>() > 0.0 {
-            println!("  {:<12} {:>8} {:>8} {:>8} {:>8} {:>8}", "", "PER", "MEM", "WIL", "INT", "CHA");
+            let fmt = |v: f64| -> String { if v == 0.0 { "-".into() } else { format_sp(v) } };
             println!(
-                "  {:<12} {:>8.0} {:>8.0} {:>8.0} {:>8.0} {:>8.0}",
-                "Primary:",
-                pri_vals[0], pri_vals[1], pri_vals[2], pri_vals[3], pri_vals[4]
+                "  {:>4} {:>7} {:>7} {:>7} {:>7} {:>7}",
+                "", "PER", "MEM", "WIL", "INT", "CHA"
             );
             println!(
-                "  {:<12} {:>8.0} {:>8.0} {:>8.0} {:>8.0} {:>8.0}",
-                "Secondary:",
-                sec_vals[0], sec_vals[1], sec_vals[2], sec_vals[3], sec_vals[4]
+                "  Pri  {:>7} {:>7} {:>7} {:>7} {:>7}",
+                fmt(pri_vals[0]), fmt(pri_vals[1]),
+                fmt(pri_vals[2]), fmt(pri_vals[3]), fmt(pri_vals[4])
+            );
+            println!(
+                "  Sec  {:>7} {:>7} {:>7} {:>7} {:>7}",
+                fmt(sec_vals[0]), fmt(sec_vals[1]),
+                fmt(sec_vals[2]), fmt(sec_vals[3]), fmt(sec_vals[4])
+            );
+        }
+
+        for (_skill_id, skill_name, _target_level, train_secs) in &epoch.completed_skills {
+            println!(
+                "    - {} ({})",
+                skill_name,
+                calculator::format_duration(*train_secs),
             );
         }
         println!();
@@ -274,16 +301,21 @@ fn write_queue_file(
         }
     }
 
-    use std::io::Write;
+    use std::io::{self, Write};
     let content = lines.join("\n") + "\n";
-    let mut file = std::fs::File::create(path).context("Failed to create output queue file")?;
-    file.write_all(content.as_bytes())
-        .context("Failed to write output queue file")?;
-
-    eprintln!(
-        "[+] Optimized queue written to '{}' ({} skills)",
-        path,
-        lines.len()
-    );
+    if path == "-" {
+        io::stdout().write_all(content.as_bytes()).context("Failed to write to stdout")?;
+        io::stdout().flush()?;
+        eprintln!("[+] Optimized queue written to stdout ({} skills)", lines.len());
+    } else {
+        let mut file = std::fs::File::create(path).context(format!("Failed to create output queue file '{}'", path))?;
+        file.write_all(content.as_bytes())
+            .context("Failed to write output queue file")?;
+        eprintln!(
+            "[+] Optimized queue written to '{}' ({} skills)",
+            path,
+            lines.len()
+        );
+    }
     Ok(())
 }

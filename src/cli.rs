@@ -17,11 +17,11 @@ pub enum Commands {
 #[derive(clap::Args)]
 pub struct OptimizeArgs {
     /// Path to a file listing target skills, one per line as "Skill Name <level>".
-    /// Example lines: "Gunnery 3", "Navigation 5"
+    /// Use "-" to read from stdin. Example lines: "Gunnery 3", "Navigation 5"
     #[arg(long, short = 'q')]
     pub queue: String,
-    /// Effective attribute values including implants for offline mode.
-    /// Format: PER:MEM:WIL:INT:CHA (e.g., 22:19:17:17:17). Defaults to 17:17:17:17:17.
+    /// Base remapped attribute values (excluding implants).
+    /// Format: PER:MEM:WIL:INT:CHA (e.g., 27:22:17:17:16). Defaults to 17:17:17:17:17.
     #[arg(long, default_value = "17:17:17:17:17")]
     pub attributes: String,
 
@@ -46,7 +46,7 @@ pub struct OptimizeArgs {
     pub implant_bonuses: String,
 
     /// Write the optimized skill training order to a file in the same format
-    /// as the input queue (one "Skill Name <level>" per line).
+    /// as the input queue (one "Skill Name <level>" per line). Use "-" for stdout.
     #[arg(long)]
     pub queue_out: Option<String>,
 }

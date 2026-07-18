@@ -54,8 +54,8 @@ Full specification is in [PLAN.md](../PLAN.md). Essentials:
 - **SP formula**: cumulative table lookup `(CUMULATIVE[to] - CUMULATIVE[from]) * STC`. See `calculator.rs:CUMULATIVE_SP`.
 - **Rate formula**: `(primary + secondary / 2.0) / 60.0` SP/s. Primary worth exactly 2x secondary.
 - **Optimizer**: greedy best-response per epoch over **2,885** valid allocations (base=17 + 14 free points, max +10/attr). Precomputed time caches and suffix sums accelerate evaluation.
-- **Queue input**: `--queue FILE` offline. Format: one "Skill Name \<level>" per line; `#` comments and blanks ignored; case-insensitive matching. Level N means train from (N-1) to N.
-- **CLI flags on `optimize`**: `--queue`, `--attributes`, `--implant-bonuses`, `--bonus-remaps`, `--remap-available Dd`, `--json`.
+- **Queue input**: `--queue FILE` or `-` for stdin. Format: one "Skill Name \<level>" per line; `#` comments and blanks ignored; case-insensitive matching. Level N means train from (N-1) to N.
+- **CLI flags on `optimize`**: `--queue`, `--attributes`, `--implant-bonuses`, `--bonus-remaps`, `--remap-available Dd`, `--json`, `--queue-out FILE` (`-` for stdout).
 
 ## File Map
 
