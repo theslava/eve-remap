@@ -1,9 +1,6 @@
 use std::time::Instant;
 use crate::calculator::{sp_rate_per_second, sp_for_level};
 use crate::data::models::*;
-/// Seconds in one day (used by tests).
-#[allow(dead_code)]
-const SECS_PER_DAY: f64 = 86_400.0;
 
 /// Base attribute value before any remapping. Hard floor — cannot go lower.
 const BASE_ATTR_VAL: u32 = 17;
@@ -32,8 +29,6 @@ const MAX_ATTR_AFTER_REMAP: u32 = BASE_ATTR_VAL + MAX_ADD_PER_ATTR; // 27
 pub(crate) struct SkillSimEntry {
     skill_id: u32,
     name: String,
-    #[allow(dead_code)]
-    current_level: u8,
     target_level: u8,
     /// Remaining SP to earn for this skill→level transition.
     remaining_sp: f64,
@@ -41,28 +36,11 @@ pub(crate) struct SkillSimEntry {
 }
 
 /// Snapshot of the sequential training queue during simulation.
-///
-/// Skills train **one at a time** in order — `entries[0]` is the currently active
-/// skill, and it carries partial progress across epoch boundaries.
 #[derive(Debug, Clone)]
 pub struct SimulationState {
     pub entries: Vec<SkillSimEntry>,
-    #[allow(dead_code)]
-    pub active_index: usize,
-    #[allow(dead_code)]
-    pub elapsed_seconds: f64,
 }
 
-impl SimulationState {
-    fn is_empty(&self) -> bool {
-        self.entries.is_empty()
-    }
-
-    #[allow(dead_code)]
-    fn len(&self) -> usize {
-        self.entries.len()
-    }
-}
 
 // ---------------------------------------------------------------------------
 // CharacterState helpers
@@ -93,7 +71,6 @@ impl CharacterState {
             entries.push(SkillSimEntry {
                 skill_id: qs.id,
                 name: record.name.clone(),
-                current_level: qs.level,
                 target_level,
                 remaining_sp,
                 record: record.clone(),
@@ -101,8 +78,6 @@ impl CharacterState {
         }
 
         SimulationState {
-            active_index: 0,
-            elapsed_seconds: 0.0,
             entries,
         }
     }
@@ -139,7 +114,7 @@ pub fn generate_allocations() -> Vec<BaseAttributes> {
                         break; // further mem values only increase the sum
                     }
                     let wil = ATTR_SUM - partial_sum;
-                    if wil >= MIN_ATTR_AFTER_REMAP && wil <= MAX_ATTR_AFTER_REMAP {
+                    if (MIN_ATTR_AFTER_REMAP..=MAX_ATTR_AFTER_REMAP).contains(&wil) {
                         results.push(BaseAttributes {
                             intelligence: int as f64,
                             charisma: cha as f64,
@@ -155,10 +130,6 @@ pub fn generate_allocations() -> Vec<BaseAttributes> {
     results
 }
 
-// ---------------------------------------------------------------------------
-// Sequential simulation engine
-// ---------------------------------------------------------------------------
-
 /// Train a single skill under `effective_attrs` and return seconds consumed.
 fn train_one_skill(entry: &SkillSimEntry, effective_attrs: &EffectiveAttributes) -> f64 {
     let rate = sp_rate_per_second(&entry.record, effective_attrs);
@@ -168,132 +139,6 @@ fn train_one_skill(entry: &SkillSimEntry, effective_attrs: &EffectiveAttributes)
     entry.remaining_sp / rate
 }
 
-/// Project total wall-clock seconds to finish all remaining skills under one fixed allocation.
-/// Skills train sequentially — sum of individual training times.
-#[allow(dead_code)]
-fn project_total_time(
-    state: &SimulationState,
-    effective_attrs: &EffectiveAttributes,
-) -> f64 {
-    let mut total_secs = 0.0;
-    for i in state.active_index..state.entries.len() {
-        let secs = train_one_skill(&state.entries[i], effective_attrs);
-        if secs.is_infinite() {
-            return f64::INFINITY;
-        }
-        total_secs += secs;
-    }
-    total_secs
-}
-
-/// Simulate sequential training under `effective_attrs` for up to `duration_secs`.
-///
-/// Processes skills one-by-one from the active index. Each skill either completes
-/// (advancing to the next) or partially trains and pauses at the epoch boundary.
-/// Returns which skills completed and the updated simulation state.
-#[allow(dead_code)]
-pub fn simulate_epoch(
-    mut state: SimulationState,
-    effective_attrs: &EffectiveAttributes,
-    duration_secs: f64,
-) -> EpochResult {
-    let start_elapsed = state.elapsed_seconds;
-    let mut completed = Vec::new();
-    let mut time_remaining = duration_secs;
-    // Track total SP earned per (role × attribute) for this epoch.
-    let mut sp_summary = AttributeSpSummary::default();
-    while !state.is_empty() && time_remaining > 0.0 {
-        // Ensure active_index is valid
-        if state.active_index >= state.len() {
-            break;
-        }
-
-        let entry = &state.entries[state.active_index];
-        let secs_needed = train_one_skill(entry, effective_attrs);
-
-        if secs_needed <= time_remaining {
-            // Skill completes within this epoch's window.
-            state.elapsed_seconds += secs_needed;
-            time_remaining -= secs_needed;
-
-            let finished = state.entries.remove(state.active_index);
-            let sp_earned = finished.remaining_sp;
-            completed.push((finished.skill_id, finished.name.clone(), secs_needed));
-
-            // Accumulate SP into primary/secondary buckets.
-            let pri_key = finished.record.primary_attribute.to_string();
-            *sp_summary.primary.entry(pri_key).or_insert(0.0) += sp_earned;
-            let sec_key = finished.record.secondary_attribute.to_string();
-            *sp_summary.secondary.entry(sec_key).or_insert(0.0) += sp_earned;
-
-            // Don't advance active_index — remove shifts later entries down.
-        } else {
-            // Skill doesn't finish in this window — advance its progress.
-            let remaining_sp_before = state.entries[state.active_index].remaining_sp;
-            let rate = sp_rate_per_second(&state.entries[state.active_index].record, effective_attrs);
-            let earned = rate * time_remaining;
-            state.entries[state.active_index].remaining_sp = (remaining_sp_before - earned).max(0.0);
-            state.elapsed_seconds += time_remaining;
-            break;
-        }
-    }
-
-    let seconds_used = state.elapsed_seconds - start_elapsed;
-    EpochResult {
-        completed,
-        state_after: state,
-        seconds_used,
-        sp_summary,
-    }
-}
-
-/// Outcome from simulating one epoch under a fixed allocation.
-#[allow(dead_code)]
-pub(crate) struct EpochResult {
-    /// Skills that fully completed during this epoch (in order of completion).
-    completed: Vec<(u32, String, f64)>, // (skill_id, name, seconds_to_train)
-    state_after: SimulationState,
-    #[allow(dead_code)]
-    seconds_used: f64,
-    /// Total SP per (role × attribute) pair for completed skills.
-    sp_summary: AttributeSpSummary,
-}
-
-// ---------------------------------------------------------------------------
-// Greedy optimizer
-// ---------------------------------------------------------------------------
-
-/// Choose the best allocation by projecting total finish time for all remaining skills
-/// under each candidate and picking the minimum.
-#[allow(dead_code)]
-fn choose_best_allocation(
-    state: &SimulationState,
-    allocations: &[BaseAttributes],
-    implants: &[ImplantRecord],
-) -> Option<BaseAttributes> {
-    if allocations.is_empty() || state.is_empty() {
-        return None;
-    }
-
-    let mut best_alloc = allocations[0];
-    let best_effective = EffectiveAttributes::from_base_and_implants(
-        &best_alloc,
-        &[], // implants already baked into attrs via effective_attributes call below
-        implants,
-    );
-    let mut best_total_secs = project_total_time(state, &best_effective);
-
-    for alloc in &allocations[1..] {
-        let effective = EffectiveAttributes::from_base_and_implants(alloc, &[], implants);
-        let total_secs = project_total_time(state, &effective);
-        if total_secs < best_total_secs {
-            best_total_secs = total_secs;
-            best_alloc = *alloc;
-        }
-    }
-
-    Some(best_alloc)
-}
 
 /// Reorder skill training queue for attribute locality while respecting prerequisites.
 ///
@@ -324,8 +169,8 @@ fn reorder_queue(
     {
         let mut by_skill: std::collections::HashMap<u32, Vec<usize>> =
             std::collections::HashMap::new();
-        for i in 0..n {
-            by_skill.entry(entries[i].skill_id).or_default().push(i);
+        for (i, entry) in entries.iter().enumerate() {
+            by_skill.entry(entry.skill_id).or_default().push(i);
         }
         for indices in by_skill.values_mut() {
             indices.sort_by_key(|&i| entries[i].target_level);
@@ -363,7 +208,7 @@ fn reorder_queue(
     }
     // Kahn's algorithm with attribute-aware tie-breaking.
     let mut ready: Vec<usize> = (0..n).filter(|&i| in_degree[i] == 0).collect();
-    let mut ordered = Vec::with_capacity(n);
+    let mut ordered: Vec<usize> = Vec::with_capacity(n);
 
     while !ready.is_empty() {
         // Score each ready entry on two axes:
@@ -394,7 +239,7 @@ fn reorder_queue(
                 }
             }
             // Strong continuity bonus if last scheduled skill shares attributes.
-            if let Some(last_idx) = ordered.last().map(|i| *i as usize) {
+            if let Some(&last_idx) = ordered.last() {
                 let (lp, ls) = attr_map.get(&entries[last_idx].skill_id).copied()
                     .unwrap_or((Attribute::Intelligence, Attribute::Memory));
                 if lp == p || ls == s {
@@ -572,8 +417,8 @@ pub fn optimize(
         let mut best_cut_info: Option<(usize, f64, usize)> = None; // (cut, total_finish, chosen_alloc_col)
         let mut cum_before = 0.0;
 
-        for offset in 0..(n - remaining_start - 1) {
-            cum_before += stay_times[offset];
+        for (offset, stay_time) in stay_times.iter().enumerate().take(n - remaining_start - 1) {
+            cum_before += stay_time;
             let cut = remaining_start + offset + 1;
             let epoch_end = wall_clock + cum_before;
 
@@ -583,11 +428,11 @@ pub fn optimize(
                 continue; // No remap available yet — skip this cut point.
             }
 
-            let mut best_after = suffix_sum[0][cut];
             let mut best_a = 0usize;
-            for a in 1..alloc_count {
-                if suffix_sum[a][cut] < best_after {
-                    best_after = suffix_sum[a][cut];
+            let mut best_after = suffix_sum[0][cut];
+            for (a, val) in suffix_sum.iter().map(|col| col[cut]).enumerate().skip(1) {
+                if val < best_after {
+                    best_after = val;
                     best_a = a;
                 }
             }
@@ -684,14 +529,11 @@ pub fn optimize(
 
 /// Sum the first `count` elements of a slice.
 fn cum_before_for(slice: &[f64], count: usize) -> f64 {
-    let mut s = 0.0;
-    for i in 0..count {
-        s += slice[i];
-    }
-    s
+    slice[..count].iter().sum()
 }
 
 /// Build an `EpochPlan` for entries[start..end) using precomputed training times.
+#[allow(clippy::too_many_arguments)]
 fn push_epoch_with_times(
     epochs: &mut Vec<EpochPlan>,
     start: usize,
@@ -767,7 +609,6 @@ mod tests {
             base_attributes: attrs, queued_skills: skills,
             active_implant_ids: Vec::new(),
             implant_bonus: BaseAttributes { intelligence: 0., charisma: 0., perception: 0., memory: 0., willpower: 0. },
-            effective_attributes: EffectiveAttributes::from(attrs),
             bonus_remaps,
             normal_remap_available_in_secs: 0.0,
         }
@@ -776,7 +617,7 @@ mod tests {
     /// Create a queue entry with realistic SP/duration so progress_fraction works.
     fn qe(id: u32, level: u8, total_sp: f64) -> QueuedSkill {
         let dur = (total_sp / 0.5).ceil() as u64;
-        QueuedSkill { id, level, sp: 0, duration: dur.max(1), remaining_sec: dur.max(1), is_active: true }
+        QueuedSkill { id, level, duration: dur.max(1), remaining_sec: dur.max(1) }
     }
 
     // -- allocation generator tests ---------------------------------------
@@ -806,89 +647,7 @@ mod tests {
         }
     }
 
-    // -- sequential simulation tests --------------------------------------
-
-    #[test]
-    fn test_simulate_epoch_empty_state() {
-        let state = SimulationState { entries: vec![], active_index: 0, elapsed_seconds: 0.0 };
-        let eff = EffectiveAttributes::from(base_attrs(17.,17.,17.,17.,17.));
-        let result = simulate_epoch(state, &eff, SECS_PER_DAY * 365.0);
-        assert!(result.completed.is_empty());
-        assert_eq!(result.seconds_used, 0.0);
-    }
-
-    #[test]
-    fn test_simulate_epoch_single_skill_completes() {
-        let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
-        let total_sp = sp_for_level(&skill, 1, 2);
-        let entry = SkillSimEntry {
-            skill_id: skill.id, name: skill.name.clone(), current_level: 1, target_level: 2,
-            remaining_sp: total_sp, record: skill,
-        };
-        let state = SimulationState { entries: vec![entry], active_index: 0, elapsed_seconds: 0.0 };
-        let eff = EffectiveAttributes::from(base_attrs(27., 17., 17., 17., 17.));
-        let result = simulate_epoch(state, &eff, f64::INFINITY);
-        assert_eq!(result.completed.len(), 1);
-        assert!(result.state_after.is_empty());
-    }
-
-    #[test]
-    fn test_simulate_epoch_sequential_order() {
-        let skill_a = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
-        let skill_b = SkillRecord { id: 2002, name: "SkillB".to_string(), primary_attribute: Attribute::Charisma, secondary_attribute: Attribute::Willpower, skill_time_constant: 1.0, prerequisites: vec![] };
-        let sp_a = sp_for_level(&skill_a, 1, 2);
-        let sp_b = sp_for_level(&skill_b, 1, 2);
-        let state = SimulationState {
-            entries: vec![
-                SkillSimEntry { skill_id: skill_a.id, name: skill_a.name.clone(), current_level: 1, target_level: 2, remaining_sp: sp_a, record: skill_a },
-                SkillSimEntry { skill_id: skill_b.id, name: skill_b.name.clone(), current_level: 1, target_level: 2, remaining_sp: sp_b, record: skill_b },
-            ], active_index: 0, elapsed_seconds: 0.0,
-        };
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
-        let result = simulate_epoch(state, &eff, f64::INFINITY);
-        assert_eq!(result.completed.len(), 2);
-        assert_eq!(result.completed[0].0, 1001); // A before B (queue order)
-        assert_eq!(result.completed[1].0, 2002);
-    }
-
-    #[test]
-    fn test_simulate_epoch_time_budget_exhausted() {
-        let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 5.0);
-        let total_sp = sp_for_level(&skill, 1, 2);
-        let state = SimulationState { entries: vec![SkillSimEntry { skill_id: skill.id, name: skill.name.clone(), current_level: 1, target_level: 2, remaining_sp: total_sp, record: skill }], active_index: 0, elapsed_seconds: 0.0 };
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
-        let result = simulate_epoch(state, &eff, 60.0); // 1 minute — not enough
-        assert!(result.completed.is_empty());
-        assert!(result.state_after.entries[0].remaining_sp < total_sp);
-    }
-
-    #[test]
-    fn test_project_total_time_sequential() {
-        let skill_a = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
-        let skill_b = SkillRecord { id: 2002, name: "SkillB".to_string(), primary_attribute: Attribute::Charisma, secondary_attribute: Attribute::Willpower, skill_time_constant: 1.0, prerequisites: vec![] };
-        let sp_a = sp_for_level(&skill_a, 1, 2);
-        let sp_b = sp_for_level(&skill_b, 1, 2);
-        let state = SimulationState { entries: vec![
-            SkillSimEntry { skill_id: skill_a.id, name: skill_a.name.clone(), current_level: 1, target_level: 2, remaining_sp: sp_a, record: skill_a },
-            SkillSimEntry { skill_id: skill_b.id, name: skill_b.name.clone(), current_level: 1, target_level: 2, remaining_sp: sp_b, record: skill_b },
-        ], active_index: 0, elapsed_seconds: 0.0 };
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
-        let rate_a = sp_rate_per_second(&state.entries[0].record, &eff);
-        let rate_b = sp_rate_per_second(&state.entries[1].record, &eff);
-        let expected = (sp_a / rate_a) + (sp_b / rate_b);
-        let actual = project_total_time(&state, &eff);
-        assert!((actual - expected).abs() < 1e-6);
-    }
-
-    #[test]
-    fn test_choose_best_prefers_primary_attr() {
-        let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
-        let total_sp = sp_for_level(&skill, 1, 2);
-        let state = SimulationState { entries: vec![SkillSimEntry { skill_id: skill.id, name: skill.name.clone(), current_level: 1, target_level: 2, remaining_sp: total_sp, record: skill }], active_index: 0, elapsed_seconds: 0.0 };
-        let allocations = generate_allocations();
-        let best = choose_best_allocation(&state, &allocations, &[]).unwrap();
-        assert!(best.intelligence >= 25.0, "INT should be near max for INT-primary skill");
-    }
+    // -- optimizer integration tests --------------------------------------
 
     #[test]
     fn test_optimize_empty_queue() {
@@ -909,17 +668,6 @@ mod tests {
     }
 
     #[test]
-    fn test_simulate_epoch_preserves_elapsed_time() {
-        let skill = make_skill(Attribute::Willpower, Attribute::Perception, 3.0);
-        let total_sp = sp_for_level(&skill, 1, 2);
-        let state = SimulationState { entries: vec![SkillSimEntry { skill_id: skill.id, name: skill.name.clone(), current_level: 1, target_level: 2, remaining_sp: total_sp, record: skill }], active_index: 0, elapsed_seconds: 1000.0 };
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
-        let half_time = 5000.0;
-        let result = simulate_epoch(state.clone(), &eff, half_time);
-        assert!((result.state_after.elapsed_seconds - (state.elapsed_seconds + half_time)).abs() < 1e-6);
-    }
-
-    #[test]
     fn test_optimize_multi_epoch_progression() {
         let mut skills_db = Vec::new();
         let mut queued_skills = Vec::new();
@@ -930,7 +678,7 @@ mod tests {
             skills_db.push(skill.clone());
             let sp_needed = sp_for_level(&skill, 1, 2);
             let dur = (sp_needed / 0.5).ceil() as u64;
-            queued_skills.push(QueuedSkill { id: skill.id, level: 1, sp: 0, duration: dur.max(1), remaining_sec: dur.max(1), is_active: i == 0 });
+            queued_skills.push(QueuedSkill { id: skill.id, level: 1, duration: dur.max(1), remaining_sec: dur.max(1) });
         }
         let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), queued_skills, Some(2));
         let result = optimize(&char_st, &skills_db, &[]);
@@ -964,23 +712,192 @@ mod tests {
         // Verify distribution sums to total
         assert_eq!(dist.values().sum::<usize>(), allocs.len());
     }
+    // -- reorder_queue tests -----------------------------------------------
 
     #[test]
-    fn test_sequential_first_skill_matters_most() {
-        // First skill has large SP cost — its rate dominates total time.
-        let skill_int = SkillRecord { id: 5001, name: "BigINTSkill".to_string(), primary_attribute: Attribute::Intelligence, secondary_attribute: Attribute::Memory, skill_time_constant: 10.0, prerequisites: vec![] };
-        let skill_wil = SkillRecord { id: 5002, name: "TinyWILSkill".to_string(), primary_attribute: Attribute::Willpower, secondary_attribute: Attribute::Perception, skill_time_constant: 0.5, prerequisites: vec![] };
-        let sp_int = sp_for_level(&skill_int, 1, 2); // huge
-        let sp_wil = sp_for_level(&skill_wil, 1, 2); // small
-        let state = SimulationState { entries: vec![
-            SkillSimEntry { skill_id: skill_int.id, name: skill_int.name.clone(), current_level: 1, target_level: 2, remaining_sp: sp_int, record: skill_int },
-            SkillSimEntry { skill_id: skill_wil.id, name: skill_wil.name.clone(), current_level: 1, target_level: 2, remaining_sp: sp_wil, record: skill_wil },
-        ], active_index: 0, elapsed_seconds: 0.0 };
-        // INT-heavy alloc should beat WIL-heavy when first skill is INT-primary and large.
-        let eff_int = EffectiveAttributes::from(base_attrs(27., 21., 17., 17., 17.));
-        let eff_wil = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 27.));
-        let time_with_int = project_total_time(&state, &eff_int);
-        let time_with_wil = project_total_time(&state, &eff_wil);
-        assert!(time_with_int < time_with_wil, "INT-first heavy queue benefits from INT-heavy allocation");
+    fn test_reorder_empty_returns_empty() {
+        let entries: Vec<SkillSimEntry> = vec![];
+        let skills_db: Vec<SkillRecord> = vec![];
+        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let ordered = reorder_queue(entries, &skills_db, &eff);
+        assert!(ordered.is_empty());
+    }
+
+    #[test]
+    fn test_reorder_single_entry_unchanged() {
+        let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
+        let sp_a = sp_for_level(&skill, 1, 2);
+        let entry = SkillSimEntry {
+            skill_id: skill.id,
+            name: skill.name.clone(),
+            target_level: 2,
+            remaining_sp: sp_a,
+            record: skill.clone(),
+        };
+        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let skills_db = vec![skill];
+        let ordered = reorder_queue(vec![entry], &skills_db, &eff);
+        assert_eq!(ordered.len(), 1);
+        assert_eq!(ordered[0].skill_id, 1001);
+    }
+
+    #[test]
+    fn test_reorder_respects_prerequisites() {
+        // SkillA (no prereqs) must come before SkillB (prereq: SkillA level 1).
+        let skill_a = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
+        let sp_a = sp_for_level(&skill_a, 1, 2);
+
+        let mut bonuses_prereqs = Vec::new();
+        bonuses_prereqs.push((skill_a.id, 1));
+        let skill_b = SkillRecord {
+            id: 2002,
+            name: "SkillB".to_string(),
+            primary_attribute: Attribute::Charisma,
+            secondary_attribute: Attribute::Willpower,
+            skill_time_constant: 1.0,
+            prerequisites: bonuses_prereqs,
+        };
+        let sp_b = sp_for_level(&skill_b, 1, 2);
+
+        // Put skill_b FIRST in input order — reorder must still put A first.
+        let entries = vec![
+            SkillSimEntry {
+                skill_id: skill_b.id,
+                name: skill_b.name.clone(),
+                target_level: 2,
+                remaining_sp: sp_b,
+                record: skill_b.clone(),
+            },
+            SkillSimEntry {
+                skill_id: skill_a.id,
+                name: skill_a.name.clone(),
+                target_level: 2,
+                remaining_sp: sp_a,
+                record: skill_a.clone(),
+            },
+        ];
+        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let skills_db = vec![skill_a.clone(), skill_b];
+        let ordered = reorder_queue(entries, &skills_db, &eff);
+
+        assert_eq!(ordered.len(), 2);
+        // SkillA must come before SkillB because of the prerequisite edge.
+        let pos_a = ordered.iter().position(|e| e.skill_id == skill_a.id).unwrap();
+        let pos_b = ordered.iter().position(|e| e.skill_id != skill_a.id).unwrap();
+        assert!(pos_a < pos_b, "prerequisite violated: SkillA at {} but SkillB at {}", pos_a, pos_b);
+    }
+
+    #[test]
+    fn test_reorder_clusters_same_attributes() {
+        // Create 3 INT/MEM skills and 2 WIL/PER skills — all STC=1.0 so rates are equal under uniform attrs.
+        let mut skills_db = Vec::new();
+        let mut entries = Vec::new();
+
+        for i in 0u32..5 {
+            let (primary, secondary) = if i < 3 {
+                (Attribute::Intelligence, Attribute::Memory)
+            } else {
+                (Attribute::Willpower, Attribute::Perception)
+            };
+            let skill = SkillRecord {
+                id: 4000 + i,
+                name: format!("Skill{}", i),
+                primary_attribute: primary,
+                secondary_attribute: secondary,
+                skill_time_constant: 1.0,
+                prerequisites: vec![],
+            };
+            let sp = sp_for_level(&skill, 1, 2);
+            entries.push(SkillSimEntry {
+                skill_id: skill.id,
+                name: skill.name.clone(),
+                target_level: 2,
+                remaining_sp: sp,
+                record: skill.clone(),
+            });
+            skills_db.push(skill);
+        }
+
+        // Uniform attributes → all rates identical; clustering should group by attribute pair.
+        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let ordered = reorder_queue(entries, &skills_db, &eff);
+
+        assert_eq!(ordered.len(), 5);
+
+        // Collect the primary attributes in order.
+        let primaries: Vec<Attribute> = ordered.iter().map(|e| e.record.primary_attribute).collect();
+
+        // The INT group (3 skills) and WIL group (2 skills) should each be contiguous blocks.
+        // Find where the first non-INT appears — everything before must be INT.
+        let int_end = primaries.iter().position(|&p| p != Attribute::Intelligence).unwrap_or(primaries.len());
+        assert_eq!(int_end, 3, "expected exactly 3 contiguous INT skills at start; got {:?}", primaries);
+
+        // Remaining two must both be Willpower.
+        for i in int_end..primaries.len() {
+            assert_eq!(
+                primaries[i],
+                Attribute::Willpower,
+                "expected WIL after INT block but found {:?} at position {}",
+                primaries[i],
+                i
+            );
+        }
+    }
+
+    #[test]
+    fn test_reorder_front_loads_high_rate_skills() {
+        // With skewed effective attrs (INT=27, others=17), an INT/MEM skill should train faster
+        // than a WIL/PER skill and thus be scheduled first when there are no prereqs.
+        let skill_int = SkillRecord {
+            id: 5001,
+            name: "SkillInt".to_string(),
+            primary_attribute: Attribute::Intelligence,
+            secondary_attribute: Attribute::Memory,
+            skill_time_constant: 1.0,
+            prerequisites: vec![],
+        };
+        let skill_wil = SkillRecord {
+            id: 5002,
+            name: "SkillWil".to_string(),
+            primary_attribute: Attribute::Willpower,
+            secondary_attribute: Attribute::Perception,
+            skill_time_constant: 1.0,
+            prerequisites: vec![],
+        };
+        let sp_int = sp_for_level(&skill_int, 1, 2);
+        let sp_wil = sp_for_level(&skill_wil, 1, 2);
+
+        // Put WIL first in input — high-rate INT should still win.
+        let entries = vec![
+            SkillSimEntry {
+                skill_id: skill_wil.id,
+                name: skill_wil.name.clone(),
+                target_level: 2,
+                remaining_sp: sp_wil,
+                record: skill_wil.clone(),
+            },
+            SkillSimEntry {
+                skill_id: skill_int.id,
+                name: skill_int.name.clone(),
+                target_level: 2,
+                remaining_sp: sp_int,
+                record: skill_int.clone(),
+            },
+        ];
+        // Skewed attributes: INT=27 (max), everything else 17.
+        let eff = EffectiveAttributes::from(base_attrs(27., 17., 17., 17., 17.));
+        let skills_db = vec![skill_int, skill_wil];
+        let ordered = reorder_queue(entries, &skills_db, &eff);
+
+        assert_eq!(ordered.len(), 2);
+        // The INT/MEM skill has rate_score ~ (27 + 17/2)*1e6 ≈ 35.5e6.
+        // The WIL/PER skill has rate_score ~ (17 + 17/2)*1e6 ≈ 25.5e6.
+        // Rate dominates the score (multiplied by n+1=3), so INT should be first.
+        assert_eq!(
+            ordered[0].record.primary_attribute,
+            Attribute::Intelligence,
+            "expected high-rate INT skill first but got {:?}",
+            ordered[0].record.primary_attribute
+        );
     }
 }

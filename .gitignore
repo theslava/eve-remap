@@ -21,5 +21,7 @@ Thumbs.db
 
 # Added by cargo
 
-/target
-sde_raw/*
+sde_raw/
+
+# Dev scratch files
+test_queue*.txt

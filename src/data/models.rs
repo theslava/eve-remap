@@ -13,18 +13,6 @@ pub enum Attribute {
     Willpower,
 }
 
-impl Attribute {
-    #[allow(dead_code)]
-    pub fn variants() -> [Attribute; 5] {
-        [
-            Attribute::Intelligence,
-            Attribute::Charisma,
-            Attribute::Perception,
-            Attribute::Memory,
-            Attribute::Willpower,
-        ]
-    }
-}
 impl std::fmt::Display for Attribute {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -131,19 +119,6 @@ pub struct BaseAttributes {
 }
 
 impl BaseAttributes {
-
-    #[allow(dead_code)]
-    /// Total points distributed across all attributes.
-    pub fn total(&self) -> f64 {
-        self.intelligence + self.charisma + self.perception + self.memory + self.willpower
-    }
-    #[allow(dead_code)]
-
-    /// Create a zeroed-out attribute set (useful as default/empty value).
-    pub const fn zero() -> Self {
-        BaseAttributes { intelligence: 0., charisma: 0., perception: 0., memory: 0., willpower: 0. }
-    }
-
     /// Add another attribute set pointwise.
     pub fn add(&self, other: &Self) -> Self {
         BaseAttributes {
@@ -156,15 +131,13 @@ impl BaseAttributes {
     }
 }
 
-/// A skill currently being trained by a character (from ESI /skillqueue).
+/// A skill entry from a user-provided queue file (parsed from `"Skill Name <level>"`).
 #[derive(Debug, Clone)]
 pub struct QueuedSkill {
     pub id: u32,
     pub level: u8,         // current trained level (1-5)
-    #[allow(dead_code)] pub sp: u64,           // SP earned so far toward next level
     pub duration: u64,     // total duration in seconds for this queue entry
     pub remaining_sec: u64, // seconds remaining until completion
-    #[allow(dead_code)] pub is_active: bool,   // true if this is the currently training skill
 }
 
 impl QueuedSkill {
@@ -175,16 +148,9 @@ impl QueuedSkill {
         }
         1.0 - (self.remaining_sec as f64 / self.duration as f64)
     }
-
-    #[allow(dead_code)]
-    /// Remaining SP needed to complete this queue entry.
-    pub fn remaining_sp(&self) -> u64 {
-        let progress = self.progress_fraction();
-        ((1.0 - progress) * self.sp as f64) as u64
-    }
 }
 
-/// Full character state snapshot combining ESI data with resolved SDE lookups.
+/// Full character state snapshot built from CLI arguments and local asset lookups.
 /// This is the single source of truth consumed by the optimizer.
 #[derive(Debug, Clone)]
 pub struct CharacterState {
@@ -195,9 +161,6 @@ pub struct CharacterState {
     /// Direct implant bonus values (for offline mode when --implant-bonuses is used).
     /// When non-zero, these are added back after each remap regardless of active_implant_ids.
     pub implant_bonus: BaseAttributes,
-    /// Effective attributes after applying active implant bonuses.
-
-    #[allow(dead_code)] pub effective_attributes: EffectiveAttributes,
     /// Skills queued for training, ordered by position (first is active).
     pub queued_skills: Vec<QueuedSkill>,
     /// Number of bonus neural interface remaps available (timed cooldown separate).
@@ -205,20 +168,6 @@ pub struct CharacterState {
     /// Wall-clock seconds from training start when the normal remap becomes available.
     /// Defaults to 0 (available immediately); set via --remap-available.
     pub normal_remap_available_in_secs: f64,
-
-}
-impl CharacterState {
-    /// Derive effective attributes from base values plus active implants.
-
-    #[allow(dead_code)]
-
-    pub fn recompute_effective(&mut self, implants: &[ImplantRecord]) {
-        self.effective_attributes = EffectiveAttributes::from_base_and_implants(
-            &self.base_attributes,
-            &self.active_implant_ids,
-            implants,
-        );
-    }
 }
 
 /// SP accumulated per (role × attribute) pair for one epoch.

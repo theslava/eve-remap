@@ -174,4 +174,47 @@ mod tests {
         assert!(s.contains("d"), "expected 'd' in '{}'", s);
         assert!(!s.contains("w") && !s.contains("y"));
     }
+    #[test]
+    fn test_format_duration_zero() {
+        assert_eq!(format_duration(0.0), "0s");
+    }
+
+    #[test]
+    fn test_format_duration_sub_second() {
+        // Sub-second rounds up via ceil to 1 second.
+        assert_eq!(format_duration(0.5), "1s");
+    }
+
+    #[test]
+    fn test_format_duration_exact_minute_boundary() {
+        // Exactly 60 seconds → "1m" with no trailing "0s".
+        let s = format_duration(60.0);
+        assert_eq!(s, "1m", "exact minute boundary should not show '0s'");
+    }
+
+    #[test]
+    fn test_format_duration_just_over_minute_boundary() {
+        // 61 seconds → "1m 1s".
+        assert_eq!(format_duration(61.0), "1m 1s");
+    }
+
+    #[test]
+    fn test_format_duration_exact_hour_boundary() {
+        // Exactly 3600 seconds → "1h" with no trailing minutes/seconds.
+        assert_eq!(format_duration(3600.0), "1h");
+    }
+
+    #[test]
+    fn test_format_duration_exact_day_boundary() {
+        // Exactly 86400 seconds → "1d".
+        assert_eq!(format_duration(86_400.0), "1d");
+    }
+
+    #[test]
+    fn test_format_duration_two_years_shows_days() {
+        // ~730 days (2 years) — should display as days only, not weeks or years.
+        let s = format_duration(86_400.0 * 730.0);
+        assert_eq!(s, "730d", "expected '730d' for two years but got '{}'", s);
+        assert!(!s.contains("w") && !s.contains("y"));
+    }
 }

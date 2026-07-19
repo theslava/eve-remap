@@ -16,17 +16,50 @@ echo "Gunnery 3" | cargo run --release -- optimize -q - --attributes 27:22:17:17
 cargo run --release -- optimize -q my_queue.txt --queue-out -
 ```
 
+### Example Output
+
+Running the optimizer produces a phased plan showing attribute allocations, training durations, SP summaries, and completed skills per epoch. Here's what output looks like:
+
+```text
+========================================================================
+REMAP OPTIMIZATION PLAN
+------------------------------------------------------------------------
+
+Epoch 1: Initial allocation
+  Attributes: PER=27 MEM=22 WIL=17 INT=16 CHA=16
+  Duration: 45 days 8 hours (45.3 days)
+  Pri        -     2.1M       -       -       -
+    - Gunnery 3 - 45 days 8 hours
+
+Epoch 2: Remap
+  Attributes: PER=27 MEM=22 WIL=17 INT=16 CHA=16
+  Duration: 12 days 3 hours (12.1 days)
+    - Navigation 2 - 12 days 3 hours
+
+------------------------------------------------------------------------
+Total training time: 57.4 days
+Epochs: 2
+```
+
 ## Installation
 
 Requires Rust 1.75+ (edition 2021). Zero system dependencies — no OpenSSL, pkg-config, or other C libraries needed.
 
 ```bash
-git clone https://github.com/<your>/eve-remap.git
+git clone <repo-url>
 cd eve-remap
 cargo build --release
 ```
 
-The binary is at `target/release/eve-remap`.
+The binary ends up at `target/release/eve-remap`.
+
+Alternatively, install it locally with cargo:
+
+```bash
+cargo install --path .
+```
+
+This installs the `eve-remap` binary to `$CARGO_HOME/bin` (typically `~/.cargo/bin`).
 
 ## Commands
 
@@ -77,46 +110,16 @@ cargo run --release -- optimize -q queue.txt \
   --implant-bonuses 5:2:0:0:0
 ```
 
-Without `--implant-bonuses`, every post-remap epoch resets to base=17 and loses your implant delta.</parameter>
-</function>
-</tool_call>
-<tool_call>
-<function=read>
-<parameter=i>
-find PLAN.md attributes references
+Without `--implant-bonuses`, every post-remap epoch resets to base=17 and loses your implant delta.
 
-## SP Calculation
+### Bonus Remaps and Cooldown Delay
 
-Uses the authoritative EVE Online cumulative SP table (rank 1):
+Use `--bonus-remaps` to limit extra neural interface uses, and `--remap-available` to specify when your normal cooldown expires:
 
-| Level | Cumulative SP | Incremental SP |
-|---|---|---|
-| L1    | 250          | 250            |
-| L2    | 1,414        | 1,164          |
-| L3    | 8,000        | 6,586          |
-| L4    | 45,255       | 37,255         |
-| L5    | 256,000      | 210,745        |
-
-SP for a transition = `(CUMULATIVE[to] − CUMULATIVE[from]) × skillTimeConstant`.
-
-Training rate per second = `(primaryAttribute + secondaryAttribute / 2) / 60`.
-
-Primary attribute points are worth exactly **twice** as much as secondary (`+1 primary ≡ +2 secondary`).
-
-## Remap Constraints
-
-- Base attribute value: **17** (hard floor)
-- Free points per remap: **14** distributed above base
-- Per-attribute cap: maximum **+10** add (max value = 27)
-- Valid allocations: **2,885** distributions
-- Timed cooldown: every 365 days; bonus remaps usable anytime
-
-## Architecture
-
+```bash
+# With bonus remaps and delayed normal cooldown
+cargo run --release -- optimize -q queue.txt \
+  --attributes 27:22:17:17:16 \
+  --bonus-remaps 2 \
+  --remap-available 90d
 ```
-CLI (clap) -> Optimizer -> Duration Calculator -> Data Layer (JSON)
-```
-
-- **Optimizer**: Greedy best-response per epoch. Epoch 0 fixed to current effective attributes; each subsequent epoch picks the allocation minimizing last-skill finish time across 2,885 valid distributions.
-- **Training model**: Sequential — one skill at a time in queue order. Skills carry SP forward across remaps with no rollback.
-- **Data**: Flat JSON assets (`assets/skills.json`, `assets/implants.json`) loaded once at startup.

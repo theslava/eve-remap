@@ -10,7 +10,7 @@ use clap::Parser;
 fn main() -> Result<()> {
     let cli = cli::Cli::parse();
 
-    match &cli.command {
+    match cli.command {
         cli::Commands::Optimize(args) => cmd_optimize(&args),
     }
 }
@@ -69,7 +69,7 @@ fn read_queue_content(path: &str) -> Result<String> {
     }
 }
 
-/// Parse a queue file and optimize directly without ESI.
+/// Parse a queue file and run the offline optimizer with user-provided attributes.
 fn run_optimizer_from_queue_file(
     attrs_str: &str,
     implant_bonuses_str: &str,
@@ -79,7 +79,7 @@ fn run_optimizer_from_queue_file(
     implants: &[data::models::ImplantRecord],
     remap_available_secs: f64,
 ) -> Result<data::models::OptimizationResult> {
-    use data::models::{BaseAttributes, EffectiveAttributes, QueuedSkill};
+    use data::models::{BaseAttributes, QueuedSkill};
 
     // Parse attributes string like "17:17:17:17:17" (PER:MEM:WIL:INT:CHA).
     let parts: Vec<f64> = attrs_str.split(':')
@@ -87,6 +87,15 @@ fn run_optimizer_from_queue_file(
         .collect::<Result<Vec<_>>>()?;
     if parts.len() != 5 {
         anyhow::bail!("--attributes must have exactly 5 values (PER:MEM:WIL:INT:CHA), got {}", parts.len());
+    }
+    // Validate attribute ranges (base remapped attributes are typically 17-27).
+    {
+        let names = ["PER", "MEM", "WIL", "INT", "CHA"];
+        for (i, &val) in parts.iter().enumerate() {
+            if !(17.0..=27.0).contains(&val) {
+                anyhow::bail!("{}={} is out of valid range (17-27)", names[i], val);
+            }
+        }
     }
     let base_attrs = BaseAttributes {
         perception: parts[0],
@@ -102,6 +111,15 @@ fn run_optimizer_from_queue_file(
         .collect::<Result<Vec<_>>>()?;
     if ib_parts.len() != 5 {
         anyhow::bail!("--implant-bonuses must have exactly 5 values (PER:MEM:WIL:INT:CHA), got {}", ib_parts.len());
+    }
+    // Validate implant bonus ranges (typically 0-10 per attribute).
+    {
+        let names = ["PER", "MEM", "WIL", "INT", "CHA"];
+        for (i, &val) in ib_parts.iter().enumerate() {
+            if !(0.0..=10.0).contains(&val) {
+                anyhow::bail!("{}={} is out of valid range for implant bonus (0-10)", names[i], val);
+            }
+        }
     }
     let implant_bonus = BaseAttributes {
         perception: ib_parts[0],
@@ -129,7 +147,7 @@ fn run_optimizer_from_queue_file(
         let level: u8 = tokens[0].parse::<u8>().with_context(|| format!(
             "Line {}: invalid level '{}', must be 1-5", line_num + 1, tokens[0]
         ))?;
-        if level < 1 || level > 5 {
+        if !(1..=5).contains(&level) {
             anyhow::bail!("Line {}: level {} out of range (must be 1-5)", line_num + 1, level);
         }
 
@@ -141,8 +159,7 @@ fn run_optimizer_from_queue_file(
             ))?;
 
         // level N means "train from level N-1 to N". Level 1 = from nothing.
-        let from_level = if level <= 1 { 0u8 } else { level - 1 };
-        let sp_to_next = calculator::sp_for_level(record, from_level, level);
+        let from_level = level.saturating_sub(1);
         let effective_attrs = data::models::EffectiveAttributes::from(base_attrs);
         let duration_secs = calculator::duration_seconds(
             record, from_level, level, &effective_attrs,
@@ -151,10 +168,8 @@ fn run_optimizer_from_queue_file(
         queued_skills.push(QueuedSkill {
             id: record.id,
             level: from_level, // current trained level; optimizer adds +1 for target
-            sp: sp_to_next as u64,
             duration: duration_secs.max(1.0) as u64,
             remaining_sec: duration_secs.max(1.0) as u64,
-            is_active: queued_skills.is_empty(),
         });
     }
 
@@ -177,7 +192,6 @@ fn run_optimizer_from_queue_file(
         active_implant_ids: vec![],
         implant_bonus,
         queued_skills,
-        effective_attributes: EffectiveAttributes::from(base_attrs),
         bonus_remaps,
         normal_remap_available_in_secs: remap_available_secs,
     };

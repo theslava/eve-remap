@@ -16,14 +16,9 @@ Offline-only CLI tool. No authentication, no ESI integration. Users supply their
 
 ### Planned Work
 
-- **Read from stdin / write to stdout** — pipe-friendly mode for scripting (`cat queue.txt | eve-remap optimize - > plan.json`)
 - **Export modified queue** — produce an EVE Online-importable queue file based on optimized epoch ordering
-- **ESI authentication & live data fetch** — PKCE/implicit grant flows, `/skillqueue`, `/attributes`, `/implants` endpoints (deferred)
-- **SDE download** — fetch and parse latest CCP SDE JSONL into `assets/` (deferred)
-- **Token refresh** — wire actual `/oauth/token` refresh call on expiry (deferred)
 - **Colored terminal output** — colored output and progress bars during optimization
 - **Save/load plans** — persist optimization results to/from files
-- **Multi-select character prompt** — when multiple accounts are stored
 
 ## Tech Stack
 
@@ -47,10 +42,12 @@ No async runtime, no HTTP client, no system dependencies. Four crates: `serde`, 
 ┌──────────▼───────────────────┐
 │    Multi-Epoch Optimizer     │
 │                              │
-│  Simulate skills one-by-one  │
-│  in queue order under each   │
-│  epoch's allocation. Greedy  │
-│  best-response per epoch.    │
+│  Reorder queue for attribute │
+│  locality (prereq-aware),    │
+│  then simulate sequentially  │
+│  under each epoch's alloc.   │
+│  Greedy best-response per    │
+│  epoch minimizes finish time.│
 └──────────┬───────────────────┘
            │
 ┌──────────▼───────────────────┐
@@ -196,8 +193,8 @@ Drone Navigation 2
 - [x] Queue file input (`--queue FILE`) with offline mode (`--attributes`, `--implant-bonuses`)
 
 ### Removed (deferred to later)
-- ~~Auth & ESI integration~~ — PKCE/implicit grant SSO flows, JWT introspection, account store, ESI client (`eve_esi` crate), token persistence. Deferred to a future phase.
-- ~~SDE download~~ — `download_sde()` and JSONL parser removed. Assets shipped statically in repo.
+- ~~Auth & ESI integration~~ — PKCE/implicit grant SSO flows, JWT introspection, account store, ESI client (`eve_esi` crate), token persistence, `/skillqueue`, `/attributes`, `/implants` endpoints, token refresh, multi-select character prompt. Deferred to a future phase.
+- ~~SDE download~~ — fetch and parse latest CCP SDE JSONL into `assets/`. Assets shipped statically in repo.
 
 ## Key Decisions
 

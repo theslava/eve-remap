@@ -2,7 +2,6 @@ pub mod models;
 
 use std::path::PathBuf;
 use anyhow::{Context, Result};
-use serde_json;
 
 use crate::data::models::{SkillRecord, ImplantRecord};
 
