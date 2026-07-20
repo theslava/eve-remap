@@ -16,8 +16,8 @@ pub enum Commands {
 
 #[derive(clap::Args)]
 pub struct OptimizeArgs {
-    /// Path to a file listing target skills, one per line as "Skill Name <level>" or "Skill Name <level>@<time_left>".
-    /// Use "-" to read from stdin. Example lines: "Gunnery 3", "Navigation 5@3d 12h" (partially trained)
+    /// Path to a file listing target skills, one per line.
+    /// Formats: "SkillName \<level>", "SkillName \<level>@\<duration>" (e.g., @3d12h), or "SkillName \<level>@\<sp_trained>" (e.g., @12000, @1,000,000). SP is cumulative from blank. Use "-" for stdin.
     #[arg(long, short = 'q')]
     pub queue: String,
     /// Base remapped attribute values (excluding implants).

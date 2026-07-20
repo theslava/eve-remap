@@ -79,7 +79,7 @@ fn run_optimizer_from_queue_file(
     implants: &[data::models::ImplantRecord],
     remap_available_secs: f64,
 ) -> Result<data::models::OptimizationResult> {
-    use data::models::{BaseAttributes, QueuedSkill};
+    use data::models::{BaseAttributes};
 
     // Parse attributes string like "17:17:17:17:17" (PER:MEM:WIL:INT:CHA).
     let parts: Vec<f64> = attrs_str.split(':')
@@ -139,16 +139,12 @@ fn run_optimizer_from_queue_file(
             continue;
         }
 
-        // Split on '@' first — everything after is the optional time-left duration
-        // (may contain spaces like "3d 12h"). The rest is "Skill Name <level>".
-        let (skill_level_part, remaining_time_secs) = match trimmed.rsplit_once('@') {
-            Some((before_at, dur_part)) => {
-                let secs = calculator::parse_duration(dur_part).with_context(|| format!(
-                    "Line {}: invalid time-left duration '{}'",
-                    line_num + 1, dur_part.trim()
-                ))?;
-                (before_at, Some(secs))
-            }
+        // Split on '@' first — everything after is progress info.
+        // Two mutually exclusive forms accepted:
+        //   "Skill Name <level>@<duration>"  e.g. "Navigation 5@3d 12h"
+        //   "Skill Name <level>@sp=<amount>"  e.g. "Navigation 5@sp=12000" or "@sp=12.5K"
+        let (skill_level_part, remaining_info) = match trimmed.rsplit_once('@') {
+            Some((before_at, after_at)) => (before_at, Some(after_at.trim())),
             None => (trimmed, None),
         };
 
@@ -173,28 +169,59 @@ fn run_optimizer_from_queue_file(
                 "Line {}: skill '{}' not found in database", line_num + 1, skill_name
             ))?;
 
-        // level N means "train from level N-1 to N". Level 1 = from nothing.
+        // Compute total SP and duration for this level transition.
         let from_level = level.saturating_sub(1);
         let duration_secs = calculator::duration_seconds(
             record, from_level, level, &effective_attrs,
         );
 
-        // If no explicit time-left was given, the full duration remains.
-        let remaining_sec = match remaining_time_secs {
-            Some(secs) => secs.max(0.0),
-            None => duration_secs,
+        // Parse remaining info after '@'. Disambiguation: if it ends with a time unit
+        // (d/h/m/s) it's a duration; otherwise it's an SP amount already trained.
+        let queued_skill_remaining = match remaining_info {
+            None => {
+                // No progress given — full training ahead.
+                data::models::QueuedSkillRemaining::Duration {
+                    remaining_sec: duration_secs,
+                    total_duration_secs: duration_secs,
+                }
+            }
+            Some(info) if matches!(info.chars().next_back(), Some('d'|'h'|'m'|'s')) => {
+                // Duration-based input.
+                let remaining_sec = calculator::parse_duration(info).with_context(|| format!(
+                    "Line {}: invalid time-left duration '{}'", line_num + 1, info
+                ))?;
+                data::models::QueuedSkillRemaining::Duration {
+                    remaining_sec: remaining_sec.max(0.0),
+                    total_duration_secs: duration_secs,
+                }
+            }
+            Some(info) => {
+                // SP-trained input: bare number with optional comma separators.
+                let sp_trained = calculator::parse_sp_value(info).with_context(|| format!(
+                    "Line {}: invalid SP value '{}'", line_num + 1, info
+                ))?;
+                // Validate: sp_trained must fall within [from_level, to_level) window.
+                let cum_from = calculator::CUMULATIVE_SP[from_level as usize] * record.skill_time_constant;
+                let cum_to = calculator::CUMULATIVE_SP[level as usize] * record.skill_time_constant;
+                if (sp_trained - cum_to).abs() < f64::EPSILON || sp_trained > cum_to {
+                    anyhow::bail!("Line {}: '{}' has {} SP trained but '{}' at level {} requires less than {:.0} SP — skill is already complete", line_num + 1, info, sp_trained as u64, record.name, level, cum_to);
+                }
+                if sp_trained < cum_from {
+                    anyhow::bail!("Line {}: '{}' has {} SP trained but '{}' at level {} needs at least {:.0} SP (level {} threshold)", line_num + 1, info, sp_trained as u64, record.name, level, cum_from, from_level);
+                }
+                data::models::QueuedSkillRemaining::SpTrained { sp_trained }
+            }
         };
 
-        queued_skills.push(QueuedSkill {
+        queued_skills.push(data::models::QueuedSkill {
             id: record.id,
-            level: from_level, // current trained level; optimizer adds +1 for target
-            duration: duration_secs.max(1.0) as u64,
-            remaining_sec: remaining_sec.max(1.0) as u64,
+            level: from_level,
+            remaining: queued_skill_remaining,
         });
     }
 
     if queued_skills.is_empty() {
-        anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>' or 'Skill Name <level>@<time_left>'.", path);
+        anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>', 'Skill Name <level>@<time_left>' (e.g., @3d12h), or 'Skill Name <level>@<sp_trained>' (e.g., @12000 or @1,000,000). SP is cumulative from blank.", path);
     }
     eprintln!(
         "Queue file '{}' — {} skills, effective PER={} MEM={} WIL={} INT={} CHA={}",

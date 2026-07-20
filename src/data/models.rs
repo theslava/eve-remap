@@ -131,24 +131,25 @@ impl BaseAttributes {
     }
 }
 
-/// A skill entry from a user-provided queue file (parsed from `"Skill Name <level>"`).
+/// A skill entry from a user-provided queue file.
 #[derive(Debug, Clone)]
 pub struct QueuedSkill {
     pub id: u32,
-    pub level: u8,         // current trained level (1-5)
-    pub duration: u64,     // total duration in seconds for this queue entry
-    pub remaining_sec: u64, // seconds remaining until completion
+    /// Current trained level (0-4). Target is level + 1.
+    pub level: u8,
+    /// How much is remaining for this training entry.
+    pub remaining: QueuedSkillRemaining,
 }
 
-impl QueuedSkill {
-    /// Fraction of progress through the current queue entry (0.0 to 1.0).
-    pub fn progress_fraction(&self) -> f64 {
-        if self.duration == 0 {
-            return 1.0;
-        }
-        1.0 - (self.remaining_sec as f64 / self.duration as f64)
-    }
+/// What remains to be trained for a queued skill entry.
+#[derive(Debug, Clone, Copy)]
+pub enum QueuedSkillRemaining {
+    /// Time-left input: seconds remaining out of total duration (seconds).
+    Duration { remaining_sec: f64, total_duration_secs: f64 },
+    /// SP already earned toward this level transition.
+    SpTrained { sp_trained: f64 },
 }
+
 
 /// Full character state snapshot built from CLI arguments and local asset lookups.
 /// This is the single source of truth consumed by the optimizer.

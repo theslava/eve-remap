@@ -3,7 +3,7 @@ use crate::data::models::{Attribute, EffectiveAttributes, SkillRecord};
 
 /// Cumulative SP required at each skill level for STC=1 (rank 1).
 /// Source: EVE Online forums archive — verified canonical values.
-const CUMULATIVE_SP: [f64; 6] = [0.0, 250.0, 1_414.0, 8_000.0, 45_255.0, 256_000.0]; // levels 0..5
+pub const CUMULATIVE_SP: [f64; 6] = [0.0, 250.0, 1_414.0, 8_000.0, 45_255.0, 256_000.0]; // levels 0..5
 
 /// Compute the SP required to go from current_level to target_level for a given skill.
 pub fn sp_for_level(skill: &SkillRecord, from_level: u8, to_level: u8) -> f64 {
@@ -45,6 +45,33 @@ pub fn duration_seconds(
         return f64::INFINITY;
     }
     sp_needed / rate
+}
+
+/// Parse a skill-point value string into f64.
+///
+/// Accepts plain integers/floats with optional comma thousands separators.
+/// No SI-style suffixes. Examples: `"12000"`, `"1,000,000"`, `"50000"`
+pub fn parse_sp_value(input: &str) -> anyhow::Result<f64> {
+    let trimmed = input.trim();
+    if trimmed.is_empty() {
+        anyhow::bail!("empty SP value");
+    }
+
+    // Strip commas for thousands separators.
+    let stripped: String = trimmed.chars().filter(|c| *c != ',').collect();
+
+    let value: f64 = stripped.parse::<f64>().map_err(|_| {
+        anyhow::anyhow!(
+            "invalid SP value '{}', expected a number (commas allowed)",
+            trimmed
+        )
+    })?;
+
+    if value < 0.0 {
+        anyhow::bail!("SP values must not be negative (got {})", value);
+    }
+
+    Ok(value)
 }
 
 /// Parse a human-readable duration string into total seconds.

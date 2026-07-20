@@ -1,5 +1,5 @@
 use std::time::Instant;
-use crate::calculator::{sp_rate_per_second, sp_for_level};
+use crate::calculator::{sp_rate_per_second, sp_for_level, CUMULATIVE_SP};
 use crate::data::models::*;
 
 /// Base attribute value before any remapping. Hard floor — cannot go lower.
@@ -63,10 +63,22 @@ impl CharacterState {
             let target_level = qs.level + 1;
             let total_sp = sp_for_level(record, qs.level, target_level);
 
-            // How much SP is already earned toward this transition?
-            let progress = qs.progress_fraction();
-            let earned_sp = progress * total_sp;
-            let remaining_sp = (total_sp - earned_sp).max(0.0);
+            // Resolve remaining SP based on input type.
+            let remaining_sp = match &qs.remaining {
+                QueuedSkillRemaining::Duration { remaining_sec, total_duration_secs } => {
+                    if *total_duration_secs == 0.0 {
+                        return SimulationState { entries };
+                    }
+                    let earned_fraction = 1.0 - (remaining_sec / total_duration_secs);
+                    (total_sp - earned_fraction * total_sp).max(0.0)
+                }
+                QueuedSkillRemaining::SpTrained { sp_trained } => {
+                    // sp_trained is cumulative from blank (level 0).
+                    // Remaining to reach target_level = cumulative_at(target) - sp_trained.
+                    let cum_to_target = CUMULATIVE_SP[target_level as usize] * record.skill_time_constant;
+                    (cum_to_target - *sp_trained).max(0.0)
+                }
+            };
 
             entries.push(SkillSimEntry {
                 skill_id: qs.id,
@@ -617,7 +629,8 @@ mod tests {
     /// Create a queue entry with realistic SP/duration so progress_fraction works.
     fn qe(id: u32, level: u8, total_sp: f64) -> QueuedSkill {
         let dur = (total_sp / 0.5).ceil() as u64;
-        QueuedSkill { id, level, duration: dur.max(1), remaining_sec: dur.max(1) }
+        let dur = dur.max(1) as f64;
+        QueuedSkill { id, level, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } }
     }
 
     // -- allocation generator tests ---------------------------------------
@@ -677,8 +690,8 @@ mod tests {
             let skill = SkillRecord { id: 3000 + i, name: format!("Skill{}", i), primary_attribute: primary, secondary_attribute: secondary, skill_time_constant: 2.0, prerequisites: vec![] };
             skills_db.push(skill.clone());
             let sp_needed = sp_for_level(&skill, 1, 2);
-            let dur = (sp_needed / 0.5).ceil() as u64;
-            queued_skills.push(QueuedSkill { id: skill.id, level: 1, duration: dur.max(1), remaining_sec: dur.max(1) });
+            let dur = (sp_needed / 0.5).ceil() as f64;
+            queued_skills.push(QueuedSkill { id: skill.id, level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } });
         }
         let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), queued_skills, Some(2));
         let result = optimize(&char_st, &skills_db, &[]);
