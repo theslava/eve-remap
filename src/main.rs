@@ -241,6 +241,22 @@ fn format_sp(sp: f64) -> String {
     }
 }
 
+/// Format a number with comma thousands separators (e.g., "217,300").
+fn format_number(n: f64) -> String {
+    let int = n as u64;
+    let s = int.to_string();
+    let mut result = String::with_capacity(s.len() + s.len() / 3);
+    let chars: Vec<char> = s.chars().collect();
+    let len = chars.len();
+    for (i, &c) in chars.iter().enumerate() {
+        if i > 0 && (len - i) % 3 == 0 {
+            result.push(',');
+        }
+        result.push(c);
+    }
+    result
+}
+
 fn print_table_output(result: &data::models::OptimizationResult) {
     println!("\n{}", "=".repeat(72));
     println!("REMAP OPTIMIZATION PLAN");
@@ -306,8 +322,13 @@ fn print_table_output(result: &data::models::OptimizationResult) {
     }
 
     let total_days = result.total_wall_clock_seconds / 86_400.0;
+    // Sum SP from primary buckets — each skill contributes exactly once.
+    let total_sp: f64 = result.epochs.iter()
+        .flat_map(|e| e.sp_summary.primary.values()).sum();
+
     println!("{}", "-".repeat(72));
     println!("Total training time: {:.1} days", total_days);
+    println!("Total SP in queue: {}", format_number(total_sp));
     println!("Epochs: {}", result.epochs.len());
     if result.baseline_wall_clock_seconds > 0.0 {
         let baseline_days = result.baseline_wall_clock_seconds / 86_400.0;

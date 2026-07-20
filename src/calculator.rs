@@ -147,41 +147,71 @@ pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
 }
 
 /// Format seconds as the two most significant time units (e.g., "5d 13h").
+/// Rounds the least-significant displayed unit based on discarded lower units.
 pub fn format_duration(seconds: f64) -> String {
-    let mut secs = seconds.max(0.0);
-    let days = (secs / 86_400.0) as u64;
-    secs -= days as f64 * 86_400.0;
-    let hours = (secs / 3_600.0) as u64;
-    secs -= hours as f64 * 3_600.0;
-    let minutes = (secs / 60.0) as u64;
-    secs -= minutes as f64 * 60.0;
-    let remaining_secs = secs.ceil() as u64;
+    let secs = seconds.max(0.0);
 
-    // Collect non-zero components in order of significance.
-    let units = [
-        ("d", days),
-        ("h", hours),
-        ("m", minutes),
-        ("s", remaining_secs),
-    ];
+    // Decompose top-down into integer components, keeping floating-point remainders.
+    let d_i = (secs / 86_400.0).floor() as u64;
+    let rem_d = secs - d_i as f64 * 86_400.0;
+    let h_i = (rem_d / 3_600.0).floor() as u64;
+    let rem_h = rem_d - h_i as f64 * 3_600.0;
+    let m_i = (rem_h / 60.0).floor() as u64;
+    let rem_m = rem_h - m_i as f64 * 60.0;
+    let s_i = rem_m.ceil() as u64;
 
-    let entries: Vec<(&str, u64)> = units.iter().filter(|(_, v)| *v > 0).copied().collect();
-
-    if entries.is_empty() {
+    if d_i == 0 && h_i == 0 && m_i == 0 && s_i == 0 {
         return "0s".to_string();
     }
 
-    // If we only have one unit, show it alone.
-    if entries.len() == 1 {
-        return format!("{}{}", entries[0].1, entries[0].0);
-    }
+    let vals = [(d_i, "d"), (h_i, "h"), (m_i, "m"), (s_i, "s")];
+    let nz: Vec<usize> = (0..4).filter(|&i| vals[i].0 > 0).collect();
 
-    // Show top-2 units. The second unit already absorbed lower remainders via ceil().
-    format!(
-        "{}{} {}{}",
-        entries[0].1, entries[0].0,
-        entries[1].1, entries[1].0
-    )
+    match nz.len() {
+        1 => format!("{}{}", vals[nz[0]].0, vals[nz[0]].1),
+        _ => {
+            // We always display top-2 non-zero units. Anything beyond that is discarded
+            // and used to round the second unit up.
+            let first = nz[0];
+            let second = nz[1];
+            let has_discarded = nz.len() > 2;
+
+            let mut v1 = vals[first].0;
+            let mut v2 = vals[second].0;
+
+            // Round up the second unit if there's discarded content >= half of it.
+            if has_discarded {
+                let threshold = match second {
+                    0 => unreachable!(),     // days — nothing below can be discarded when d is first
+                    1 => 1_800.0_f64,        // 30 min in seconds → rounds hour
+                    2 => 30.0_f64,           // 30 sec → rounds minute
+                    3 => 0.0,                // seconds — last unit, already ceiled
+                    _ => unreachable!(),
+                };
+                // The "discarded value" is the total time in seconds from all units after `second`.
+                let discarded_secs: f64 = (nz.iter().skip(2))
+                    .map(|&i| vals[i].0 as f64 * [86_400., 3_600., 60., 1.][i])
+                    .sum();
+                if discarded_secs >= threshold {
+                    v2 += 1;
+                }
+            }
+
+            // Cascade overflow from second into first (e.g., 60m→1h, 24h→1d).
+            let cascade = [0u64, 24, 60, 60][second];
+            if cascade > 0 && v2 >= cascade {
+                v2 -= cascade;
+                v1 += 1;
+            }
+
+            // Build result — skip zero-valued second unit after cascade.
+            match (v1, v2) {
+                (n, 0) => format!("{}{}", n, vals[first].1),
+                (a, b) if a > 0 && b > 0 => format!("{}{} {}{}", a, vals[first].1, b, vals[second].1),
+                _ => unreachable!(),
+            }
+        }
+    }
 }
 
 #[cfg(test)]
@@ -314,6 +344,22 @@ mod tests {
         let s = format_duration(86_400.0 * 730.0);
         assert_eq!(s, "730d", "expected '730d' for two years but got '{}'", s);
         assert!(!s.contains("w") && !s.contains("y"));
+    }
+
+    #[test]
+    fn test_format_duration_round_when_discarding() {
+        // Rounding applies when 3+ non-zero units exist and we show top-2.
+        // 1d 11h 30m → shows d,h; discards m=30 >= threshold(1800s) → rounds h up
+        let s = format_duration(86_400.0 + 11.0 * 3_600.0 + 30.0 * 60.0);
+        assert_eq!(s, "1d 12h", "expected '1d 12h' but got '{}'", s);
+
+        // 1d 11h 29m → discards m=29 < 1800s → no round
+        let s = format_duration(86_400.0 + 11.0 * 3_600.0 + 29.0 * 60.0);
+        assert_eq!(s, "1d 11h", "expected '1d 11h' but got '{}'", s);
+
+        // 5h 59m 30s → shows h,m; discards s=30 >= threshold(30s) → rounds m up to 60, cascades to h
+        let s = format_duration(5.0 * 3_600.0 + 59.0 * 60.0 + 30.0);
+        assert_eq!(s, "6h", "expected '6h' for 5h 59m 30s but got '{}'", s);
     }
 
     #[test]
