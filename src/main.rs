@@ -138,14 +138,28 @@ fn run_optimizer_from_queue_file(
             continue;
         }
 
-        // Parse "Skill Name <level>" — level is the last token, skill name is everything before it.
+        // Parse "Skill Name <level>" or "Skill Name <level>@<time_left>".
         let tokens: Vec<&str> = trimmed.rsplitn(2, |c: char| c.is_whitespace()).collect();
         if tokens.len() != 2 {
             anyhow::bail!("Line {}: expected 'Skill Name <level>', got '{}'", line_num + 1, trimmed);
         }
 
-        let level: u8 = tokens[0].parse::<u8>().with_context(|| format!(
-            "Line {}: invalid level '{}', must be 1-5", line_num + 1, tokens[0]
+        // The last token may have an optional "@<duration>" suffix for partial training progress.
+        let (level_str, remaining_time_secs) = match tokens[0].find('@') {
+            Some(pos) => {
+                let lvl_part = &tokens[0][..pos];
+                let dur_part = &tokens[0][pos + 1..];
+                let secs = calculator::parse_duration(dur_part).with_context(|| format!(
+                    "Line {}: invalid time-left duration '{}' after '@' in '{}'",
+                    line_num + 1, dur_part, tokens[0]
+                ))?;
+                (lvl_part, Some(secs))
+            }
+            None => (tokens[0], None),
+        };
+
+        let level: u8 = level_str.parse::<u8>().with_context(|| format!(
+            "Line {}: invalid level '{}', must be 1-5", line_num + 1, level_str
         ))?;
         if !(1..=5).contains(&level) {
             anyhow::bail!("Line {}: level {} out of range (must be 1-5)", line_num + 1, level);
@@ -165,16 +179,22 @@ fn run_optimizer_from_queue_file(
             record, from_level, level, &effective_attrs,
         );
 
+        // If no explicit time-left was given, the full duration remains.
+        let remaining_sec = match remaining_time_secs {
+            Some(secs) => secs.max(0.0),
+            None => duration_secs,
+        };
+
         queued_skills.push(QueuedSkill {
             id: record.id,
             level: from_level, // current trained level; optimizer adds +1 for target
             duration: duration_secs.max(1.0) as u64,
-            remaining_sec: duration_secs.max(1.0) as u64,
+            remaining_sec: remaining_sec.max(1.0) as u64,
         });
     }
 
     if queued_skills.is_empty() {
-        anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>'.", path);
+        anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>' or 'Skill Name <level>@<time_left>'.", path);
     }
     eprintln!(
         "Queue file '{}' — {} skills, effective PER={} MEM={} WIL={} INT={} CHA={}",

@@ -47,8 +47,106 @@ pub fn duration_seconds(
     sp_needed / rate
 }
 
+/// Parse a human-readable duration string into total seconds.
+///
+/// Accepts up to two components, each consisting of a numeric value followed by a unit
+/// suffix (`d`, `h`, `m`, `s`). Components may be separated by a space or concatenated.
+/// This is the inverse of [`format_duration`].
+///
+/// Valid examples: `"5d"`, `"3d 12h"`, `"3d12h"`, `"5h30m"`, `"1m 30s"`, `"90s"`, `"0s"`.
+pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
+    let input = input.trim();
+    if input.is_empty() {
+        anyhow::bail!("duration string is empty");
+    }
+
+    // Extract individual <number><unit> tokens from the input.
+    // We scan character-by-character, collecting digit/dot runs and expecting a unit after each.
+    let mut total_secs: f64 = 0.0;
+    let mut component_count: usize = 0;
+    let mut chars = input.chars().peekable();
+
+    loop {
+        // Skip whitespace between components.
+        while let Some(&c) = chars.peek() {
+            if c.is_whitespace() {
+                chars.next();
+            } else {
+                break;
+            }
+        }
+
+        // If no more characters, we're done.
+        if chars.peek().is_none() {
+            break;
+        }
+
+        // Collect the numeric value (digits and at most one decimal point).
+        let mut num_str = String::new();
+        let mut has_dot = false;
+        while let Some(&c) = chars.peek() {
+            if c.is_ascii_digit() || (c == '.' && !has_dot) {
+                num_str.push(c);
+                chars.next();
+                if c == '.' {
+                    has_dot = true;
+                }
+            } else {
+                break;
+            }
+        }
+
+        if num_str.is_empty() {
+            anyhow::bail!(
+                "expected a number in duration string '{}' but found non-numeric character",
+                input
+            );
+        }
+
+        // Next character must be the unit suffix.
+        let unit_char = match chars.next() {
+            Some(c) => c,
+            None => anyhow::bail!(
+                "duration component '{}' is missing a unit suffix (expected d, h, m, or s)",
+                num_str
+            ),
+        };
+
+        let value: f64 = num_str.parse::<f64>().map_err(|_| {
+            anyhow::anyhow!("invalid numeric value '{}' in duration '{}'", num_str, input)
+        })?;
+
+        if value < 0.0 {
+            anyhow::bail!("duration values must not be negative (got {})", value);
+        }
+
+        match unit_char {
+            'd' => total_secs += value * 86_400.0,
+            'h' => total_secs += value * 3_600.0,
+            'm' => total_secs += value * 60.0,
+            's' => total_secs += value,
+            other => anyhow::bail!(
+                "unknown duration unit '{}' after value {}; expected d, h, m, or s",
+                other,
+                value
+            ),
+        }
+
+        component_count += 1;
+        // Allow up to two components (matching format_duration output).
+        if component_count > 2 {
+            anyhow::bail!(
+                "duration '{}' has too many components (expected 1-2, got {})",
+                input,
+                component_count
+            );
+        }
+    }
+
+    Ok(total_secs)
+}
+
 /// Format seconds as the two most significant time units (e.g., "5d 13h").
-/// Rounds at the boundary of the second unit — sub-units push it up to the next integer.
 pub fn format_duration(seconds: f64) -> String {
     let mut secs = seconds.max(0.0);
     let days = (secs / 86_400.0) as u64;
@@ -216,5 +314,113 @@ mod tests {
         let s = format_duration(86_400.0 * 730.0);
         assert_eq!(s, "730d", "expected '730d' for two years but got '{}'", s);
         assert!(!s.contains("w") && !s.contains("y"));
+    }
+
+    #[test]
+    fn test_parse_duration_single_day() {
+        assert_eq!(parse_duration("5d").unwrap(), 5.0 * 86_400.0);
+    }
+
+    #[test]
+    fn test_parse_duration_two_components() {
+        assert_eq!(parse_duration("3d 12h").unwrap(), 3.0 * 86_400.0 + 12.0 * 3_600.0);
+    }
+
+    #[test]
+    fn test_parse_duration_hours_minutes() {
+        assert_eq!(parse_duration("5h 30m").unwrap(), 5.0 * 3_600.0 + 30.0 * 60.0);
+    }
+
+    #[test]
+    fn test_parse_duration_minutes_seconds() {
+        assert_eq!(parse_duration("1m 30s").unwrap(), 90.0);
+    }
+
+    #[test]
+    fn test_parse_duration_zero() {
+        assert_eq!(parse_duration("0s").unwrap(), 0.0);
+    }
+
+    #[test]
+    fn test_parse_duration_single_hour() {
+        assert_eq!(parse_duration("90s").unwrap(), 90.0);
+    }
+
+    #[test]
+    fn test_parse_duration_whitespace_tolerance() {
+        assert_eq!(parse_duration("  3d 12h  ").unwrap(), 3.0 * 86_400.0 + 12.0 * 3_600.0);
+    }
+
+    #[test]
+    fn test_parse_duration_too_many_components() {
+        assert!(parse_duration("1d 2h 3m").is_err());
+    }
+
+    #[test]
+    fn test_parse_duration_empty_string() {
+        assert!(parse_duration("").is_err());
+    }
+
+    #[test]
+    fn test_parse_duration_bad_unit() {
+        assert!(parse_duration("5w").is_err());
+    }
+
+    #[test]
+    fn test_parse_duration_missing_value() {
+        assert!(parse_duration("d").is_err());
+    }
+
+    #[test]
+    fn test_parse_duration_concatenated_days_hours() {
+        // "3d12h" without space — common in game UI copy-paste.
+        assert_eq!(parse_duration("3d12h").unwrap(), 3.0 * 86_400.0 + 12.0 * 3_600.0);
+    }
+
+    #[test]
+    fn test_parse_duration_concatenated_hours_minutes() {
+        assert_eq!(parse_duration("5h30m").unwrap(), 5.0 * 3_600.0 + 30.0 * 60.0);
+    }
+
+    #[test]
+    fn test_parse_format_roundtrip_concatenated() {
+        let original = 3.0 * 86_400.0 + 7.0 * 3_600.0; // 3d 7h
+        let formatted = format_duration(original);   // "3d 7h" with space
+        // Re-parse the spaced output as if it were concatenated.
+        let compact = formatted.replace(' ', "");     // "3d7h"
+        let parsed = parse_duration(&compact).unwrap();
+        assert_eq!(parsed, original);
+    }
+
+    #[test]
+    fn test_parse_format_roundtrip_single_unit() {
+        let original = 86_400.0; // 1 day exact
+        let formatted = format_duration(original);
+        let parsed = parse_duration(&formatted).unwrap();
+        assert_eq!(parsed, original);
+    }
+
+    #[test]
+    fn test_parse_format_roundtrip_two_units() {
+        let original = 3.0 * 86_400.0 + 7.0 * 3_600.0; // 3d 7h
+        let formatted = format_duration(original);
+        let parsed = parse_duration(&formatted).unwrap();
+        assert_eq!(parsed, original);
+    }
+
+    #[test]
+    fn test_parse_format_roundtrip_hours_minutes() {
+        let original = 2.0 * 3_600.0 + 45.0 * 60.0; // 2h 45m
+        let formatted = format_duration(original);
+        let parsed = parse_duration(&formatted).unwrap();
+        assert_eq!(parsed, original);
+    }
+
+    #[test]
+    fn test_parse_format_roundtrip_minutes_seconds() {
+        let original = 12.0 * 60.0 + 30.0; // 12m 30s
+        let formatted = format_duration(original);
+        let parsed = parse_duration(&formatted).unwrap();
+        assert_eq!(parsed, original);
     }
 }
