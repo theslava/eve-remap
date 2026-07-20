@@ -138,26 +138,26 @@ fn run_optimizer_from_queue_file(
             continue;
         }
 
-        // Parse "Skill Name <level>" or "Skill Name <level>@<time_left>".
-        let tokens: Vec<&str> = trimmed.rsplitn(2, |c: char| c.is_whitespace()).collect();
-        if tokens.len() != 2 {
-            anyhow::bail!("Line {}: expected 'Skill Name <level>', got '{}'", line_num + 1, trimmed);
-        }
-
-        // The last token may have an optional "@<duration>" suffix for partial training progress.
-        let (level_str, remaining_time_secs) = match tokens[0].find('@') {
-            Some(pos) => {
-                let lvl_part = &tokens[0][..pos];
-                let dur_part = &tokens[0][pos + 1..];
+        // Split on '@' first — everything after is the optional time-left duration
+        // (may contain spaces like "3d 12h"). The rest is "Skill Name <level>".
+        let (skill_level_part, remaining_time_secs) = match trimmed.rsplit_once('@') {
+            Some((before_at, dur_part)) => {
                 let secs = calculator::parse_duration(dur_part).with_context(|| format!(
-                    "Line {}: invalid time-left duration '{}' after '@' in '{}'",
-                    line_num + 1, dur_part, tokens[0]
+                    "Line {}: invalid time-left duration '{}'",
+                    line_num + 1, dur_part.trim()
                 ))?;
-                (lvl_part, Some(secs))
+                (before_at, Some(secs))
             }
-            None => (tokens[0], None),
+            None => (trimmed, None),
         };
 
+        // Parse "Skill Name <level>" from the part before '@'.
+        let tokens: Vec<&str> = skill_level_part.rsplitn(2, |c: char| c.is_whitespace()).collect();
+        if tokens.len() != 2 {
+            anyhow::bail!("Line {}: expected 'Skill Name <level>', got '{}'", line_num + 1, skill_level_part);
+        }
+
+        let level_str = tokens[0];
         let level: u8 = level_str.parse::<u8>().with_context(|| format!(
             "Line {}: invalid level '{}', must be 1-5", line_num + 1, level_str
         ))?;
