@@ -128,7 +128,8 @@ fn run_optimizer_from_queue_file(
         intelligence: ib_parts[3],
         charisma: ib_parts[4],
     };
-
+    // Effective attributes including implants — used for duration calculations below.
+    let effective_attrs = data::models::EffectiveAttributes::from(base_attrs.add(&implant_bonus));
     // Read from file or stdin (when path is "-").
     let content = read_queue_content(path)?;
     let mut queued_skills = Vec::new();
@@ -174,7 +175,6 @@ fn run_optimizer_from_queue_file(
 
         // level N means "train from level N-1 to N". Level 1 = from nothing.
         let from_level = level.saturating_sub(1);
-        let effective_attrs = data::models::EffectiveAttributes::from(base_attrs);
         let duration_secs = calculator::duration_seconds(
             record, from_level, level, &effective_attrs,
         );
