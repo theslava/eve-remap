@@ -32,9 +32,10 @@ cargo test           # run all tests
 ## Test Commands
 
 ```bash
-cargo test                    # full suite (calculator, optimizer)
+cargo test                    # full suite (calculator, optimizer, parser)
 cargo test calculator::tests  # only calculator module
 cargo test optimizer::tests   # only optimizer module
+cargo test parser::tests      # only parser module
 ```
 
 ## Code Style
@@ -61,9 +62,10 @@ Full specification is in [PLAN.md](../PLAN.md). Essentials:
 
 ```
 src/
-├── main.rs           — CLI entrypoint, command dispatch, output formatters, queue file parser
+├── main.rs           — CLI entrypoint, command dispatch, output formatters
 ├── cli.rs            — clap derive argument definitions (--queue, --attributes, --implant-bonuses, --remap-available, etc.)
 ├── calculator.rs     — SP formula, rate computation, duration helpers, format_duration
+├── parser.rs         — queue file parser, attribute/implant string parsers (pure functions, tested)
 ├── optimizer.rs      — multi-epoch allocation search with simulation engine
 └── data/
     ├── mod.rs        — load_skills(), load_implants() facades

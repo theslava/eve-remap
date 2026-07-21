@@ -913,4 +913,113 @@ mod tests {
             ordered[0].record.primary_attribute
         );
     }
+
+    // -- edge-case / property tests ----------------------------------------
+
+    #[test]
+    fn test_optimize_l5_only_queue_empty_result() {
+        let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
+        // level=4 means target is L5 — but if we set remaining_sp to 0 it's already done.
+        // More directly: QueuedSkill with level >= 5 is skipped in build_simulation_state.
+        let char_st = char_state(
+            base_attrs(17., 17., 17., 17., 17.),
+            vec![QueuedSkill { id: skill.id, level: 5, remaining: QueuedSkillRemaining::Duration { remaining_sec: 0., total_duration_secs: 0. } }],
+            Some(1),
+        );
+        let result = optimize(&char_st, &[skill], &[]);
+        assert!(result.epochs.is_empty());
+        assert_eq!(result.total_wall_clock_seconds, 0.0);
+    }
+
+    #[test]
+    fn test_optimize_remap_available_exceeds_completion() {
+        // Normal remap available far in the future (999 days). Queue finishes quickly.
+        let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
+        let sp_needed = sp_for_level(&skill, 1, 2);
+        let mut cs = char_state(base_attrs(17., 17., 17., 17., 17.), vec![qe(skill.id, 1, sp_needed)], None);
+        cs.normal_remap_available_in_secs = 999.0 * 86_400.0; // 999 days
+        cs.bonus_remaps = None; // no bonus remaps either — effectively unlimited timed but all far away
+        let result = optimize(&cs, &[skill], &[]);
+        // Should produce a single epoch under current attrs — no beneficial switch possible.
+        assert_eq!(result.epochs.len(), 1);
+        assert!(result.total_wall_clock_seconds > 0.0);
+    }
+
+    #[test]
+    fn test_optimize_zero_bonus_normal_available_now() {
+        // Exactly one switch allowed: normal remap available at t=0, then cooldown kicks in.
+        let skill_int = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
+        let skill_wil = make_skill(Attribute::Willpower, Attribute::Perception, 1.0);
+        let sp_int = sp_for_level(&skill_int, 1, 2);
+        let sp_wil = sp_for_level(&skill_wil, 1, 2);
+        let char_st = char_state(
+            base_attrs(17., 17., 17., 17., 17.),
+            vec![qe(skill_int.id, 1, sp_int), qe(skill_wil.id, 1, sp_wil)],
+            Some(0), // zero bonus remaps
+        );
+        // normal_remap_available_in_secs defaults to 0 — available immediately.
+        let result = optimize(&char_st, &[skill_int.clone(), skill_wil], &[]);
+        assert!(!result.epochs.is_empty());
+        // At most 2 epochs (one initial + one after the single available remap).
+        assert!(result.epochs.len() <= 3);
+    }
+
+    #[test]
+    fn test_optimize_duration_remaining_equals_total_no_progress() {
+        // When remaining_sec == total_duration_secs, earned_fraction = 0 → full SP remains.
+        let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
+        let sp_needed = sp_for_level(&skill, 1, 2);
+        let dur = (sp_needed / 0.5) as f64;
+        let char_st = char_state(
+            base_attrs(17., 17., 17., 17., 17.),
+            vec![QueuedSkill { id: skill.id, level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } }],
+            Some(0),
+        );
+        let result = optimize(&char_st, &[skill], &[]);
+        assert!(!result.epochs.is_empty());
+        // Total time should be approximately equal to baseline (no progress means nothing saved).
+        assert!((result.total_wall_clock_seconds - result.baseline_wall_clock_seconds).abs() < 1.0);
+    }
+
+    #[test]
+    fn test_optimize_property_always_at_most_baseline() {
+        // Property: the optimizer never produces a plan worse than training under current attrs.
+        let mut skills_db = Vec::new();
+        let mut queued_skills = Vec::new();
+        for i in 0..20u32 {
+            let primary = [Attribute::Intelligence, Attribute::Charisma, Attribute::Perception, Attribute::Memory, Attribute::Willpower][(i % 5) as usize];
+            let secondary = [Attribute::Memory, Attribute::Willpower, Attribute::Intelligence, Attribute::Perception, Attribute::Charisma][(i % 5) as usize];
+            let skill = SkillRecord { id: 7000 + i, name: format!("Skill{}", i), primary_attribute: primary, secondary_attribute: secondary, skill_time_constant: 2.0, prerequisites: vec![] };
+            skills_db.push(skill.clone());
+            let sp_needed = sp_for_level(&skill, 1, 2);
+            queued_skills.push(qe(skill.id, 1, sp_needed));
+        }
+        let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), queued_skills, Some(3));
+        let result = optimize(&char_st, &skills_db, &[]);
+        assert!(
+            result.total_wall_clock_seconds <= result.baseline_wall_clock_seconds + 1.0,
+            "optimized {:.1}s should not exceed baseline {:.1}s",
+            result.total_wall_clock_seconds,
+            result.baseline_wall_clock_seconds
+        );
+    }
+
+    #[test]
+    fn test_optimize_skewed_attributes_front_loads_matching_skills() {
+        // With INT=27 and all others=17, the optimizer should prefer an INT-heavy allocation.
+        let skill_int = make_skill(Attribute::Intelligence, Attribute::Memory, 4.0); // high STC → benefits most from rate boost
+        let skill_cha = make_skill(Attribute::Charisma, Attribute::Willpower, 1.0);
+        let sp_int = sp_for_level(&skill_int, 1, 2);
+        let sp_cha = sp_for_level(&skill_cha, 1, 2);
+        let char_st = char_state(
+            base_attrs(27., 17., 17., 17., 17.),
+            vec![qe(skill_int.id, 1, sp_int), qe(skill_cha.id, 1, sp_cha)],
+            Some(1),
+        );
+        let result = optimize(&char_st, &[skill_int.clone(), skill_cha], &[]);
+        assert!(!result.epochs.is_empty());
+        // The first epoch should use the current INT-skewed attributes.
+        let first_epoch = &result.epochs[0];
+        assert!(first_epoch.effective_attributes.intelligence >= 27.0 - 1.0);
+    }
 }

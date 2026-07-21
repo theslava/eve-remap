@@ -69,9 +69,10 @@ No async runtime, no HTTP client, no system dependencies. Four crates: `serde`, 
 eve-remap/
 ├── Cargo.toml
 ├── src/
-│   ├── main.rs         — CLI entrypoint, command dispatch, output formatters, queue file parser
+│   ├── main.rs         — CLI entrypoint, command dispatch, output formatters
 │   ├── cli.rs          — clap derive argument definitions (--queue, --attributes, --implant-bonuses, etc.)
 │   ├── calculator.rs   — SP formula, rate computation, duration helpers, format_duration
+│   ├── parser.rs       — queue file parser, attribute/implant string parsers (pure functions, tested)
 │   ├── optimizer.rs    — multi-epoch allocation search with simulation engine
 │   └── data/
 │       ├── mod.rs      — load_skills(), load_implants() facades
@@ -177,20 +178,26 @@ Drone Navigation 2
 ### Phase 2 — Offline Optimizer ✅
 - [x] Domain models mapping API responses to internal types in `data/models.rs`
 - [x] Character state snapshot combining user input + assets lookups
-- [x] Queue file parser (`main.rs`): parse "Skill Name <level>" format
+- [x] Queue file parser extracted to `parser.rs`: pure functions for attributes, implant bonuses, and queue parsing (~45 tests)
 
 ### Phase 3 — Multi-Epoch Optimizer ✅
 - [x] Simulation engine: advance queue sequentially through epochs at varying rates
 - [x] Allocation generator: backtracking search producing valid attribute distributions
 - [x] Greedy allocation search per epoch (minimize last-skill finish time)
 - [x] Output phased plan with table and JSON formats
-- [x] Optimizer tests covering allocation generation, epoch simulation, and greedy scheduling
+- [x] Optimizer tests covering allocation generation, epoch simulation, greedy scheduling, edge cases (L5-only, remap cooldown), property invariant (optimized ≤ baseline)
 
 ### Phase 4 — CLI Polish ✅
 - [x] All commands wired up with clap derive subcommands
 - [x] Human-readable output: table per epoch showing allocation, which skills complete, projected dates
 - [x] JSON output format for scripting (`--json`)
 - [x] Queue file input (`--queue FILE`) with offline mode (`--attributes`, `--implant-bonuses`)
+
+### Phase 5 — Test Coverage ✅
+- [x] Extracted `src/parser.rs` with testable pure functions (`parse_attributes`, `parse_implant_bonuses`, `parse_queue`)
+- [x] 45+ unit tests across parser module: format variants, progress disambiguation, error messages, boundary values
+- [x] Edge-case optimizer tests: L5-only queues, remap-available-exceeds-completion, zero-bonus-single-switch, duration-no-progress
+- [x] Property test: optimizer result never exceeds baseline wall-clock time
 
 ### Removed (deferred to later)
 - ~~Auth & ESI integration~~ — PKCE/implicit grant SSO flows, JWT introspection, account store, ESI client (`eve_esi` crate), token persistence, `/skillqueue`, `/attributes`, `/implants` endpoints, token refresh, multi-select character prompt. Deferred to a future phase.

@@ -2,6 +2,7 @@ mod calculator;
 mod cli;
 mod data;
 mod optimizer;
+mod parser;
 
 use anyhow::{Context, Result};
 use std::io::{self, Read};
@@ -79,150 +80,13 @@ fn run_optimizer_from_queue_file(
     implants: &[data::models::ImplantRecord],
     remap_available_secs: f64,
 ) -> Result<data::models::OptimizationResult> {
-    use data::models::{BaseAttributes};
-
-    // Parse attributes string like "17:17:17:17:17" (PER:MEM:WIL:INT:CHA).
-    let parts: Vec<f64> = attrs_str.split(':')
-        .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid attribute value: {}", s)))
-        .collect::<Result<Vec<_>>>()?;
-    if parts.len() != 5 {
-        anyhow::bail!("--attributes must have exactly 5 values (PER:MEM:WIL:INT:CHA), got {}", parts.len());
-    }
-    // Validate attribute ranges (base remapped attributes are typically 17-27).
-    {
-        let names = ["PER", "MEM", "WIL", "INT", "CHA"];
-        for (i, &val) in parts.iter().enumerate() {
-            if !(17.0..=27.0).contains(&val) {
-                anyhow::bail!("{}={} is out of valid range (17-27)", names[i], val);
-            }
-        }
-    }
-    let base_attrs = BaseAttributes {
-        perception: parts[0],
-        memory: parts[1],
-        willpower: parts[2],
-        intelligence: parts[3],
-        charisma: parts[4],
-    };
-
-    // Parse implant bonus string like "0:0:0:0:0" (PER:MEM:WIL:INT:CHA).
-    let ib_parts: Vec<f64> = implant_bonuses_str.split(':')
-        .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid implant bonus value: {}", s)))
-        .collect::<Result<Vec<_>>>()?;
-    if ib_parts.len() != 5 {
-        anyhow::bail!("--implant-bonuses must have exactly 5 values (PER:MEM:WIL:INT:CHA), got {}", ib_parts.len());
-    }
-    // Validate implant bonus ranges (typically 0-10 per attribute).
-    {
-        let names = ["PER", "MEM", "WIL", "INT", "CHA"];
-        for (i, &val) in ib_parts.iter().enumerate() {
-            if !(0.0..=10.0).contains(&val) {
-                anyhow::bail!("{}={} is out of valid range for implant bonus (0-10)", names[i], val);
-            }
-        }
-    }
-    let implant_bonus = BaseAttributes {
-        perception: ib_parts[0],
-        memory: ib_parts[1],
-        willpower: ib_parts[2],
-        intelligence: ib_parts[3],
-        charisma: ib_parts[4],
-    };
-    // Effective attributes including implants — used for duration calculations below.
+    let base_attrs = parser::parse_attributes(attrs_str)?;
+    let implant_bonus = parser::parse_implant_bonuses(implant_bonuses_str)?;
     let effective_attrs = data::models::EffectiveAttributes::from(base_attrs.add(&implant_bonus));
-    // Read from file or stdin (when path is "-").
+
     let content = read_queue_content(path)?;
-    let mut queued_skills = Vec::new();
-    for (line_num, line) in content.lines().enumerate() {
-        let trimmed = line.trim();
-        if trimmed.is_empty() || trimmed.starts_with('#') {
-            continue;
-        }
+    let queued_skills = parser::parse_queue(&content, skills_db, &effective_attrs, path)?;
 
-        // Split on '@' first — everything after is progress info.
-        // Two mutually exclusive forms accepted:
-        //   "Skill Name <level>@<duration>"  e.g. "Navigation 5@3d 12h"
-        //   "Skill Name <level>@sp=<amount>"  e.g. "Navigation 5@sp=12000" or "@sp=12.5K"
-        let (skill_level_part, remaining_info) = match trimmed.rsplit_once('@') {
-            Some((before_at, after_at)) => (before_at, Some(after_at.trim())),
-            None => (trimmed, None),
-        };
-
-        // Parse "Skill Name <level>" from the part before '@'.
-        let tokens: Vec<&str> = skill_level_part.rsplitn(2, |c: char| c.is_whitespace()).collect();
-        if tokens.len() != 2 {
-            anyhow::bail!("Line {}: expected 'Skill Name <level>', got '{}'", line_num + 1, skill_level_part);
-        }
-
-        let level_str = tokens[0];
-        let level: u8 = level_str.parse::<u8>().with_context(|| format!(
-            "Line {}: invalid level '{}', must be 1-5", line_num + 1, level_str
-        ))?;
-        if !(1..=5).contains(&level) {
-            anyhow::bail!("Line {}: level {} out of range (must be 1-5)", line_num + 1, level);
-        }
-
-        let skill_name = tokens[1];
-        let record = skills_db.iter()
-            .find(|s| s.name.eq_ignore_ascii_case(skill_name))
-            .ok_or_else(|| anyhow::anyhow!(
-                "Line {}: skill '{}' not found in database", line_num + 1, skill_name
-            ))?;
-
-        // Compute total SP and duration for this level transition.
-        let from_level = level.saturating_sub(1);
-        let duration_secs = calculator::duration_seconds(
-            record, from_level, level, &effective_attrs,
-        );
-
-        // Parse remaining info after '@'. Disambiguation: if it ends with a time unit
-        // (d/h/m/s) it's a duration; otherwise it's an SP amount already trained.
-        let queued_skill_remaining = match remaining_info {
-            None => {
-                // No progress given — full training ahead.
-                data::models::QueuedSkillRemaining::Duration {
-                    remaining_sec: duration_secs,
-                    total_duration_secs: duration_secs,
-                }
-            }
-            Some(info) if matches!(info.chars().next_back(), Some('d'|'h'|'m'|'s')) => {
-                // Duration-based input.
-                let remaining_sec = calculator::parse_duration(info).with_context(|| format!(
-                    "Line {}: invalid time-left duration '{}'", line_num + 1, info
-                ))?;
-                data::models::QueuedSkillRemaining::Duration {
-                    remaining_sec: remaining_sec.max(0.0),
-                    total_duration_secs: duration_secs,
-                }
-            }
-            Some(info) => {
-                // SP-trained input: bare number with optional comma separators.
-                let sp_trained = calculator::parse_sp_value(info).with_context(|| format!(
-                    "Line {}: invalid SP value '{}'", line_num + 1, info
-                ))?;
-                // Validate: sp_trained must fall within [from_level, to_level) window.
-                let cum_from = calculator::CUMULATIVE_SP[from_level as usize] * record.skill_time_constant;
-                let cum_to = calculator::CUMULATIVE_SP[level as usize] * record.skill_time_constant;
-                if (sp_trained - cum_to).abs() < f64::EPSILON || sp_trained > cum_to {
-                    anyhow::bail!("Line {}: '{}' has {} SP trained but '{}' at level {} requires less than {:.0} SP — skill is already complete", line_num + 1, info, sp_trained as u64, record.name, level, cum_to);
-                }
-                if sp_trained < cum_from {
-                    anyhow::bail!("Line {}: '{}' has {} SP trained but '{}' at level {} needs at least {:.0} SP (level {} threshold)", line_num + 1, info, sp_trained as u64, record.name, level, cum_from, from_level);
-                }
-                data::models::QueuedSkillRemaining::SpTrained { sp_trained }
-            }
-        };
-
-        queued_skills.push(data::models::QueuedSkill {
-            id: record.id,
-            level: from_level,
-            remaining: queued_skill_remaining,
-        });
-    }
-
-    if queued_skills.is_empty() {
-        anyhow::bail!("No valid skills found in '{}'. Format each line as 'Skill Name <level>', 'Skill Name <level>@<time_left>' (e.g., @3d12h), or 'Skill Name <level>@<sp_trained>' (e.g., @12000 or @1,000,000). SP is cumulative from blank.", path);
-    }
     eprintln!(
         "Queue file '{}' — {} skills, effective PER={} MEM={} WIL={} INT={} CHA={}",
         path,
