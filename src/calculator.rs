@@ -1,5 +1,4 @@
-#[allow(unused_imports)] // used by test helpers below
-use crate::data::models::{Attribute, EffectiveAttributes, SkillRecord};
+use crate::data::models::{EffectiveAttributes, SkillRecord};
 
 /// Cumulative SP required at each skill level for STC=1 (rank 1).
 /// Source: EVE Online forums archive — verified canonical values.
@@ -90,7 +89,6 @@ pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
     // Extract individual <number><unit> tokens from the input.
     // We scan character-by-character, collecting digit/dot runs and expecting a unit after each.
     let mut total_secs: f64 = 0.0;
-    let mut component_count: usize = 0;
     let mut chars = input.chars().peekable();
 
     loop {
@@ -159,15 +157,6 @@ pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
             ),
         }
 
-        component_count += 1;
-        // Allow up to two components (matching format_duration output).
-        if component_count > 2 {
-            anyhow::bail!(
-                "duration '{}' has too many components (expected 1-2, got {})",
-                input,
-                component_count
-            );
-        }
     }
 
     Ok(total_secs)
@@ -244,6 +233,7 @@ pub fn format_duration(seconds: f64) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::data::models::Attribute;
 
     fn test_attrs(int: f64, cha: f64, per: f64, mem: f64, wil: f64) -> EffectiveAttributes {
         EffectiveAttributes {

@@ -12,34 +12,15 @@ The greedy best-response approach picks one cut point per epoch and commits irre
 
 **Recommendation**: Add a note in output or help text clarifying the plan is an approximation from a greedy search, not provably optimal. Consider a limited lookahead (e.g., evaluate 2-step lookaheads at each decision) if quality matters more than speed.
 
-### 2. Tie-breaking score overflow risk
+### ~~2. Tie-breaking score overflow risk~~ ✅ **Resolved**
 
-**Location**: `src/optimizer.rs:264`
+Changed `rate_score` and combined tie-break key from `u32` to `u64` (`src/optimizer.rs`). Overflow path eliminated; max safe value is now ~1.8e19 instead of ~4e9.
+### ~~3. Duplicate prerequisite edges possible~~ ✅ **Resolved**
 
-```rust
-rate_score * (n + 1) as u32 + cluster_score
-```
+Added `HashSet<(usize, usize)>` deduplication guard in `reorder_queue` explicit prerequisite loop (`src/optimizer.rs`). Edges `(j, i)` are only inserted once even if multiple SDE prerequisites resolve to the same queued entry index. Kahn's algorithm `in_degree` counts remain accurate.
+### ~~4. Cycle detection fallback produces no warning~~ ✅ **Resolved**
 
-With `rate_score` up to ~40 million and large queues, the product approaches `u32::MAX`. Overflow wraps silently in release mode; panics in debug/tests. Queues rarely exceed 100 entries, so this is unlikely in practice.
-
-**Recommendation**: Change to `u64` arithmetic to eliminate the risk entirely.
-
-### 3. Duplicate prerequisite edges possible
-
-**Location**: `src/optimizer.rs:197-220`, `reorder_queue` explicit prerequisite loop.
-
-If two different SDE prerequisites on the same skill resolve to the same queued entry index, duplicate edges are created — incrementing `in_degree` twice. Kahn's algorithm then requires that predecessor processed twice before the dependent becomes ready, which never happens. The entry gets stuck in the cycle fallback (lines 280-285). Most EVE skills have distinct prerequisites, making this latent, but structurally unsound.
-
-**Recommendation**: Deduplicate edges with a `HashSet<(usize, usize)>` or check for existing adjacency before adding.
-
-### 4. Cycle detection fallback produces no warning
-
-**Location**: `src/optimizer.rs:280-285`
-
-Unprocessed entries appended "in original order" when cycles exist. No user-visible warning. If triggered by bug #3 above, output violates prerequisites silently.
-
-**Recommendation**: Emit an `eprintln!` warning when `ordered.len() < n` so the user knows reordering may be incorrect.
-
+Emit `eprintln!` warning when topological sort leaves unprocessed entries (`src/optimizer.rs`). Message reports count of affected skills and explains they are appended in original queue order.
 ## Design / Architecture
 
 ### 5. `BaseAttributes` stores integer values as `f64`
@@ -68,43 +49,20 @@ O(N*M) — linear scan per active implant ID against all records. With N ≤ 9 s
 
 Flat Vec with manual stride math works but doesn't document its access pattern. A `Vec<Vec<f64>>` organized as `[alloc][skill]` (matching suffix_sum layout) would be self-documenting with negligible overhead.
 
-### 8. `generate_allocations()` not cached
+### ~~8. `generate_allocations()` not cached~~ ✅ **Resolved**
 
-**Location**: `src/optimizer.rs:116-143`, called at line 332
-
-The allocation space is constant: exactly 2,885 entries independent of input. Regenerated on every `optimize()` call.
-
-**Recommendation**: Cache via `std::sync::OnceLock::<Vec<BaseAttributes>>`. One-line change; eliminates redundant work.
-
+Cached via `std::sync::LazyLock<Vec<BaseAttributes>>` at module scope (`src/optimizer.rs`). Allocation space (2,885 entries) computed once on first call, cloned thereafter. Eliminates redundant backtracking search on repeated `optimize()` calls.
 ## Code Quality / Maintainability
 
-### 9. Clippy warning unaddressed
+### ~~9. Clippy warning unaddressed~~ ✅ **Resolved**
 
-**Location**: `src/main.rs:279`
+Changed `(len - i) % 3 == 0` to `(len - i).is_multiple_of(3)` in `format_number` (`src/main.rs`). Clippy lint satisfied.
+### ~~10. `parse_duration` rejects 3+ components~~ ✅ **Resolved**
 
-`(len - i) % 3 == 0` should use `(len - i).is_multiple_of(3)`. Flagged by default clippy lints.
+Removed component limit check from `parse_duration` (`src/calculator.rs`). Parser now accepts arbitrary numbers of components (e.g., `"1d 2h 3m"`), matching EVE Online UI format. Dead `component_count` variable removed.
+### ~~11. Unused import with misleading comment~~ ✅ **Resolved**
 
-### 10. `parse_duration` rejects 3+ components
-
-**Location**: `src/calculator.rs:164`
-
-EVE Online UI displays durations like `"1d 2h 3m"` — three components. The parser explicitly rejects anything beyond two. Round-tripping output → re-parse works because the formatter outputs max 2 units, but user copy-paste from game UI fails.
-
-**Recommendation**: Remove or raise the component limit. The parser already handles arbitrary components internally before rejecting them.
-
-### 11. Unused import with misleading comment
-
-**Location**: `src/calculator.rs:1`
-
-```rust
-#[allow(unused_imports)] // used by test helpers below
-use crate::data::models::{Attribute, EffectiveAttributes, SkillRecord};
-```
-
-If these imports are genuinely unused at module scope (only consumed by inline tests), the allow-attribute papers over a real issue. If they're needed by public functions, the allow is unnecessary noise.
-
-**Recommendation**: Audit whether each import is actually dead code or if the allow can be removed. Move used-by-tests-only imports inside the `#[cfg(test)]` module.
-
+Moved `Attribute` import from module-level into `#[cfg(test)] mod tests { ... }` where it is actually used. Removed `#[allow(unused_imports)]` allow-attribute and stale comment (`src/calculator.rs`). `EffectiveAttributes` and `SkillRecord` remain at module scope as they are consumed by public functions.
 ### 12. Attribute name strings duplicated as magic constants
 
 **Location**: `src/main.rs:292`, and multiple places using string keys for `sp_summary.primary.get("intelligence")`.
@@ -202,13 +160,15 @@ Lines 378-381 write in epoch-completion order with no header comment. A user re-
 
 | # | Issue | Severity | Effort | Status |
 |---|-------|----------|--------|--------|
-| 3 | Duplicate prerequisite edges | **Bug** (latent) | Low | Open |
 | 5 | `f64` attributes | Design debt | Medium | Open |
 | 1 | Greedy limitation un-documented | UX/correctness framing | Low | Open |
-| 8 | Allocation cache | Perf (minor) | Low | Open |
-| 10 | Duration parse limit | UX bug | Low | Open |
-| 2 | Score overflow | Bug (pathological) | Trivial | Open |
-| 9 | Clippy warning (`is_multiple_of`) | Style | Trivial | Open |
+| 2 | ~~Score overflow~~ | — | — | ✅ Resolved |
+| 3 | ~~Duplicate prerequisite edges~~ | — | — | ✅ Resolved |
+| 4 | ~~Cycle detection no warning~~ | — | — | ✅ Resolved |
+| 8 | ~~Allocation cache~~ | — | — | ✅ Resolved |
+| 9 | ~~Clippy warning~~ | — | — | ✅ Resolved |
+| 10 | ~~Duration parse limit~~ | — | — | ✅ Resolved |
+| 11 | ~~Unused import~~ | — | — | ✅ Resolved |
 | 14 | ~~No parser tests~~ | — | — | ✅ Resolved |
 | 16 | ~~Shallow integration tests~~ | — | — | ✅ Resolved |
 | 17 | ~~Missing edge-case tests~~ | — | — | ✅ Resolved |

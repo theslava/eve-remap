@@ -140,7 +140,7 @@ fn format_number(n: f64) -> String {
     let chars: Vec<char> = s.chars().collect();
     let len = chars.len();
     for (i, &c) in chars.iter().enumerate() {
-        if i > 0 && (len - i) % 3 == 0 {
+        if i > 0 && (len - i).is_multiple_of(3) {
             result.push(',');
         }
         result.push(c);

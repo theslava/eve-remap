@@ -1,3 +1,4 @@
+use std::sync::LazyLock;
 use std::time::Instant;
 use crate::calculator::{sp_rate_per_second, sp_for_level, CUMULATIVE_SP};
 use crate::data::models::*;
@@ -114,32 +115,33 @@ impl CharacterState {
 ///
 /// Each attribute must be in [17..=27], sum of added points (= attr-17) across all five must equal 14.
 pub fn generate_allocations() -> Vec<BaseAttributes> {
-    let mut results = Vec::new();
-    // Five nested loops are fine — each iterates at most 11 values (17..=27).
-    // Total iterations: 11^5 = 161,051 — fast enough with pruning.
-    for int in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
-        for cha in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
-            for per in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
-                for mem in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
-                    let partial_sum = int + cha + per + mem;
-                    if partial_sum > ATTR_SUM {
-                        break; // further mem values only increase the sum
-                    }
-                    let wil = ATTR_SUM - partial_sum;
-                    if (MIN_ATTR_AFTER_REMAP..=MAX_ATTR_AFTER_REMAP).contains(&wil) {
-                        results.push(BaseAttributes {
-                            intelligence: int as f64,
-                            charisma: cha as f64,
-                            perception: per as f64,
-                            memory: mem as f64,
-                            willpower: wil as f64,
-                        });
+    static CACHE: LazyLock<Vec<BaseAttributes>> = LazyLock::new(|| {
+        let mut results = Vec::new();
+        for int in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
+            for cha in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
+                for per in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
+                    for mem in BASE_ATTR_VAL..=MAX_ATTR_AFTER_REMAP {
+                        let partial_sum = int + cha + per + mem;
+                        if partial_sum > ATTR_SUM {
+                            break;
+                        }
+                        let wil = ATTR_SUM - partial_sum;
+                        if (MIN_ATTR_AFTER_REMAP..=MAX_ATTR_AFTER_REMAP).contains(&wil) {
+                            results.push(BaseAttributes {
+                                intelligence: int as f64,
+                                charisma: cha as f64,
+                                perception: per as f64,
+                                memory: mem as f64,
+                                willpower: wil as f64,
+                            });
+                        }
                     }
                 }
             }
         }
-    }
-    results
+        results
+    });
+    CACHE.clone()
 }
 
 /// Train a single skill under `effective_attrs` and return seconds consumed.
@@ -194,27 +196,32 @@ fn reorder_queue(
     }
 
     // Add explicit prerequisite edges from SDE data.
-    for i in 0..n {
-        let entry = &entries[i];
-        for &(req_id, req_level) in &entry.record.prerequisites {
-            if !queued_ids.contains(&req_id) {
-                continue;
-            }
-            // Find the queued entry that trains this prerequisite to at least req_level.
-            // Among candidates, pick the one with highest target_level <= req_level
-            // (the last level before or at what we need), or any >= req_level.
-            let dominated_by = (0..n).filter(|&j| j != i && entries[j].skill_id == req_id)
-                .max_by_key(|&j| {
-                    if entries[j].target_level >= req_level {
-                        u32::MAX // fully satisfies — prefer it
-                    } else {
-                        entries[j].target_level as u32 // partial but still needed first
-                    }
-                });
+    // Use a HashSet to deduplicate — two different SDE prerequisites can resolve
+    // to the same queued entry index.
+    {
+        use std::collections::HashSet;
+        let mut seen_edges: HashSet<(usize, usize)> = HashSet::new();
+        for i in 0..n {
+            let entry = &entries[i];
+            for &(req_id, req_level) in &entry.record.prerequisites {
+                if !queued_ids.contains(&req_id) {
+                    continue;
+                }
+                let dominated_by = (0..n).filter(|&j| j != i && entries[j].skill_id == req_id)
+                    .max_by_key(|&j| {
+                        if entries[j].target_level >= req_level {
+                            u32::MAX
+                        } else {
+                            entries[j].target_level as u32
+                        }
+                    });
 
-            if let Some(j) = dominated_by {
-                reverse_deps[j].push(i);
-                in_degree[i] += 1;
+                if let Some(j) = dominated_by {
+                    if seen_edges.insert((j, i)) {
+                        reverse_deps[j].push(i);
+                        in_degree[i] += 1;
+                    }
+                }
             }
         }
     }
@@ -237,7 +244,7 @@ fn reorder_queue(
             // Axis 1: effective SP rate under current attrs (higher = faster training now).
             let eff_primary = initial_effective.get(p);
             let eff_secondary = initial_effective.get(s);
-            let rate_score = ((eff_primary + eff_secondary / 2.0) * 1_000_000.0) as u32;
+            let rate_score = ((eff_primary + eff_secondary / 2.0) * 1_000_000.0) as u64;
 
             // Axis 2: clustering bonus — count other unscheduled entries sharing p or s.
             let total_unscheduled = n - ordered.len();
@@ -261,7 +268,7 @@ fn reorder_queue(
 
             // Combine: rate is the dominant key so high-rate skills lead;
             // cluster breaks ties among similar-rate skills.
-            rate_score * (n + 1) as u32 + cluster_score
+            rate_score * (n + 1) as u64 + cluster_score as u64
         }).map(|(pos, _)| pos).unwrap_or(0);
         let chosen = ready[chosen_pos];
         ready.remove(chosen_pos);
@@ -278,6 +285,11 @@ fn reorder_queue(
 
     // If not all entries were scheduled (cycle), append remaining in original order.
     if ordered.len() < n {
+        eprintln!(
+            "[-] Warning: prerequisite cycle detected — {} skills could not be topologically \n\
+             [-]     ordered and are appended in original queue order",
+            n - ordered.len()
+        );
         for i in 0..n {
             if !ordered.contains(&i) {
                 ordered.push(i);
