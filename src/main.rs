@@ -152,7 +152,14 @@ fn print_table_output(result: &data::models::OptimizationResult) {
     println!("REMAP OPTIMIZATION PLAN");
     println!("{}\n", "-".repeat(72));
 
-    const ATTR_KEYS: [&str; 5] = ["perception", "memory", "willpower", "intelligence", "charisma"];
+    // Fixed display order matching table header.
+    const DISPLAY_ORDER: [data::models::Attribute; 5] = [
+        data::models::Attribute::Perception,
+        data::models::Attribute::Memory,
+        data::models::Attribute::Willpower,
+        data::models::Attribute::Intelligence,
+        data::models::Attribute::Charisma,
+    ];
 
     for (i, epoch) in result.epochs.iter().enumerate() {
         let epoch_type = match i {
@@ -175,11 +182,11 @@ fn print_table_output(result: &data::models::OptimizationResult) {
         );
 
         // SP summary as an attribute matrix table
-        let pri_vals: Vec<f64> = ATTR_KEYS.iter()
-            .map(|k| epoch.sp_summary.primary.get(*k).copied().unwrap_or(0.0))
+        let pri_vals: Vec<f64> = DISPLAY_ORDER.iter()
+            .map(|a| epoch.sp_summary.primary.get(a).copied().unwrap_or(0.0))
             .collect();
-        let sec_vals: Vec<f64> = ATTR_KEYS.iter()
-            .map(|k| epoch.sp_summary.secondary.get(*k).copied().unwrap_or(0.0))
+        let sec_vals: Vec<f64> = DISPLAY_ORDER.iter()
+            .map(|a| epoch.sp_summary.secondary.get(a).copied().unwrap_or(0.0))
             .collect();
 
         if pri_vals.iter().sum::<f64>() > 0.0 || sec_vals.iter().sum::<f64>() > 0.0 {

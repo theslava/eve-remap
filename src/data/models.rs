@@ -181,13 +181,13 @@ pub struct CharacterState {
     pub normal_remap_available_in_secs: f64,
 }
 
-/// SP accumulated per (role × attribute) pair for one epoch.
+/// SP accumulated per (role x attribute) pair for one epoch.
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct AttributeSpSummary {
     /// SP earned while attributes served as **primary** for completed skills.
-    pub primary: HashMap<String, f64>,
+    pub primary: HashMap<Attribute, f64>,
     /// SP earned while attributes served as **secondary** for completed skills.
-    pub secondary: HashMap<String, f64>,
+    pub secondary: HashMap<Attribute, f64>,
 }
 
 #[derive(Debug, Clone, Serialize)]

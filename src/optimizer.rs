@@ -589,10 +589,8 @@ fn push_epoch_with_times(
         completed_skills.push((entry.skill_id, entry.name.clone(), entry.target_level, secs));
 
         let sp_earned = entry.remaining_sp;
-        let pri_key = entry.record.primary_attribute.to_string();
-        *sp_summary.primary.entry(pri_key).or_insert(0.0) += sp_earned;
-        let sec_key = entry.record.secondary_attribute.to_string();
-        *sp_summary.secondary.entry(sec_key).or_insert(0.0) += sp_earned;
+        *sp_summary.primary.entry(entry.record.primary_attribute).or_insert(0.0) += sp_earned;
+        *sp_summary.secondary.entry(entry.record.secondary_attribute).or_insert(0.0) += sp_earned;
     }
 
     epochs.push(EpochPlan {
