@@ -128,11 +128,11 @@ pub fn generate_allocations() -> Vec<BaseAttributes> {
                         let wil = ATTR_SUM - partial_sum;
                         if (MIN_ATTR_AFTER_REMAP..=MAX_ATTR_AFTER_REMAP).contains(&wil) {
                             results.push(BaseAttributes {
-                                intelligence: int as f64,
-                                charisma: cha as f64,
-                                perception: per as f64,
-                                memory: mem as f64,
-                                willpower: wil as f64,
+                                intelligence: int,
+                                charisma: cha,
+                                perception: per,
+                                memory: mem,
+                                willpower: wil,
                             });
                         }
                     }
@@ -624,7 +624,7 @@ mod tests {
         SkillRecord { id: 1001, name: "TestSkill".to_string(), primary_attribute: primary, secondary_attribute: secondary, skill_time_constant: stc, prerequisites: vec![] }
     }
 
-    fn base_attrs(int: f64, cha: f64, per: f64, mem: f64, wil: f64) -> BaseAttributes {
+    fn base_attrs(int: u32, cha: u32, per: u32, mem: u32, wil: u32) -> BaseAttributes {
         BaseAttributes { intelligence: int, charisma: cha, perception: per, memory: mem, willpower: wil }
     }
 
@@ -632,7 +632,7 @@ mod tests {
         CharacterState {
             base_attributes: attrs, queued_skills: skills,
             active_implant_ids: Vec::new(),
-            implant_bonus: BaseAttributes { intelligence: 0., charisma: 0., perception: 0., memory: 0., willpower: 0. },
+            implant_bonus: BaseAttributes { intelligence: 0, charisma: 0, perception: 0, memory: 0, willpower: 0 },
             bonus_remaps,
             normal_remap_available_in_secs: 0.0,
         }
@@ -652,13 +652,13 @@ mod tests {
         let allocs = generate_allocations();
         assert_eq!(allocs.len(), 2_885);
         for a in &allocs {
-            let sum = (a.intelligence + a.charisma + a.perception + a.memory + a.willpower).round() as u32;
+            let sum = a.intelligence + a.charisma + a.perception + a.memory + a.willpower;
             assert_eq!(sum, ATTR_SUM);
-            assert!((a.intelligence as u32) >= MIN_ATTR_AFTER_REMAP && (a.intelligence as u32) <= MAX_ATTR_AFTER_REMAP);
-            assert!((a.charisma as u32) >= MIN_ATTR_AFTER_REMAP && (a.charisma as u32) <= MAX_ATTR_AFTER_REMAP);
-            assert!((a.perception as u32) >= MIN_ATTR_AFTER_REMAP && (a.perception as u32) <= MAX_ATTR_AFTER_REMAP);
-            assert!((a.memory as u32) >= MIN_ATTR_AFTER_REMAP && (a.memory as u32) <= MAX_ATTR_AFTER_REMAP);
-            assert!((a.willpower as u32) >= MIN_ATTR_AFTER_REMAP && (a.willpower as u32) <= MAX_ATTR_AFTER_REMAP);
+            assert!(a.intelligence >= MIN_ATTR_AFTER_REMAP && a.intelligence <= MAX_ATTR_AFTER_REMAP);
+            assert!(a.charisma >= MIN_ATTR_AFTER_REMAP && a.charisma <= MAX_ATTR_AFTER_REMAP);
+            assert!(a.perception >= MIN_ATTR_AFTER_REMAP && a.perception <= MAX_ATTR_AFTER_REMAP);
+            assert!(a.memory >= MIN_ATTR_AFTER_REMAP && a.memory <= MAX_ATTR_AFTER_REMAP);
+            assert!(a.willpower >= MIN_ATTR_AFTER_REMAP && a.willpower <= MAX_ATTR_AFTER_REMAP);
         }
     }
 
@@ -667,7 +667,7 @@ mod tests {
         let allocs = generate_allocations();
         for a in &allocs {
             let boosted = [a.intelligence, a.charisma, a.perception, a.memory, a.willpower]
-                .iter().filter(|&&v| v > BASE_ATTR_VAL as f64).count();
+                .into_iter().filter(|&v| v > BASE_ATTR_VAL).count();
             assert!(boosted >= 2, "must boost at least 2 attributes");
         }
     }
@@ -676,7 +676,7 @@ mod tests {
 
     #[test]
     fn test_optimize_empty_queue() {
-        let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), Vec::new(), None);
+        let char_st = char_state(base_attrs(17, 17, 17, 17, 17), Vec::new(), None);
         let result = optimize(&char_st, &[], &[]);
         assert_eq!(result.total_wall_clock_seconds, 0.0);
         assert!(result.epochs.is_empty());
@@ -686,7 +686,7 @@ mod tests {
     fn test_optimize_single_skill_basic() {
         let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
         let sp_needed = sp_for_level(&skill, 1, 2);
-        let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), vec![qe(skill.id, 1, sp_needed)], Some(1));
+        let char_st = char_state(base_attrs(17, 17, 17, 17, 17), vec![qe(skill.id, 1, sp_needed)], Some(1));
         let result = optimize(&char_st, &[skill], &[]);
         assert!(!result.epochs.is_empty());
         assert!(result.total_wall_clock_seconds > 0.0);
@@ -705,7 +705,7 @@ mod tests {
             let dur = (sp_needed / 0.5).ceil() as f64;
             queued_skills.push(QueuedSkill { id: skill.id, level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } });
         }
-        let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), queued_skills, Some(2));
+        let char_st = char_state(base_attrs(17, 17, 17, 17, 17), queued_skills, Some(2));
         let result = optimize(&char_st, &skills_db, &[]);
         assert!(!result.epochs.is_empty());
         assert!(result.total_wall_clock_seconds > 0.0);
@@ -718,7 +718,7 @@ mod tests {
         bonuses.insert(Attribute::Intelligence, 4);
         let implants = vec![ImplantRecord { type_id: 5001, name: "Talisman Delta".to_string(), bonuses }];
         let sp_needed = sp_for_level(&skill, 1, 2);
-        let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), vec![qe(skill.id, 1, sp_needed)], Some(1));
+        let char_st = char_state(base_attrs(17, 17, 17, 17, 17), vec![qe(skill.id, 1, sp_needed)], Some(1));
         let result = optimize(&char_st, &[skill], &implants);
         assert!(result.total_wall_clock_seconds > 0.0);
     }
@@ -730,7 +730,7 @@ mod tests {
         let mut dist = HashMap::new();
         for a in &allocs {
             let boosted = [a.intelligence, a.charisma, a.perception, a.memory, a.willpower]
-                .iter().filter(|&&v| v > BASE_ATTR_VAL as f64).count();
+                .into_iter().filter(|&v| v > BASE_ATTR_VAL).count();
             *dist.entry(boosted).or_insert(0usize) += 1;
         }
         assert!(!dist.contains_key(&1));
@@ -743,7 +743,7 @@ mod tests {
     fn test_reorder_empty_returns_empty() {
         let entries: Vec<SkillSimEntry> = vec![];
         let skills_db: Vec<SkillRecord> = vec![];
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let eff = EffectiveAttributes::from(base_attrs(17, 17, 17, 17, 17));
         let ordered = reorder_queue(entries, &skills_db, &eff);
         assert!(ordered.is_empty());
     }
@@ -759,7 +759,7 @@ mod tests {
             remaining_sp: sp_a,
             record: skill.clone(),
         };
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let eff = EffectiveAttributes::from(base_attrs(17, 17, 17, 17, 17));
         let skills_db = vec![skill];
         let ordered = reorder_queue(vec![entry], &skills_db, &eff);
         assert_eq!(ordered.len(), 1);
@@ -801,7 +801,7 @@ mod tests {
                 record: skill_a.clone(),
             },
         ];
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let eff = EffectiveAttributes::from(base_attrs(17, 17, 17, 17, 17));
         let skills_db = vec![skill_a.clone(), skill_b];
         let ordered = reorder_queue(entries, &skills_db, &eff);
 
@@ -844,7 +844,7 @@ mod tests {
         }
 
         // Uniform attributes → all rates identical; clustering should group by attribute pair.
-        let eff = EffectiveAttributes::from(base_attrs(17., 17., 17., 17., 17.));
+        let eff = EffectiveAttributes::from(base_attrs(17, 17, 17, 17, 17));
         let ordered = reorder_queue(entries, &skills_db, &eff);
 
         assert_eq!(ordered.len(), 5);
@@ -910,7 +910,7 @@ mod tests {
             },
         ];
         // Skewed attributes: INT=27 (max), everything else 17.
-        let eff = EffectiveAttributes::from(base_attrs(27., 17., 17., 17., 17.));
+        let eff = EffectiveAttributes::from(base_attrs(27, 17, 17, 17, 17));
         let skills_db = vec![skill_int, skill_wil];
         let ordered = reorder_queue(entries, &skills_db, &eff);
 
@@ -934,7 +934,7 @@ mod tests {
         // level=4 means target is L5 — but if we set remaining_sp to 0 it's already done.
         // More directly: QueuedSkill with level >= 5 is skipped in build_simulation_state.
         let char_st = char_state(
-            base_attrs(17., 17., 17., 17., 17.),
+            base_attrs(17, 17, 17, 17, 17),
             vec![QueuedSkill { id: skill.id, level: 5, remaining: QueuedSkillRemaining::Duration { remaining_sec: 0., total_duration_secs: 0. } }],
             Some(1),
         );
@@ -948,7 +948,7 @@ mod tests {
         // Normal remap available far in the future (999 days). Queue finishes quickly.
         let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
         let sp_needed = sp_for_level(&skill, 1, 2);
-        let mut cs = char_state(base_attrs(17., 17., 17., 17., 17.), vec![qe(skill.id, 1, sp_needed)], None);
+        let mut cs = char_state(base_attrs(17, 17, 17, 17, 17), vec![qe(skill.id, 1, sp_needed)], None);
         cs.normal_remap_available_in_secs = 999.0 * 86_400.0; // 999 days
         cs.bonus_remaps = None; // no bonus remaps either — effectively unlimited timed but all far away
         let result = optimize(&cs, &[skill], &[]);
@@ -965,7 +965,7 @@ mod tests {
         let sp_int = sp_for_level(&skill_int, 1, 2);
         let sp_wil = sp_for_level(&skill_wil, 1, 2);
         let char_st = char_state(
-            base_attrs(17., 17., 17., 17., 17.),
+            base_attrs(17, 17, 17, 17, 17),
             vec![qe(skill_int.id, 1, sp_int), qe(skill_wil.id, 1, sp_wil)],
             Some(0), // zero bonus remaps
         );
@@ -983,7 +983,7 @@ mod tests {
         let sp_needed = sp_for_level(&skill, 1, 2);
         let dur = (sp_needed / 0.5) as f64;
         let char_st = char_state(
-            base_attrs(17., 17., 17., 17., 17.),
+            base_attrs(17, 17, 17, 17, 17),
             vec![QueuedSkill { id: skill.id, level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } }],
             Some(0),
         );
@@ -1006,7 +1006,7 @@ mod tests {
             let sp_needed = sp_for_level(&skill, 1, 2);
             queued_skills.push(qe(skill.id, 1, sp_needed));
         }
-        let char_st = char_state(base_attrs(17., 17., 17., 17., 17.), queued_skills, Some(3));
+        let char_st = char_state(base_attrs(17, 17, 17, 17, 17), queued_skills, Some(3));
         let result = optimize(&char_st, &skills_db, &[]);
         assert!(
             result.total_wall_clock_seconds <= result.baseline_wall_clock_seconds + 1.0,
@@ -1024,7 +1024,7 @@ mod tests {
         let sp_int = sp_for_level(&skill_int, 1, 2);
         let sp_cha = sp_for_level(&skill_cha, 1, 2);
         let char_st = char_state(
-            base_attrs(27., 17., 17., 17., 17.),
+            base_attrs(27, 17, 17, 17, 17),
             vec![qe(skill_int.id, 1, sp_int), qe(skill_cha.id, 1, sp_cha)],
             Some(1),
         );

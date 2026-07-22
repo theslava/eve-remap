@@ -91,11 +91,11 @@ fn run_optimizer_from_queue_file(
         "Queue file '{}' — {} skills, effective PER={} MEM={} WIL={} INT={} CHA={}",
         path,
         queued_skills.len(),
-        (base_attrs.perception + implant_bonus.perception) as u32,
-        (base_attrs.memory + implant_bonus.memory) as u32,
-        (base_attrs.willpower + implant_bonus.willpower) as u32,
-        (base_attrs.intelligence + implant_bonus.intelligence) as u32,
-        (base_attrs.charisma + implant_bonus.charisma) as u32,
+        base_attrs.perception + implant_bonus.perception,
+        base_attrs.memory + implant_bonus.memory,
+        base_attrs.willpower + implant_bonus.willpower,
+        base_attrs.intelligence + implant_bonus.intelligence,
+        base_attrs.charisma + implant_bonus.charisma,
     );
 
     let char_state = data::models::CharacterState {
@@ -225,6 +225,9 @@ fn print_table_output(result: &data::models::OptimizationResult) {
         let baseline_days = result.baseline_wall_clock_seconds / 86_400.0;
         println!("Baseline (no remaps): {:.1} days", baseline_days);
     }
+    println!();
+    println!("Note: This plan uses a greedy heuristic and is not guaranteed optimal.");
+    println!("      Results may vary by a few percent from the true minimum.");
     println!();
 }
 

@@ -5,9 +5,9 @@ use crate::data::models::*;
 
 /// Parse "PER:MEM:WIL:INT:CHA" string into base attributes (e.g., "27:22:17:17:16").
 pub fn parse_attributes(input: &str) -> Result<BaseAttributes> {
-    let parts: Vec<f64> = input
+    let parts: Vec<u32> = input
         .split(':')
-        .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid attribute value: {}", s)))
+        .map(|s| s.trim().parse::<u32>().with_context(|| format!("Invalid attribute value: {}", s)))
         .collect::<Result<Vec<_>>>()?;
     if parts.len() != 5 {
         bail!(
@@ -17,7 +17,7 @@ pub fn parse_attributes(input: &str) -> Result<BaseAttributes> {
     }
     let names = ["PER", "MEM", "WIL", "INT", "CHA"];
     for (i, &val) in parts.iter().enumerate() {
-        if !(17.0..=27.0).contains(&val) {
+        if !(17..=27).contains(&val) {
             bail!("{}={} is out of valid range (17-27)", names[i], val);
         }
     }
@@ -32,9 +32,9 @@ pub fn parse_attributes(input: &str) -> Result<BaseAttributes> {
 
 /// Parse implant bonus string "PER:MEM:WIL:INT:CHA" (e.g., "0:1:2:0:1").
 pub fn parse_implant_bonuses(input: &str) -> Result<BaseAttributes> {
-    let parts: Vec<f64> = input
+    let parts: Vec<u32> = input
         .split(':')
-        .map(|s| s.trim().parse::<f64>().with_context(|| format!("Invalid implant bonus value: {}", s)))
+        .map(|s| s.trim().parse::<u32>().with_context(|| format!("Invalid implant bonus value: {}", s)))
         .collect::<Result<Vec<_>>>()?;
     if parts.len() != 5 {
         bail!(
@@ -44,7 +44,7 @@ pub fn parse_implant_bonuses(input: &str) -> Result<BaseAttributes> {
     }
     let names = ["PER", "MEM", "WIL", "INT", "CHA"];
     for (i, &val) in parts.iter().enumerate() {
-        if !(0.0..=10.0).contains(&val) {
+        if !(0..=10).contains(&val) {
             bail!(
                 "{}={} is out of valid range for implant bonus (0-10)",
                 names[i],
@@ -241,14 +241,14 @@ mod tests {
     #[test]
     fn test_parse_attributes_uniform_min() {
         let attrs = parse_attributes("17:17:17:17:17").unwrap();
-        assert_eq!(attrs.perception, 17.0);
-        assert_eq!(attrs.intelligence, 17.0);
+        assert_eq!(attrs.perception, 17);
+        assert_eq!(attrs.intelligence, 17);
     }
 
     #[test]
     fn test_parse_attributes_max_values() {
         let attrs = parse_attributes("27:27:27:27:27").unwrap();
-        assert_eq!(attrs.charisma, 27.0);
+        assert_eq!(attrs.charisma, 27);
     }
 
     #[test]
@@ -276,7 +276,7 @@ mod tests {
     #[test]
     fn test_parse_attributes_whitespace_tolerant() {
         let attrs = parse_attributes(" 17 : 17 : 17 : 17 : 17 ").unwrap();
-        assert_eq!(attrs.perception, 17.0);
+        assert_eq!(attrs.perception, 17);
     }
 
     // ── parse_implant_bonuses tests ────────────────────────────────────────
@@ -284,17 +284,17 @@ mod tests {
     #[test]
     fn test_parse_implant_bonuses_zero() {
         let bonuses = parse_implant_bonuses("0:0:0:0:0").unwrap();
-        assert_eq!(bonuses.intelligence, 0.0);
+        assert_eq!(bonuses.intelligence, 0);
     }
 
     #[test]
     fn test_parse_implant_bonuses_mixed() {
         let bonuses = parse_implant_bonuses("0:1:2:3:4").unwrap();
-        assert_eq!(bonuses.perception, 0.0);
-        assert_eq!(bonuses.memory, 1.0);
-        assert_eq!(bonuses.willpower, 2.0);
-        assert_eq!(bonuses.intelligence, 3.0);
-        assert_eq!(bonuses.charisma, 4.0);
+        assert_eq!(bonuses.perception, 0);
+        assert_eq!(bonuses.memory, 1);
+        assert_eq!(bonuses.willpower, 2);
+        assert_eq!(bonuses.intelligence, 3);
+        assert_eq!(bonuses.charisma, 4);
     }
 
     #[test]

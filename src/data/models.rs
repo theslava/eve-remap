@@ -79,7 +79,7 @@ impl EffectiveAttributes {
         active_implant_ids: &[u32],
         implants: &[ImplantRecord],
     ) -> Self {
-        let mut attrs = *base;
+        let mut attrs = EffectiveAttributes::from(*base);
         for impl_id in active_implant_ids {
             if let Some(implant) = implants.iter().find(|i| i.type_id == *impl_id) {
                 for (attr, bonus) in &implant.bonuses {
@@ -93,29 +93,29 @@ impl EffectiveAttributes {
                 }
             }
         }
-        EffectiveAttributes::from(attrs)
+        attrs
     }
-}
 
+}
 impl From<BaseAttributes> for EffectiveAttributes {
     fn from(base: BaseAttributes) -> Self {
         EffectiveAttributes {
-            intelligence: base.intelligence,
-            charisma: base.charisma,
-            perception: base.perception,
-            memory: base.memory,
-            willpower: base.willpower,
+            intelligence: base.intelligence as f64,
+            charisma: base.charisma as f64,
+            perception: base.perception as f64,
+            memory: base.memory as f64,
+            willpower: base.willpower as f64,
         }
     }
 }
 
 #[derive(Debug, Clone, Copy, Serialize)]
 pub struct BaseAttributes {
-    pub intelligence: f64,
-    pub charisma: f64,
-    pub perception: f64,
-    pub memory: f64,
-    pub willpower: f64,
+    pub intelligence: u32,
+    pub charisma: u32,
+    pub perception: u32,
+    pub memory: u32,
+    pub willpower: u32,
 }
 
 impl BaseAttributes {

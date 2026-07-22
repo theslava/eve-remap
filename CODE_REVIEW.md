@@ -4,13 +4,9 @@ Review date: 2026-07-21
 
 ## Critical / Correctness
 
-### 1. Greedy optimizer limitation not documented
+### ~~1. Greedy optimizer limitation not documented~~ ✅ **Resolved**
 
-**Location**: `src/optimizer.rs:391-523`, main optimization loop.
-
-The greedy best-response approach picks one cut point per epoch and commits irrevocably. A suboptimal early cut can cascade into worse later decisions. For example, cutting early to boost INT skills may leave a long tail of PER skills better served by a deeper single cut covering both groups under one allocation change. This is inherent to greedy; results should not be presented as "optimal."
-
-**Recommendation**: Add a note in output or help text clarifying the plan is an approximation from a greedy search, not provably optimal. Consider a limited lookahead (e.g., evaluate 2-step lookaheads at each decision) if quality matters more than speed.
+Added disclaimer note in `print_table_output()` (`src/main.rs`) after summary statistics. Output now reads: "Note: This plan uses a greedy heuristic and is not guaranteed optimal. Results may vary by a few percent from the true minimum."
 
 ### ~~2. Tie-breaking score overflow risk~~ ✅ **Resolved**
 
@@ -23,13 +19,13 @@ Added `HashSet<(usize, usize)>` deduplication guard in `reorder_queue` explicit 
 Emit `eprintln!` warning when topological sort leaves unprocessed entries (`src/optimizer.rs`). Message reports count of affected skills and explains they are appended in original queue order.
 ## Design / Architecture
 
-### 5. `BaseAttributes` stores integer values as `f64`
+### ~~5. `BaseAttributes` stores integer values as `f64`~~ ✅ **Resolved**
 
-**Location**: `src/data/models.rs:112-119`
-
-All attribute values are integers in game mechanics (17-27 base + integer implant bonuses). Using `f64` means every allocation generation, comparison, and arithmetic operation works through floating-point unnecessarily.
-
-**Recommendation**: Use `u32` for `BaseAttributes`. Convert to `f64` only at the rate calculation boundary (`sp_rate_per_second`). This eliminates a class of precision bugs and tightens memory layout.
+Changed `BaseAttributes` fields from `f64` to `u32` across the entire codebase:
+- `src/data/models.rs`: struct fields changed; `From<BaseAttributes>` impl casts to `f64`; `from_base_and_implants` accumulates into `EffectiveAttributes` directly
+- `src/optimizer.rs`: `generate_allocations()` generates `u32` values natively; test helpers updated; removed `.round() as u32` casts
+- `src/parser.rs`: `parse_attributes()` and `parse_implant_bonuses()` parse `u32` with range validation (17-27, 0-10); test assertions use integer literals
+- `src/main.rs`: removed redundant `as u32` casts on attribute display
 
 ### 6. Linear scan for implant lookups
 
@@ -160,8 +156,8 @@ Lines 378-381 write in epoch-completion order with no header comment. A user re-
 
 | # | Issue | Severity | Effort | Status |
 |---|-------|----------|--------|--------|
-| 5 | `f64` attributes | Design debt | Medium | Open |
-| 1 | Greedy limitation un-documented | UX/correctness framing | Low | Open |
+| 5 | ~~`f64` attributes~~ | — | — | ✅ Resolved |
+| 1 | ~~Greedy limitation un-documented~~ | — | — | ✅ Resolved |
 | 2 | ~~Score overflow~~ | — | — | ✅ Resolved |
 | 3 | ~~Duplicate prerequisite edges~~ | — | — | ✅ Resolved |
 | 4 | ~~Cycle detection no warning~~ | — | — | ✅ Resolved |
