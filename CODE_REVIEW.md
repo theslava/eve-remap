@@ -138,19 +138,12 @@ Collects characters into `Vec<char>` before iterating. Input is ASCII digits; it
 
 The optimizer logs epoch-by-epoch to stderr but has no output during initial setup (allocation generation, time cache, suffix sums). For large queues this phase is fast, but a single "precomputing..." line would set expectations.
 
-### 22. Baseline comparison message unclear when remaps not used
+### ~~22. Baseline comparison message unclear when remaps not used~~ ✅ **Resolved**
 
-If optimization determines remapping doesn't help (queue finishes before normal remap available), baseline wall-clock is printed but there's no explanation of why remaps were skipped.
+Added context line when optimizer produces single epoch: "(Remapping did not improve training time over current attributes.)" printed indented under baseline stat (`src/main.rs`).
+### ~~23. `--queue-out` writes reordered skills without explanation~~ ✅ **Resolved**
 
-**Recommendation**: Add context — e.g., "Remap at Dd exceeds queue completion time, skipped."
-
-### 23. `--queue-out` writes reordered skills without explanation
-
-Lines 378-381 write in epoch-completion order with no header comment. A user re-importing may be confused about why their queue changed.
-
-**Recommendation**: Prepend a comment line: `# Optimized by eve-remap — skill order reordered for attribute locality`.
-
----
+Prepends `# Optimized by eve-remap — skill order reordered for attribute locality` as first line of output. Skill count messages adjusted with `- 1` to exclude header from count (`src/main.rs`).
 
 ## Priority Ranking
 
@@ -166,6 +159,6 @@ Lines 378-381 write in epoch-completion order with no header comment. A user re-
 | 10 | ~~Duration parse limit~~ | — | — | ✅ Resolved |
 | 11 | ~~Unused import~~ | — | — | ✅ Resolved |
 | 14 | ~~No parser tests~~ | — | — | ✅ Resolved |
-| 16 | ~~Shallow integration tests~~ | — | — | ✅ Resolved |
-| 17 | ~~Missing edge-case tests~~ | — | — | ✅ Resolved |
+| 22 | ~~Baseline message unclear~~ | — | — | ✅ Resolved |
+| 23 | ~~Queue-out no header~~ | — | — | ✅ Resolved |
 | 15 | Stdin queue input untested | Coverage | Low | ⚠️ Deferred |
