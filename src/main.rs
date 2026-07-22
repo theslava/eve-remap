@@ -224,6 +224,9 @@ fn print_table_output(result: &data::models::OptimizationResult) {
     if result.baseline_wall_clock_seconds > 0.0 {
         let baseline_days = result.baseline_wall_clock_seconds / 86_400.0;
         println!("Baseline (no remaps): {:.1} days", baseline_days);
+        if result.epochs.len() <= 1 {
+            println!("  (Remapping did not improve training time over current attributes.)");
+        }
     }
     println!();
     println!("Note: This plan uses a greedy heuristic and is not guaranteed optimal.");
@@ -241,7 +244,7 @@ fn write_queue_file(
     path: &str,
     result: &data::models::OptimizationResult,
 ) -> Result<()> {
-    let mut lines = Vec::new();
+    let mut lines = vec![String::from("# Optimized by eve-remap — skill order reordered for attribute locality")];
     for epoch in &result.epochs {
         for (_skill_id, skill_name, target_level, _train_secs) in &epoch.completed_skills {
             lines.push(format!("{} {}", skill_name, target_level));
@@ -253,7 +256,7 @@ fn write_queue_file(
     if path == "-" {
         io::stdout().write_all(content.as_bytes()).context("Failed to write to stdout")?;
         io::stdout().flush()?;
-        eprintln!("[+] Optimized queue written to stdout ({} skills)", lines.len());
+        eprintln!("[+] Optimized queue written to stdout ({} skills)", lines.len() - 1);
     } else {
         let mut file = std::fs::File::create(path).context(format!("Failed to create output queue file '{}'", path))?;
         file.write_all(content.as_bytes())
@@ -261,7 +264,7 @@ fn write_queue_file(
         eprintln!(
             "[+] Optimized queue written to '{}' ({} skills)",
             path,
-            lines.len()
+            lines.len() - 1
         );
     }
     Ok(())
