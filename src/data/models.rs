@@ -73,15 +73,6 @@ impl EffectiveAttributes {
         }
     }
 
-    /// Build from raw base values plus implant bonuses (linear scan — convenience wrapper).
-    pub fn from_base_and_implants(
-        base: &BaseAttributes,
-        active_implant_ids: &[u32],
-        implants: &[ImplantRecord],
-    ) -> Self {
-        let map: std::collections::HashMap<u32, &ImplantRecord> = implants.iter().map(|r| (r.type_id, r)).collect();
-        Self::from_base_and_implants_with_index(base, active_implant_ids, &map)
-    }
 
     /// Build from raw base values plus implant bonuses using a pre-built index.
     pub fn from_base_and_implants_with_index(

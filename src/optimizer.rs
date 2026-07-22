@@ -95,16 +95,6 @@ impl CharacterState {
         }
     }
 
-    /// Derive effective attributes from base values plus implant bonuses.
-    fn effective_attributes(&self, implants: &[ImplantRecord]) -> EffectiveAttributes {
-        // Start with base + direct implant bonus (--implant-bonuses in offline mode).
-        let base_with_bonuses = self.base_attributes.add(&self.implant_bonus);
-        EffectiveAttributes::from_base_and_implants(
-            &base_with_bonuses,
-            &self.active_implant_ids,
-            implants,
-        )
-    }
 }
 
 // ---------------------------------------------------------------------------
@@ -549,10 +539,25 @@ pub fn optimize(
         .map(|e| e.projected_finish_secs)
         .unwrap_or(wall_clock);
 
+    // Restore original first skill to position 0 within its epoch so that
+    // "replace queue from clipboard" keeps the actively-trained skill at top.
+    // Only applies when the skill ends up in epoch 0 (no remap used for it).
+    // Reorder costs nothing under identical attributes (sum of durations invariant).
+    let original_first_key = sim_state.entries.first()
+        .map(|e| (e.skill_id, e.target_level));
+    if let Some((orig_id, orig_level)) = original_first_key {
+        let epoch = &mut result_epochs[0];
+        let first = &epoch.completed_skills[0];
+        if first.0 != orig_id || first.2 != orig_level {
+            if let Some(pos) = epoch.completed_skills.iter().skip(1).position(|s| s.0 == orig_id && s.2 == orig_level) {
+                epoch.completed_skills.swap(0, pos + 1);
+            }
+        }
+    }
+
     eprintln!(
         "[+] Optimization complete: {} epochs in {:.2}s",
-        result_epochs.len(),
-        _timer.elapsed().as_secs_f64()
+        result_epochs.len(), _timer.elapsed().as_secs_f64()
     );
 
     OptimizationResult {
@@ -1042,5 +1047,46 @@ mod tests {
         // The first epoch should use the current INT-skewed attributes.
         let first_epoch = &result.epochs[0];
         assert!(first_epoch.effective_attributes.intelligence >= 27.0 - 1.0);
+    }
+
+    #[test]
+    fn test_first_skill_pinned_in_single_epoch() {
+        // No bonus remaps + normal remap far in future → single epoch guaranteed.
+        // First skill is CHA/WIL (slow under INT-skewed attrs).
+        // Second skill is INT/MEM (fast — would normally win reorder).
+        let skill_cha = SkillRecord { id: 2001, name: "ChaSkill".to_string(), primary_attribute: Attribute::Charisma, secondary_attribute: Attribute::Willpower, skill_time_constant: 2.0, prerequisites: vec![] };
+        let skill_int = SkillRecord { id: 2002, name: "IntSkill".to_string(), primary_attribute: Attribute::Intelligence, secondary_attribute: Attribute::Memory, skill_time_constant: 2.0, prerequisites: vec![] };
+        let sp_cha = sp_for_level(&skill_cha, 1, 2);
+        let sp_int = sp_for_level(&skill_int, 1, 2);
+        let char_st = CharacterState {
+            base_attributes: base_attrs(27, 17, 17, 20, 17),
+            queued_skills: vec![qe(skill_cha.id, 1, sp_cha), qe(skill_int.id, 1, sp_int)],
+            active_implant_ids: Vec::new(),
+            implant_bonus: BaseAttributes { intelligence: 0, charisma: 0, perception: 0, memory: 0, willpower: 0 },
+            bonus_remaps: None,
+            normal_remap_available_in_secs: 365.0 * 86_400.0 * 10.0, // 10 years out — unreachable
+        };
+        let result = optimize(&char_st, &[skill_cha.clone(), skill_int], &[]);
+        assert_eq!(result.epochs.len(), 1, "should be single epoch");
+        let first_skill = &result.epochs[0].completed_skills[0];
+        assert_eq!(first_skill.0, skill_cha.id, "original first skill should remain at position 0 in single epoch");
+    }
+
+    #[test]
+    fn test_first_skill_not_pinned_across_epochs() {
+        // With bonus remaps available, optimizer may split into multiple epochs.
+        // In that case the original first skill is free to move.
+        let skill_cha = SkillRecord { id: 2001, name: "ChaSkill".to_string(), primary_attribute: Attribute::Charisma, secondary_attribute: Attribute::Willpower, skill_time_constant: 10.0, prerequisites: vec![] };
+        let skill_int = SkillRecord { id: 2002, name: "IntSkill".to_string(), primary_attribute: Attribute::Intelligence, secondary_attribute: Attribute::Memory, skill_time_constant: 2.0, prerequisites: vec![] };
+        let sp_cha = sp_for_level(&skill_cha, 1, 2);
+        let sp_int = sp_for_level(&skill_int, 1, 2);
+        let char_st = char_state(
+            base_attrs(27, 17, 17, 20, 17),
+            vec![qe(skill_cha.id, 1, sp_cha), qe(skill_int.id, 1, sp_int)],
+            Some(1),
+        );
+        let result = optimize(&char_st, &[skill_cha.clone(), skill_int], &[]);
+        // If multi-epoch, no pin guarantee — just verify optimization ran.
+        assert!(!result.epochs.is_empty());
     }
 }
