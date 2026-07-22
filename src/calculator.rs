@@ -415,8 +415,8 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_duration_too_many_components() {
-        assert!(parse_duration("1d 2h 3m").is_err());
+    fn test_parse_duration_three_components_accepted() {
+        assert_eq!(parse_duration("1d 2h 3m").unwrap(), 1.0 * 86_400.0 + 2.0 * 3_600.0 + 3.0 * 60.0);
     }
 
     #[test]

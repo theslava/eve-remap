@@ -474,9 +474,9 @@ mod tests {
     fn test_parse_queue_sp_trained_too_high_rejected() {
         let db = skills_db();
         let attrs = uniform_attrs();
-        // Gunnery L1→L2: cum_to = CUMULATIVE_SP[1]*1.0 = 250.0
-        // Providing @300 exceeds the total for this level transition.
-        let err = parse_queue("Gunnery 2@300", &db, &attrs, "test").unwrap_err();
+        // Gunnery L2: cum_to = CUMULATIVE_SP[2]*1.0 = 1414.0
+        // Providing @2000 exceeds the total for this level transition.
+        let err = parse_queue("Gunnery 2@2000", &db, &attrs, "test").unwrap_err();
         assert!(err.to_string().contains("already complete"));
     }
 
@@ -484,14 +484,14 @@ mod tests {
     fn test_parse_queue_sp_trained_exact_threshold_accepted() {
         let db = skills_db();
         let attrs = uniform_attrs();
-        // Gunnery L2→L3: cum_from = CUMULATIVE_SP[1]*1.0 = 250 (level 1 threshold)
-        // cum_to = CUMULATIVE_SP[2]*1.0 = 1414
-        // @1000 is in range [250, 1414).
-        let skills = parse_queue("Gunnery 3@1000", &db, &attrs, "test").unwrap();
+        // Gunnery L3: from_level=2, cum_from = CUMULATIVE_SP[2]*1.0 = 1414
+        // cum_to = CUMULATIVE_SP[3]*1.0 = 8000
+        // @1500 is in range [1414, 8000).
+        let skills = parse_queue("Gunnery 3@1500", &db, &attrs, "test").unwrap();
         assert_eq!(skills.len(), 1);
         match &skills[0].remaining {
             QueuedSkillRemaining::SpTrained { sp_trained } => {
-                assert_eq!(*sp_trained, 1000.0);
+                assert_eq!(*sp_trained, 1500.0);
             }
             _ => panic!("expected SpTrained variant"),
         }
@@ -569,17 +569,18 @@ mod tests {
     fn test_parse_queue_bad_duration_format() {
         let db = skills_db();
         let attrs = uniform_attrs();
-        // Ends with 's' so treated as duration — but invalid format.
-        let err = parse_queue("Gunnery 3@abc", &db, &attrs, "test").unwrap_err();
-        assert!(err.to_string().contains("invalid time-left duration") || err.to_string().contains("unknown duration unit"));
+        // Ends with 'd' so treated as duration — but invalid format (no number).
+        let err = parse_queue("Gunnery 3@d", &db, &attrs, "test").unwrap_err();
+        assert!(err.to_string().contains("invalid time-left duration"));
     }
 
     #[test]
     fn test_parse_queue_negative_sp_rejected() {
         let db = skills_db();
         let attrs = uniform_attrs();
+        use std::error::Error;
         let err = parse_queue("Gunnery 2@-100", &db, &attrs, "test").unwrap_err();
-        assert!(err.to_string().contains("must not be negative"));
+        assert!(err.root_cause().to_string().contains("must not be negative"));
     }
 
     #[test]
