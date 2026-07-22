@@ -137,13 +137,12 @@ fn format_number(n: f64) -> String {
     let int = n as u64;
     let s = int.to_string();
     let mut result = String::with_capacity(s.len() + s.len() / 3);
-    let chars: Vec<char> = s.chars().collect();
-    let len = chars.len();
-    for (i, &c) in chars.iter().enumerate() {
+    let len = s.len();
+    for (i, &b) in s.as_bytes().iter().enumerate() {
         if i > 0 && (len - i).is_multiple_of(3) {
             result.push(',');
         }
-        result.push(c);
+        result.push(b as char);
     }
     result
 }

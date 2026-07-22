@@ -73,15 +73,25 @@ impl EffectiveAttributes {
         }
     }
 
-    /// Build from raw base values plus implant bonuses.
+    /// Build from raw base values plus implant bonuses (linear scan — convenience wrapper).
     pub fn from_base_and_implants(
         base: &BaseAttributes,
         active_implant_ids: &[u32],
         implants: &[ImplantRecord],
     ) -> Self {
+        let map: std::collections::HashMap<u32, &ImplantRecord> = implants.iter().map(|r| (r.type_id, r)).collect();
+        Self::from_base_and_implants_with_index(base, active_implant_ids, &map)
+    }
+
+    /// Build from raw base values plus implant bonuses using a pre-built index.
+    pub fn from_base_and_implants_with_index(
+        base: &BaseAttributes,
+        active_implant_ids: &[u32],
+        implant_map: &std::collections::HashMap<u32, &ImplantRecord>,
+    ) -> Self {
         let mut attrs = EffectiveAttributes::from(*base);
         for impl_id in active_implant_ids {
-            if let Some(implant) = implants.iter().find(|i| i.type_id == *impl_id) {
+            if let Some(implant) = implant_map.get(impl_id) {
                 for (attr, bonus) in &implant.bonuses {
                     match attr {
                         Attribute::Intelligence => attrs.intelligence += *bonus as f64,

@@ -311,8 +311,19 @@ pub fn optimize(
 
     let sim_state = char_state.build_simulation_state(skills_db);
 
+    // Build implant lookup index once for the entire optimization run.
+    let implant_map: std::collections::HashMap<u32, &ImplantRecord> = implants
+        .iter()
+        .map(|r| (r.type_id, r))
+        .collect();
+
     // Compute effective attributes early — needed by reorder_queue tie-breaking.
-    let initial_effective = char_state.effective_attributes(implants);
+    let base_with_bonuses = char_state.base_attributes.add(&char_state.implant_bonus);
+    let initial_effective = EffectiveAttributes::from_base_and_implants_with_index(
+        &base_with_bonuses,
+        &char_state.active_implant_ids,
+        &implant_map,
+    );
 
     // Reorder queue for attribute locality while respecting prerequisites.
     let entries = if sim_state.entries.len() > 1 {
@@ -354,6 +365,7 @@ pub fn optimize(
         alloc_count
     );
 
+
     // ── Precompute per-skill training times ────────────────────────────────
     // time_cache[i * alloc_count + a] = seconds for entries[i] under allocation a.
     let mut time_cache = vec![0.0; n * alloc_count];
@@ -361,10 +373,10 @@ pub fn optimize(
     // Effective attributes for each candidate allocation (with implants added).
     let effective_for_alloc: Vec<EffectiveAttributes> = allocations.iter().map(|alloc| {
         let with_implants = alloc.add(&char_state.implant_bonus);
-        EffectiveAttributes::from_base_and_implants(
+        EffectiveAttributes::from_base_and_implants_with_index(
             &with_implants,
             &char_state.active_implant_ids,
-            implants,
+            &implant_map,
         )
     }).collect();
 
