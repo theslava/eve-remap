@@ -31,11 +31,9 @@ Changed `BaseAttributes` fields from `f64` to `u32` across the entire codebase:
 
 Added `EffectiveAttributes::from_base_and_implants_with_index()` accepting a pre-built `HashMap<u32, &ImplantRecord>`. Old method delegates to indexed version. `optimize()` builds single map at entry point (`src/optimizer.rs`), reused across all callers including initial effective attributes computation.
 
-### 7. Time cache uses manual stride indexing
+### ~~7. Time cache uses manual stride indexing~~ ❌ **Won't Fix**
 
-**Location**: `src/optimizer.rs:347`, `time_cache[i * alloc_count + a]`
-
-Flat Vec with manual stride math works but doesn't document its access pattern. A `Vec<Vec<f64>>` organized as `[alloc][skill]` (matching suffix_sum layout) would be self-documenting with negligible overhead.
+Flat `Vec<f64>` with stride math is intentional — matches the layout we converted `suffix_sum` to in #18. Making both `Vec<Vec<f64>>` would undo that allocation reduction. The comment documents the access pattern.
 
 ### ~~8. `generate_allocations()` not cached~~ ✅ **Resolved**
 
@@ -51,19 +49,13 @@ Restored 2-component limit matching EVE Online client UI (displays max two compo
 ### ~~11. Unused import with misleading comment~~ ✅ **Resolved**
 
 Moved `Attribute` import from module-level into `#[cfg(test)] mod tests { ... }` where it is actually used. Removed `#[allow(unused_imports)]` allow-attribute and stale comment (`src/calculator.rs`). `EffectiveAttributes` and `SkillRecord` remain at module scope as they are consumed by public functions.
-### 12. Attribute name strings duplicated as magic constants
+### ~~12. Attribute name strings duplicated as magic constants~~ ❌ **Won't Fix**
 
-**Location**: `src/main.rs:292`, and multiple places using string keys for `sp_summary.primary.get("intelligence")`.
+Single location (`ATTR_KEYS` const in `print_table_output`). Five attributes, typed enum exists for logic paths. Adding `Attribute::as_str()` adds surface area for negligible gain.
 
-The `ATTR_KEYS` array in `print_table_output` duplicates attribute names that also exist in the `Attribute` enum's `Display` impl and elsewhere. No centralized mapping from `Attribute → &str` key for HashMap lookups.
+### ~~13. Inconsistent error message patterns~~ ❌ **Won't Fix**
 
-**Recommendation**: Add an `impl Attribute { fn key(&self) -> &'static str }` method and use it consistently. Eliminates duplication and typo risk.
-
-### 13. Inconsistent error message patterns
-
-Some errors use `anyhow::bail!` with format args, others construct context with `.context(format!(...))`. Some include line numbers (queue parsing) while others don't (attribute parsing).
-
-**Recommendation**: Standardize on one pattern. Consider a helper like `parse_error(line_num, msg)` for queue-file parsing to guarantee consistent formatting.
+Existing conventions are self-documenting: line-numbered context for queue-file parsing (user-facing), bare errors for CLI args and data loading. Introducing a helper would add indirection without improving signal-to-noise.
 
 ## Testing
 
@@ -106,25 +98,19 @@ Six new tests added to `src/optimizer.rs`:
 
 Converted from `Vec<Vec<f64>>` (~2,885 allocations) to single flat buffer matching `time_cache` stride convention (`src/optimizer.rs`). Reduces allocation overhead and improves cache locality.
 
-### 19. Reorder cluster scoring O(|ready|² per step)
+### ~~19. Reorder cluster scoring O(|ready|² per step)~~ ❌ **Won't Fix**
 
-**Location**: `src/optimizer.rs:245-252`
+Queues are < 50 skills. This runs in sub-milliseconds. Incremental scoring optimization adds complexity with no measurable benefit at current scale.
 
-Iterates all ready entries for each candidate in tie-breaking. Combined with the outer while-loop processing n entries, worst case O(n³).
+### ~~20. `format_number` allocates intermediate vector~~ ✅ **Resolved**
 
-**Recommendation**: Precompute attribute-pair frequency counts updated incrementally as entries are scheduled. Reduces to O(n log n) total. Low priority given typical queue sizes (< 50).
-
-### 20. `format_number` allocates intermediate vector
-
-**Location**: `src/main.rs:276`
-
-Collects characters into `Vec<char>` before iterating. Input is ASCII digits; iterating bytes or using integer modulo arithmetic avoids the allocation entirely.
+Replaced `Vec<char>` collection with byte iteration via `as_bytes()` (`src/main.rs`). Zero-allocation path for ASCII digit input.
 
 ## UX / CLI
 
-### 21. No progress indicator during precomputation
+### ~~21. No progress indicator during precomputation~~ ❌ **Won't Fix**
 
-The optimizer logs epoch-by-epoch to stderr but has no output during initial setup (allocation generation, time cache, suffix sums). For large queues this phase is fast, but a single "precomputing..." line would set expectations.
+User declined — optimizer completes in under a second for typical queues. Progress output would add noise, not signal.
 
 ### ~~22. Baseline comparison message unclear when remaps not used~~ ✅ **Resolved**
 
@@ -152,4 +138,9 @@ Prepends `# Optimized by eve-remap — skill order reordered for attribute local
 | 14 | ~~No parser tests~~ | — | — | ✅ Resolved |
 | 22 | ~~Baseline message unclear~~ | — | — | ✅ Resolved |
 | 23 | ~~Queue-out no header~~ | — | — | ✅ Resolved |
-| 15 | Stdin queue input untested | Coverage | Low | ⚠️ Deferred |
+| 7 | ~~Time cache stride~~ | — | — | ❌ Won't Fix |
+| 12 | ~~Attribute name duplication~~ | — | — | ❌ Won't Fix |
+| 13 | ~~Error message patterns~~ | — | — | ❌ Won't Fix |
+| 15 | ~~Stdin queue untested~~ | Coverage | Low | ❌ Won't Fix |
+| 19 | ~~Cluster scoring O(n²)~~ | — | — | ❌ Won't Fix |
+| 21 | ~~Progress indicator~~ | UX | Low | ❌ Won't Fix |
