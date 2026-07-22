@@ -79,7 +79,11 @@ pub fn parse_sp_value(input: &str) -> anyhow::Result<f64> {
 /// suffix (`d`, `h`, `m`, `s`). Components may be separated by a space or concatenated.
 /// This is the inverse of [`format_duration`].
 ///
-/// Valid examples: `"5d"`, `"3d 12h"`, `"3d12h"`, `"5h30m"`, `"1m 30s"`, `"90s"`, `"0s"`.
+/// Maximum of two time units is enforced — this matches the EVE Online client UI
+/// which only ever displays durations in two components (e.g., "5d 13h"). Accepting
+/// more would be meaningless as users cannot enter such values in-game.
+///
+/// Valid examples: `"5d"`, `"3d 12h"`, `"3d12h"`, `"5h30m"`, `"90s"`, `"0s"`.
 pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
     let input = input.trim();
     if input.is_empty() {
@@ -89,6 +93,7 @@ pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
     // Extract individual <number><unit> tokens from the input.
     // We scan character-by-character, collecting digit/dot runs and expecting a unit after each.
     let mut total_secs: f64 = 0.0;
+    let mut component_count = 0usize;
     let mut chars = input.chars().peekable();
 
     loop {
@@ -145,6 +150,14 @@ pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
             anyhow::bail!("duration values must not be negative (got {})", value);
         }
 
+        component_count += 1;
+        if component_count > 2 {
+            anyhow::bail!(
+                "too many time components in duration '{}' (max 2 allowed, matching EVE Online UI)",
+                input
+            );
+        }
+
         match unit_char {
             'd' => total_secs += value * 86_400.0,
             'h' => total_secs += value * 3_600.0,
@@ -156,7 +169,6 @@ pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
                 value
             ),
         }
-
     }
 
     Ok(total_secs)
@@ -415,8 +427,9 @@ mod tests {
     }
 
     #[test]
-    fn test_parse_duration_three_components_accepted() {
-        assert_eq!(parse_duration("1d 2h 3m").unwrap(), 1.0 * 86_400.0 + 2.0 * 3_600.0 + 3.0 * 60.0);
+    fn test_parse_duration_three_components_rejected() {
+        let err = parse_duration("1d 2h 3m").unwrap_err();
+        assert!(err.to_string().contains("too many time components"));
     }
 
     #[test]

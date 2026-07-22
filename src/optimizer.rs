@@ -388,14 +388,12 @@ pub fn optimize(
     }
 
     // ── Precompute suffix sums per allocation ──────────────────────────────
-    // suffix_sum[a][i] = sum of time_cache[k*alloc_count + a] for k in i..n
-    let mut suffix_sum: Vec<Vec<f64>> = (0..alloc_count)
-        .map(|_| vec![0.0; n + 1])
-        .collect();
+    // suffix_sum[a * (n+1) + i] = sum of time_cache[k*alloc_count + a] for k in i..n
+    let mut suffix_sum = vec![0.0f64; alloc_count * (n + 1)];
 
     for a in 0..alloc_count {
         for i in (0..n).rev() {
-            suffix_sum[a][i] = suffix_sum[a][i + 1] + time_cache[i * alloc_count + a];
+            suffix_sum[a * (n + 1) + i] = suffix_sum[a * (n + 1) + i + 1] + time_cache[i * alloc_count + a];
         }
     }
 
@@ -465,8 +463,9 @@ pub fn optimize(
             }
 
             let mut best_a = 0usize;
-            let mut best_after = suffix_sum[0][cut];
-            for (a, val) in suffix_sum.iter().map(|col| col[cut]).enumerate().skip(1) {
+            let mut best_after = suffix_sum[0 * (n + 1) + cut];
+            for a in 1..alloc_count {
+                let val = suffix_sum[a * (n + 1) + cut];
                 if val < best_after {
                     best_after = val;
                     best_a = a;
