@@ -79,9 +79,9 @@ Extracted into `src/parser.rs` with three pure functions:
 
 Refactored `main.rs::run_optimizer_from_queue_file` to delegate all parsing to the new module (~130 lines removed).
 
-### ~~15. Stdin queue input untested~~ ⚠️ **Deferred**
+### ~~15. Stdin queue input untested~~ ❌ **Won't Fix**
 
-The `-` stdin path in `read_queue_content` is trivially correct and exercises standard library I/O. Testing requires process-level integration (piping data into a binary), which is blocked by linker unavailability in this environment. Low risk; revisit when CI with `cargo test` execution is available.
+Stdin (`-`) and file paths both call `parse_queue()` with a `String` — the parser module has full coverage (38 tests). The only difference is where the string comes from (`std::io::stdin().read_to_string()` vs `fs::read_to_string()`), which is stdlib I/O with no application logic to test.
 
 ### ~~16. Optimizer integration tests are shallow~~ ✅ **Resolved**
 
