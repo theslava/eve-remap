@@ -49,9 +49,9 @@ Restored 2-component limit matching EVE Online client UI (displays max two compo
 ### ~~11. Unused import with misleading comment~~ ✅ **Resolved**
 
 Moved `Attribute` import from module-level into `#[cfg(test)] mod tests { ... }` where it is actually used. Removed `#[allow(unused_imports)]` allow-attribute and stale comment (`src/calculator.rs`). `EffectiveAttributes` and `SkillRecord` remain at module scope as they are consumed by public functions.
-### ~~12. Attribute name strings duplicated as magic constants~~ ❌ **Won't Fix**
+### ~~12. Attribute name strings duplicated as magic constants~~ ✅ **Resolved**
 
-Single location (`ATTR_KEYS` const in `print_table_output`). Five attributes, typed enum exists for logic paths. Adding `Attribute::as_str()` adds surface area for negligible gain.
+Changed `AttributeSpSummary` HashMaps from `HashMap<String, f64>` to `HashMap<Attribute, f64>`. Producer (`optimizer.rs`) inserts typed attributes directly — no `.to_string()`. Consumer (`main.rs::print_table_output`) iterates over a typed `DISPLAY_ORDER` const instead of string keys. JSON output unchanged via existing `#[serde(rename_all = "lowercase")]`.
 
 ### ~~13. Inconsistent error message patterns~~ ❌ **Won't Fix**
 
@@ -139,7 +139,7 @@ Prepends `# Optimized by eve-remap — skill order reordered for attribute local
 | 22 | ~~Baseline message unclear~~ | — | — | ✅ Resolved |
 | 23 | ~~Queue-out no header~~ | — | — | ✅ Resolved |
 | 7 | ~~Time cache stride~~ | — | — | ❌ Won't Fix |
-| 12 | ~~Attribute name duplication~~ | — | — | ❌ Won't Fix |
+| 12 | ~~Attribute name duplication~~ | — | — | ✅ Resolved |
 | 13 | ~~Error message patterns~~ | — | — | ❌ Won't Fix |
 | 15 | ~~Stdin queue untested~~ | Coverage | Low | ❌ Won't Fix |
 | 19 | ~~Cluster scoring O(n²)~~ | — | — | ❌ Won't Fix |
