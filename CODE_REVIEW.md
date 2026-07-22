@@ -27,17 +27,9 @@ Changed `BaseAttributes` fields from `f64` to `u32` across the entire codebase:
 - `src/parser.rs`: `parse_attributes()` and `parse_implant_bonuses()` parse `u32` with range validation (17-27, 0-10); test assertions use integer literals
 - `src/main.rs`: removed redundant `as u32` casts on attribute display
 
-### 6. Linear scan for implant lookups
+### ~~6. Linear scan for implant lookups~~ ✅ **Resolved**
 
-**Location**: `src/data/models.rs:84`, `EffectiveAttributes::from_base_and_implants`
-
-```rust
-if let Some(implant) = implants.iter().find(|i| i.type_id == *impl_id) {
-```
-
-O(N*M) — linear scan per active implant ID against all records. With N ≤ 9 slots and M ~hundreds, performance impact is negligible but the pattern repeats.
-
-**Recommendation**: Build a `HashMap<u32, &ImplantRecord>` index once at startup. Low effort, cleaner pattern.
+Added `EffectiveAttributes::from_base_and_implants_with_index()` accepting a pre-built `HashMap<u32, &ImplantRecord>`. Old method delegates to indexed version. `optimize()` builds single map at entry point (`src/optimizer.rs`), reused across all callers including initial effective attributes computation.
 
 ### 7. Time cache uses manual stride indexing
 
@@ -151,6 +143,8 @@ Prepends `# Optimized by eve-remap — skill order reordered for attribute local
 |---|-------|----------|--------|--------|
 | 5 | ~~`f64` attributes~~ | — | — | ✅ Resolved |
 | 1 | ~~Greedy limitation un-documented~~ | — | — | ✅ Resolved |
+| 6 | ~~Linear implant scan~~ | — | — | ✅ Resolved |
+| 20 | ~~Vec\<char\> allocation~~ | — | — | ✅ Resolved |
 | 2 | ~~Score overflow~~ | — | — | ✅ Resolved |
 | 3 | ~~Duplicate prerequisite edges~~ | — | — | ✅ Resolved |
 | 4 | ~~Cycle detection no warning~~ | — | — | ✅ Resolved |
