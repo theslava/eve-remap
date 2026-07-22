@@ -136,8 +136,9 @@ impl BaseAttributes {
 #[derive(Debug, Clone)]
 pub struct QueuedSkill {
     pub id: u32,
-    /// Current trained level (0-4). Target is level + 1.
-    pub level: u8,
+    /// Source level already trained (0–4). Target level is `current_level + 1`.
+    /// For example, user input "Gunnery 3" stores current_level=2, target=3.
+    pub current_level: u8,
     /// How much is remaining for this training entry.
     pub remaining: QueuedSkillRemaining,
 }

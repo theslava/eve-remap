@@ -53,16 +53,16 @@ impl CharacterState {
         let mut entries = Vec::with_capacity(self.queued_skills.len());
 
         for qs in &self.queued_skills {
-            if qs.level >= 5 {
-                continue; // already max level
+            if qs.current_level >= 5 {
+                continue; // defensive: can't fire from parsed input (max stored is 4)
             }
 
             let Some(record) = skills_db.iter().find(|r| r.id == qs.id) else {
                 continue; // unknown skill — skip
             };
 
-            let target_level = qs.level + 1;
-            let total_sp = sp_for_level(record, qs.level, target_level);
+            let target_level = qs.current_level + 1;
+            let total_sp = sp_for_level(record, qs.current_level, target_level);
 
             // Resolve remaining SP based on input type.
             let remaining_sp = match &qs.remaining {
@@ -305,7 +305,7 @@ pub fn optimize(
     skills_db: &[SkillRecord],
     implants: &[ImplantRecord],
 ) -> OptimizationResult {
-    let _timer = Instant::now();
+    let timer = Instant::now();
     eprintln!("[+] Starting optimization...");
 
     let sim_state = char_state.build_simulation_state(skills_db);
@@ -343,6 +343,8 @@ pub fn optimize(
     let n = entries.len();
 
     // Baseline: train everything under current attrs, no remaps.
+    // Safe to compute on reordered entries: addition is commutative, so total time
+    // under constant rates doesn't depend on order.
     let baseline_secs = {
         let mut t = 0.0;
         for entry in &entries {
@@ -436,7 +438,7 @@ pub fn optimize(
                 result_epochs.len(),
                 format_attrs(&current_effective),
                 n - remaining_start,
-                _timer.elapsed().as_secs_f64()
+                timer.elapsed().as_secs_f64()
             );
             break;
         }
@@ -518,7 +520,7 @@ pub fn optimize(
                 if uses_normal { "normal" } else { "bonus" },
                 stay_finish - total_finish,
                 (stay_finish - total_finish) / 86_400.0,
-                _timer.elapsed().as_secs_f64()
+                timer.elapsed().as_secs_f64()
             );
 
             current_base = allocations[chosen_a];
@@ -539,7 +541,7 @@ pub fn optimize(
                 result_epochs.len(),
                 format_attrs(&current_effective),
                 n - remaining_start,
-                _timer.elapsed().as_secs_f64()
+                timer.elapsed().as_secs_f64()
             );
             break;
         }
@@ -567,7 +569,7 @@ pub fn optimize(
 
     eprintln!(
         "[+] Optimization complete: {} epochs in {:.2}s",
-        result_epochs.len(), _timer.elapsed().as_secs_f64()
+        result_epochs.len(), timer.elapsed().as_secs_f64()
     );
 
     OptimizationResult {
@@ -602,8 +604,10 @@ fn push_epoch_with_times(
         let entry = &entries[global_i];
         let secs = train_times[local_i];
         completed_skills.push((entry.skill_id, entry.name.clone(), entry.target_level, secs));
-
         let sp_earned = entry.remaining_sp;
+        // SP is attributed to both primary and secondary buckets so the output table
+        // can show per-attribute contribution from each role. Summing both gives 2x;
+        // total epoch SP = sum of primary only (or secondary only).
         *sp_summary.primary.entry(entry.record.primary_attribute).or_insert(0.0) += sp_earned;
         *sp_summary.secondary.entry(entry.record.secondary_attribute).or_insert(0.0) += sp_earned;
     }
@@ -666,7 +670,7 @@ mod tests {
     fn qe(id: u32, level: u8, total_sp: f64) -> QueuedSkill {
         let dur = (total_sp / 0.5).ceil() as u64;
         let dur = dur.max(1) as f64;
-        QueuedSkill { id, level, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } }
+        QueuedSkill { id, current_level: level, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } }
     }
 
     // -- allocation generator tests ---------------------------------------
@@ -727,7 +731,7 @@ mod tests {
             skills_db.push(skill.clone());
             let sp_needed = sp_for_level(&skill, 1, 2);
             let dur = (sp_needed / 0.5).ceil() as f64;
-            queued_skills.push(QueuedSkill { id: skill.id, level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } });
+            queued_skills.push(QueuedSkill { id: skill.id, current_level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } });
         }
         let char_st = char_state(base_attrs(17, 17, 17, 17, 17), queued_skills, Some(2));
         let result = optimize(&char_st, &skills_db, &[]);
@@ -956,10 +960,10 @@ mod tests {
     fn test_optimize_l5_only_queue_empty_result() {
         let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
         // level=4 means target is L5 — but if we set remaining_sp to 0 it's already done.
-        // More directly: QueuedSkill with level >= 5 is skipped in build_simulation_state.
+        // More directly: QueuedSkill with current_level >= 5 is skipped in build_simulation_state.
         let char_st = char_state(
             base_attrs(17, 17, 17, 17, 17),
-            vec![QueuedSkill { id: skill.id, level: 5, remaining: QueuedSkillRemaining::Duration { remaining_sec: 0., total_duration_secs: 0. } }],
+            vec![QueuedSkill { id: skill.id, current_level: 5, remaining: QueuedSkillRemaining::Duration { remaining_sec: 0., total_duration_secs: 0. } }],
             Some(1),
         );
         let result = optimize(&char_st, &[skill], &[]);
@@ -1008,7 +1012,7 @@ mod tests {
         let dur = (sp_needed / 0.5) as f64;
         let char_st = char_state(
             base_attrs(17, 17, 17, 17, 17),
-            vec![QueuedSkill { id: skill.id, level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } }],
+            vec![QueuedSkill { id: skill.id, current_level: 1, remaining: QueuedSkillRemaining::Duration { remaining_sec: dur, total_duration_secs: dur } }],
             Some(0),
         );
         let result = optimize(&char_st, &[skill], &[]);

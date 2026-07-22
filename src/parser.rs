@@ -140,8 +140,12 @@ pub fn parse_queue(
                     calculator::parse_duration(info).with_context(|| {
                         format!("Line {}: invalid time-left duration '{}'", line_num + 1, info)
                     })?;
+                // Clamp: user-provided time-left may exceed our computed total (e.g.,
+                // they were training under different attributes/implants). Without the
+                // cap, earned_fraction goes negative and remaining SP inflates past total.
+                let capped = remaining_sec.min(duration_secs);
                 QueuedSkillRemaining::Duration {
-                    remaining_sec: remaining_sec.max(0.0),
+                    remaining_sec: capped.max(0.0),
                     total_duration_secs: duration_secs,
                 }
             }
@@ -183,7 +187,7 @@ pub fn parse_queue(
 
         queued_skills.push(QueuedSkill {
             id: record.id,
-            level: from_level,
+            current_level: from_level,
             remaining: queued_skill_remaining,
         });
     }
@@ -312,7 +316,7 @@ mod tests {
         let skills = parse_queue("Gunnery 3", &db, &attrs, "test").unwrap();
         assert_eq!(skills.len(), 1);
         assert_eq!(skills[0].id, 1);
-        assert_eq!(skills[0].level, 2); // from_level for target 3
+        assert_eq!(skills[0].current_level, 2); // from_level for target 3
         matches!(&skills[0].remaining, QueuedSkillRemaining::Duration { remaining_sec, total_duration_secs } if (remaining_sec - total_duration_secs).abs() < f64::EPSILON);
     }
 
@@ -354,11 +358,11 @@ mod tests {
         let attrs = uniform_attrs();
         // Level 1 → from_level 0
         let skills = parse_queue("Gunnery 1", &db, &attrs, "test").unwrap();
-        assert_eq!(skills[0].level, 0);
+        assert_eq!(skills[0].current_level, 0);
 
         // Level 5 → from_level 4
         let skills = parse_queue("Gunnery 5", &db, &attrs, "test").unwrap();
-        assert_eq!(skills[0].level, 4);
+        assert_eq!(skills[0].current_level, 4);
     }
 
     // ── parse_queue: duration progress tests ───────────────────────────────
@@ -367,11 +371,12 @@ mod tests {
     fn test_parse_queue_duration_progress_days_hours() {
         let db = skills_db();
         let attrs = uniform_attrs();
-        let skills = parse_queue("Gunnery 3@3d12h", &db, &attrs, "test").unwrap();
+        // Use a short duration well within Gunnery L2->L3 total (~2h42m at 27/27 attrs).
+        let skills = parse_queue("Gunnery 3@2h", &db, &attrs, "test").unwrap();
         assert_eq!(skills.len(), 1);
         match &skills[0].remaining {
             QueuedSkillRemaining::Duration { remaining_sec, .. } => {
-                assert!((remaining_sec - (3.0 * 86_400.0 + 12.0 * 3_600.0)).abs() < 1.0);
+                assert!((remaining_sec - (2.0 * 3_600.0)).abs() < 1.0);
             }
             _ => panic!("expected Duration variant"),
         }
@@ -634,9 +639,9 @@ mod tests {
         for s in &skills {
             assert_eq!(s.id, 1);
         }
-        assert_eq!(skills[0].level, 1); // L1→L2
-        assert_eq!(skills[1].level, 2); // L2→L3
-        assert_eq!(skills[2].level, 3); // L3→L4
+        assert_eq!(skills[0].current_level, 1); // L1->L2
+        assert_eq!(skills[1].current_level, 2); // L2->L3
+        assert_eq!(skills[2].current_level, 3); // L3->L4
     }
 
     // ── parse_queue: source_label in error messages ────────────────────────

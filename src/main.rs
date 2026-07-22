@@ -22,18 +22,9 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
     let skills_db = data::load_skills().context("Failed to load skill database")?;
     let implants = data::load_implants().context("Failed to load implant database")?;
 
-    // Parse --remap-available: "0d", "30d", etc. → seconds from now.
-    let remap_available_str = args.remap_available.trim();
-    let remap_available_secs = if let Some(num) = remap_available_str.strip_suffix('d') {
-        num.parse::<f64>()
-            .with_context(|| format!("Invalid --remap-available '{}': expected a number followed by 'd'", remap_available_str))?
-            * 86_400.0
-    } else {
-        anyhow::bail!(
-            "Invalid --remap-available '{}': expected a value like '0d' or '30d'",
-            remap_available_str
-        );
-    };
+    // Parse --remap-available using the shared duration parser ("0d", "30d", etc.).
+    let remap_available_secs = calculator::parse_duration(&args.remap_available)
+        .with_context(|| format!("Invalid --remap-available '{}': expected a value like '0d' or '30d'", args.remap_available))?;
 
     let result = run_optimizer_from_queue_file(
         &args.attributes,

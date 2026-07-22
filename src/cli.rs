@@ -21,7 +21,7 @@ pub struct OptimizeArgs {
     #[arg(long, short = 'q')]
     pub queue: String,
     /// Base remapped attribute values (excluding implants).
-    /// Format: PER:MEM:WIL:INT:CHA (e.g., 27:22:17:17:16). Defaults to 17:17:17:17:17.
+    /// Format: PER:MEM:WIL:INT:CHA (e.g., 27:20:17:17:18). Defaults to 17:17:17:17:17.
     #[arg(long, default_value = "17:17:17:17:17")]
     pub attributes: String,
 

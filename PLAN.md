@@ -2,7 +2,7 @@
 
 ## Problem Statement
 
-EVE Online players invest hundreds of hours training skills on their characters. When they use a Neural Interface to remap (reallocate attribute points between Intelligence, Charisma, Perception, Memory, Willpower), currently training skills keep their accumulated SP but switch to the new generation rate immediately. Players have a timed remap available every 365 days plus any bonus remaps they've purchased. Active implants add +1 to +5 per slot to specific attributes.
+EVE Online players invest hundreds of hours training skills on their characters. When they use a Neural Interface to remap (reallocate attribute points between Intelligence, Charisma, Perception, Memory, Willpower), currently training skills keep their accumulated SP but switch to the new generation rate immediately. Players have a timed remap available every 365 days plus any bonus remaps they've been granted. Active implants add +1 to +5 per slot to specific attributes.
 
 The optimizer should answer:
 
@@ -121,7 +121,7 @@ Effective value used in duration formula = base + total implant bonus per attrib
 
 ### Multi-Epoch Optimization (no rollback model)
 
-Skills train **sequentially** in queue order — only one skill earns SP at any given moment. On completion, the next queued skill starts. Skills keep their SP across remaps; only the future training rate changes. Lower levels of a skill must complete before higher ones (Gunnery 1 → Gunnery 2), but cross-skill prerequisites are ignored for now.
+Skills train **sequentially** in queue order — only one skill earns SP at any given moment. On completion, the next queued skill starts. Skills keep their SP across remaps; only the future training rate changes. The optimizer reorders the queue for attribute locality while respecting both intra-skill ordering (Gunnery 1 before Gunnery 2) and cross-skill prerequisites from SDE data, using topological sort with attribute-aware tie-breaking.
 
 Primary attribute points are worth exactly **twice** as much as secondary (`+1 primary = +2 secondary`), because the rate formula is linear.
 
@@ -149,7 +149,7 @@ A remap distributes **14** free points above a hard floor of **17** across 5 att
 
 ### Queue File Format
 
-One skill per line in the format `"Skill Name <level>"`. Lines starting with `#` are comments; blank lines are ignored. Skill names must match entries in `assets/skills.json` (case-insensitive). Level must be 1–5. Skills at level 5 are skipped by the optimizer (already maxed).
+One skill per line in the format `"Skill Name <level>"`. Lines starting with `#` are comments; blank lines are ignored. Skill names must match entries in `assets/skills.json` (case-insensitive). Level must be 1–5 — it represents the target level, training from (level-1) to level. For example, `"Gunnery 5"` trains Gunnery from level 4 to level 5.
 
 Example:
 ```
