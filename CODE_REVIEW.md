@@ -47,7 +47,7 @@ Cached via `std::sync::LazyLock<Vec<BaseAttributes>>` at module scope (`src/opti
 Changed `(len - i) % 3 == 0` to `(len - i).is_multiple_of(3)` in `format_number` (`src/main.rs`). Clippy lint satisfied.
 ### ~~10. `parse_duration` rejects 3+ components~~ ✅ **Resolved**
 
-Removed component limit check from `parse_duration` (`src/calculator.rs`). Parser now accepts arbitrary numbers of components (e.g., `"1d 2h 3m"`), matching EVE Online UI format. Dead `component_count` variable removed.
+Restored 2-component limit matching EVE Online client UI (displays max two components like "5d 13h"). Added rationale comment in doc string so this is not reverted again. Test renamed `three_components_accepted` → `three_components_rejected`.
 ### ~~11. Unused import with misleading comment~~ ✅ **Resolved**
 
 Moved `Attribute` import from module-level into `#[cfg(test)] mod tests { ... }` where it is actually used. Removed `#[allow(unused_imports)]` allow-attribute and stale comment (`src/calculator.rs`). `EffectiveAttributes` and `SkillRecord` remain at module scope as they are consumed by public functions.
@@ -102,13 +102,9 @@ Six new tests added to `src/optimizer.rs`:
 
 ## Performance
 
-### 18. Suffix sum table fragmentation
+### ~~18. Suffix sum table fragmentation~~ ✅ **Resolved**
 
-**Location**: `src/optimizer.rs:368-376`
-
-Builds 2,885 separate `Vec<f64>` allocations for `suffix_sum[alloc_count][n+1]`. For N=100 this is ~2.3 MB across thousands of small allocations.
-
-**Recommendation**: Use a single flat buffer (`Vec<f64>` of size `alloc_count * (n + 1)`) matching the `time_cache` layout. Reduces allocation overhead and improves cache locality during the scan loop.
+Converted from `Vec<Vec<f64>>` (~2,885 allocations) to single flat buffer matching `time_cache` stride convention (`src/optimizer.rs`). Reduces allocation overhead and improves cache locality.
 
 ### 19. Reorder cluster scoring O(|ready|² per step)
 
@@ -151,6 +147,7 @@ Prepends `# Optimized by eve-remap — skill order reordered for attribute local
 | 8 | ~~Allocation cache~~ | — | — | ✅ Resolved |
 | 9 | ~~Clippy warning~~ | — | — | ✅ Resolved |
 | 10 | ~~Duration parse limit~~ | — | — | ✅ Resolved |
+| 18 | ~~Suffix sum fragmentation~~ | — | — | ✅ Resolved |
 | 11 | ~~Unused import~~ | — | — | ✅ Resolved |
 | 14 | ~~No parser tests~~ | — | — | ✅ Resolved |
 | 22 | ~~Baseline message unclear~~ | — | — | ✅ Resolved |
