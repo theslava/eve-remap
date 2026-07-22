@@ -68,7 +68,11 @@ impl CharacterState {
             let remaining_sp = match &qs.remaining {
                 QueuedSkillRemaining::Duration { remaining_sec, total_duration_secs } => {
                     if *total_duration_secs == 0.0 {
-                        return SimulationState { entries };
+                        eprintln!(
+                            "[-] Warning: skill '{}' level {} has zero training time — skipped",
+                            record.name, target_level
+                        );
+                        continue;
                     }
                     let earned_fraction = 1.0 - (remaining_sec / total_duration_secs);
                     (total_sp - earned_fraction * total_sp).max(0.0)
@@ -280,8 +284,13 @@ fn reorder_queue(
              [-]     ordered and are appended in original queue order",
             n - ordered.len()
         );
+        // Use a visited flag for O(n) instead of Vec::contains (O(n^2)).
+        let mut seen = vec![false; n];
+        for &idx in &ordered {
+            seen[idx] = true;
+        }
         for i in 0..n {
-            if !ordered.contains(&i) {
+            if !seen[i] {
                 ordered.push(i);
             }
         }
@@ -496,6 +505,7 @@ pub fn optimize(
                 normal_available_at = epoch_end + REMAP_COOLDOWN_SECS;
             } else {
                 // Bonus remap consumed.
+                debug_assert!(bonus_left > 0, "bonus remap used but none left");
                 result_epochs.last_mut().unwrap().bonus_remaps_used += 1;
                 bonus_left -= 1;
             }

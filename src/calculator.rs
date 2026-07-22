@@ -6,8 +6,9 @@ pub const CUMULATIVE_SP: [f64; 6] = [0.0, 250.0, 1_414.0, 8_000.0, 45_255.0, 256
 
 /// Compute the SP required to go from current_level to target_level for a given skill.
 pub fn sp_for_level(skill: &SkillRecord, from_level: u8, to_level: u8) -> f64 {
-    let from_idx = from_level.min(5) as usize;
-    let to_idx = to_level.min(5) as usize;
+    debug_assert!((from_level <= 5) && (to_level <= 5), "levels should be validated before calling sp_for_level");
+    let from_idx = from_level as usize;
+    let to_idx = to_level as usize;
     if from_idx >= to_idx {
         return 0.0;
     }
@@ -225,11 +226,18 @@ pub fn format_duration(seconds: f64) -> String {
                 }
             }
 
-            // Cascade overflow from second into first (e.g., 60m→1h, 24h→1d).
+            // Cascade overflow from second into first, propagating up if needed.
+            // E.g., 60m→1h, 24h→1d — may chain when v1 itself overflows its parent unit.
             let cascade = [0u64, 24, 60, 60][second];
             if cascade > 0 && v2 >= cascade {
                 v2 -= cascade;
                 v1 += 1;
+                // If first unit is hours and rolled past 24, carry into days.
+                if first == 1 && v1 >= 24 {
+                    // Hours rolled over to a new day. Since d_i==0 (first==hours),
+                    // v1 was at most 23 before +1 from cascade, so exactly 1 day.
+                    return "1d".to_string();
+                }
             }
 
             // Build result — skip zero-valued second unit after cascade.
@@ -498,5 +506,12 @@ mod tests {
         let formatted = format_duration(original);
         let parsed = parse_duration(&formatted).unwrap();
         assert_eq!(parsed, original);
+    }
+
+    #[test]
+    fn test_format_duration_hour_cascade_to_day() {
+        // 23h 59m 30s → shows h,m; discards s=30 >= threshold → rounds m→60, cascades h→24→1d
+        let secs = 23.0 * 3_600.0 + 59.0 * 60.0 + 30.0;
+        assert_eq!(format_duration(secs), "1d");
     }
 }

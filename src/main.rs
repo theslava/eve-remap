@@ -251,9 +251,11 @@ fn write_queue_file(
     result: &data::models::OptimizationResult,
 ) -> Result<()> {
     let mut lines = vec![String::from("# Optimized by eve-remap — skill order reordered for attribute locality")];
+    let mut skill_count = 0usize;
     for epoch in &result.epochs {
         for (_skill_id, skill_name, target_level, _train_secs) in &epoch.completed_skills {
             lines.push(format!("{} {}", skill_name, target_level));
+            skill_count += 1;
         }
     }
 
@@ -262,7 +264,7 @@ fn write_queue_file(
     if path == "-" {
         io::stdout().write_all(content.as_bytes()).context("Failed to write to stdout")?;
         io::stdout().flush()?;
-        eprintln!("[+] Optimized queue written to stdout ({} skills)", lines.len() - 1);
+        eprintln!("[+] Optimized queue written to stdout ({} skills)", skill_count);
     } else {
         let mut file = std::fs::File::create(path).context(format!("Failed to create output queue file '{}'", path))?;
         file.write_all(content.as_bytes())
@@ -270,7 +272,7 @@ fn write_queue_file(
         eprintln!(
             "[+] Optimized queue written to '{}' ({} skills)",
             path,
-            lines.len() - 1
+            skill_count
         );
     }
     Ok(())
