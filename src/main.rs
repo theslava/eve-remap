@@ -47,18 +47,27 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
 
     eprintln!(
         "Base     PER={} MEM={} WIL={} INT={} CHA={}",
-        base_attrs.perception, base_attrs.memory, base_attrs.willpower,
-        base_attrs.intelligence, base_attrs.charisma,
+        base_attrs.perception,
+        base_attrs.memory,
+        base_attrs.willpower,
+        base_attrs.intelligence,
+        base_attrs.charisma,
     );
     eprintln!(
         "Implant  +{} +{} +{} +{} +{}",
-        implant_bonus.perception, implant_bonus.memory, implant_bonus.willpower,
-        implant_bonus.intelligence, implant_bonus.charisma,
+        implant_bonus.perception,
+        implant_bonus.memory,
+        implant_bonus.willpower,
+        implant_bonus.intelligence,
+        implant_bonus.charisma,
     );
     eprintln!(
         "Effective PER={} MEM={} WIL={} INT={} CHA={}",
-        effective_attrs.perception, effective_attrs.memory, effective_attrs.willpower,
-        effective_attrs.intelligence, effective_attrs.charisma,
+        effective_attrs.perception,
+        effective_attrs.memory,
+        effective_attrs.willpower,
+        effective_attrs.intelligence,
+        effective_attrs.charisma,
     );
     // ── Build queued skills ────────────────────────────────────────────
     let (queued_skills, queue_label) = if let Some(path) = &args.queue {
@@ -224,12 +233,24 @@ fn resolve_attributes(
     args: &cli::OptimizeArgs,
     esi_data: &Option<esi::CharacterData>,
     implants: &[data::models::ImplantRecord],
-) -> Result<(data::models::BaseAttributes, &'static str, data::models::BaseAttributes)> {
+) -> Result<(
+    data::models::BaseAttributes,
+    &'static str,
+    data::models::BaseAttributes,
+)> {
     let default_base = data::models::BaseAttributes {
-        perception: 17, memory: 17, willpower: 17, intelligence: 17, charisma: 17,
+        perception: 17,
+        memory: 17,
+        willpower: 17,
+        intelligence: 17,
+        charisma: 17,
     };
     let zero_implant = data::models::BaseAttributes {
-        perception: 0, memory: 0, willpower: 0, intelligence: 0, charisma: 0,
+        perception: 0,
+        memory: 0,
+        willpower: 0,
+        intelligence: 0,
+        charisma: 0,
     };
 
     // ── Implant bonuses (resolved first — needed for ESI back-calculation) ──
@@ -242,10 +263,16 @@ fn resolve_attributes(
             if let Some(rec) = implants.iter().find(|r| r.type_id == *impl_id) {
                 for (attr, val) in &rec.bonuses {
                     match attr {
-                        data::models::Attribute::Perception => implant_bonus.perception += *val as u32,
+                        data::models::Attribute::Perception => {
+                            implant_bonus.perception += *val as u32
+                        }
                         data::models::Attribute::Memory => implant_bonus.memory += *val as u32,
-                        data::models::Attribute::Willpower => implant_bonus.willpower += *val as u32,
-                        data::models::Attribute::Intelligence => implant_bonus.intelligence += *val as u32,
+                        data::models::Attribute::Willpower => {
+                            implant_bonus.willpower += *val as u32
+                        }
+                        data::models::Attribute::Intelligence => {
+                            implant_bonus.intelligence += *val as u32
+                        }
                         data::models::Attribute::Charisma => implant_bonus.charisma += *val as u32,
                     }
                 }
@@ -343,7 +370,10 @@ fn build_queued_from_esi(
 
         // Only include SP progress if training has actually started.
         if entry.training_start_sp > entry.level_start_sp {
-            lines.push(format!("{} {}@{}", record.name, target_level as i32, entry.training_start_sp as i64));
+            lines.push(format!(
+                "{} {}@{}",
+                record.name, target_level as i32, entry.training_start_sp as i64
+            ));
         } else {
             lines.push(format!("{} {}", record.name, target_level as i32));
         }
@@ -486,7 +516,6 @@ fn print_table_output(result: &data::models::OptimizationResult) {
         println!();
     }
 
-    let total_days = result.total_wall_clock_seconds / 86_400.0;
     // Sum SP from primary buckets — each skill contributes exactly once.
     let total_sp: f64 = result
         .epochs
@@ -495,12 +524,17 @@ fn print_table_output(result: &data::models::OptimizationResult) {
         .sum();
 
     println!("{}", "-".repeat(72));
-    println!("Total training time: {:.1} days", total_days);
+    println!(
+        "Total training time: {}",
+        calculator::format_duration(result.total_wall_clock_seconds)
+    );
     println!("Total SP in queue: {}", format_number(total_sp));
     println!("Epochs: {}", result.epochs.len());
     if result.baseline_wall_clock_seconds > 0.0 {
-        let baseline_days = result.baseline_wall_clock_seconds / 86_400.0;
-        println!("Baseline (no remaps): {:.1} days", baseline_days);
+        println!(
+            "Baseline (no remaps): {}",
+            calculator::format_duration(result.baseline_wall_clock_seconds)
+        );
         if result.epochs.len() <= 1 {
             println!("  (Remapping did not improve training time over current attributes.)");
         }
