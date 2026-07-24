@@ -317,15 +317,11 @@ fn reorder_queue(
 }
 
 /// Run the greedy multi-epoch remap optimizer with sequential training.
-pub fn optimize(
-    char_state: &CharacterState,
-    skills_db: &[SkillRecord],
-) -> OptimizationResult {
+pub fn optimize(char_state: &CharacterState, skills_db: &[SkillRecord]) -> OptimizationResult {
     let timer = Instant::now();
     eprintln!("[+] Starting optimization...");
 
     let sim_state = char_state.build_simulation_state(skills_db);
-
 
     // Compute effective attributes early — needed by reorder_queue tie-breaking.
     // implant_bonus is authoritative (resolved from active_implant_ids or CLI override);
