@@ -6,7 +6,10 @@ pub const CUMULATIVE_SP: [f64; 6] = [0.0, 250.0, 1_414.0, 8_000.0, 45_255.0, 256
 
 /// Compute the SP required to go from current_level to target_level for a given skill.
 pub fn sp_for_level(skill: &SkillRecord, from_level: u8, to_level: u8) -> f64 {
-    debug_assert!((from_level <= 5) && (to_level <= 5), "levels should be validated before calling sp_for_level");
+    debug_assert!(
+        (from_level <= 5) && (to_level <= 5),
+        "levels should be validated before calling sp_for_level"
+    );
     let from_idx = from_level as usize;
     let to_idx = to_level as usize;
     if from_idx >= to_idx {
@@ -26,7 +29,7 @@ pub fn sp_for_level(skill: &SkillRecord, from_level: u8, to_level: u8) -> f64 {
 pub fn sp_rate_per_second(skill: &SkillRecord, attrs: &EffectiveAttributes) -> f64 {
     let primary_val = attrs.get(skill.primary_attribute);
     let secondary_val = attrs.get(skill.secondary_attribute);
-    
+
     // Primary contributes full value, secondary contributes half.
     // Rate is measured in SP per minute conceptually, but we convert to per-second.
     (primary_val + secondary_val / 2.0) / 60.0
@@ -144,7 +147,11 @@ pub fn parse_duration(input: &str) -> anyhow::Result<f64> {
         };
 
         let value: f64 = num_str.parse::<f64>().map_err(|_| {
-            anyhow::anyhow!("invalid numeric value '{}' in duration '{}'", num_str, input)
+            anyhow::anyhow!(
+                "invalid numeric value '{}' in duration '{}'",
+                num_str,
+                input
+            )
         })?;
 
         if value < 0.0 {
@@ -211,10 +218,10 @@ pub fn format_duration(seconds: f64) -> String {
             // Round up the second unit if there's discarded content >= half of it.
             if has_discarded {
                 let threshold = match second {
-                    0 => unreachable!(),     // days — nothing below can be discarded when d is first
-                    1 => 1_800.0_f64,        // 30 min in seconds → rounds hour
-                    2 => 30.0_f64,           // 30 sec → rounds minute
-                    3 => 0.0,                // seconds — last unit, already ceiled
+                    0 => unreachable!(), // days — nothing below can be discarded when d is first
+                    1 => 1_800.0_f64,    // 30 min in seconds → rounds hour
+                    2 => 30.0_f64,       // 30 sec → rounds minute
+                    3 => 0.0,            // seconds — last unit, already ceiled
                     _ => unreachable!(),
                 };
                 // The "discarded value" is the total time in seconds from all units after `second`.
@@ -243,7 +250,9 @@ pub fn format_duration(seconds: f64) -> String {
             // Build result — skip zero-valued second unit after cascade.
             match (v1, v2) {
                 (n, 0) => format!("{}{}", n, vals[first].1),
-                (a, b) if a > 0 && b > 0 => format!("{}{} {}{}", a, vals[first].1, b, vals[second].1),
+                (a, b) if a > 0 && b > 0 => {
+                    format!("{}{} {}{}", a, vals[first].1, b, vals[second].1)
+                }
                 _ => unreachable!(),
             }
         }
@@ -277,7 +286,7 @@ mod tests {
             prerequisites: vec![],
         };
         let attrs = test_attrs(5.0, 1.0, 1.0, 3.0, 1.0);
-        
+
         let rate = sp_rate_per_second(&skill, &attrs);
         assert!((rate - 0.10833).abs() < 0.001);
     }
@@ -293,7 +302,7 @@ mod tests {
             skill_time_constant: 4.0,
             prerequisites: vec![],
         };
-        
+
         let sp = sp_for_level(&skill, 1, 2);
         assert_eq!(sp, (1_414.0 - 250.0) * 4.0); // 4656.0
     }
@@ -309,7 +318,7 @@ mod tests {
             skill_time_constant: 3.0,
             prerequisites: vec![],
         };
-        
+
         let sp = sp_for_level(&skill, 3, 5);
         assert_eq!(sp, (256_000.0 - 8_000.0) * 3.0); // 744000.0
     }
@@ -325,7 +334,7 @@ mod tests {
             prerequisites: vec![],
         };
         let attrs = test_attrs(10.0, 1.0, 1.0, 6.0, 1.0);
-        
+
         // SP for level 1→2 = (1414-250)*2.0 = 2328.0
         // Rate = (10 + 6/2)/60 = 13/60 ≈ 0.2167 SP/s
         // Duration = 2328 / (13/60) ≈ 10763.1 seconds (~3 hours)
@@ -406,12 +415,18 @@ mod tests {
 
     #[test]
     fn test_parse_duration_two_components() {
-        assert_eq!(parse_duration("3d 12h").unwrap(), 3.0 * 86_400.0 + 12.0 * 3_600.0);
+        assert_eq!(
+            parse_duration("3d 12h").unwrap(),
+            3.0 * 86_400.0 + 12.0 * 3_600.0
+        );
     }
 
     #[test]
     fn test_parse_duration_hours_minutes() {
-        assert_eq!(parse_duration("5h 30m").unwrap(), 5.0 * 3_600.0 + 30.0 * 60.0);
+        assert_eq!(
+            parse_duration("5h 30m").unwrap(),
+            5.0 * 3_600.0 + 30.0 * 60.0
+        );
     }
 
     #[test]
@@ -431,7 +446,10 @@ mod tests {
 
     #[test]
     fn test_parse_duration_whitespace_tolerance() {
-        assert_eq!(parse_duration("  3d 12h  ").unwrap(), 3.0 * 86_400.0 + 12.0 * 3_600.0);
+        assert_eq!(
+            parse_duration("  3d 12h  ").unwrap(),
+            3.0 * 86_400.0 + 12.0 * 3_600.0
+        );
     }
 
     #[test]
@@ -458,20 +476,26 @@ mod tests {
     #[test]
     fn test_parse_duration_concatenated_days_hours() {
         // "3d12h" without space — common in game UI copy-paste.
-        assert_eq!(parse_duration("3d12h").unwrap(), 3.0 * 86_400.0 + 12.0 * 3_600.0);
+        assert_eq!(
+            parse_duration("3d12h").unwrap(),
+            3.0 * 86_400.0 + 12.0 * 3_600.0
+        );
     }
 
     #[test]
     fn test_parse_duration_concatenated_hours_minutes() {
-        assert_eq!(parse_duration("5h30m").unwrap(), 5.0 * 3_600.0 + 30.0 * 60.0);
+        assert_eq!(
+            parse_duration("5h30m").unwrap(),
+            5.0 * 3_600.0 + 30.0 * 60.0
+        );
     }
 
     #[test]
     fn test_parse_format_roundtrip_concatenated() {
         let original = 3.0 * 86_400.0 + 7.0 * 3_600.0; // 3d 7h
-        let formatted = format_duration(original);   // "3d 7h" with space
-        // Re-parse the spaced output as if it were concatenated.
-        let compact = formatted.replace(' ', "");     // "3d7h"
+        let formatted = format_duration(original); // "3d 7h" with space
+                                                   // Re-parse the spaced output as if it were concatenated.
+        let compact = formatted.replace(' ', ""); // "3d7h"
         let parsed = parse_duration(&compact).unwrap();
         assert_eq!(parsed, original);
     }

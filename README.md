@@ -4,6 +4,8 @@ EVE Online skill queue remap optimizer. Determines the best attribute allocation
 
 ## Quick Start
 
+### Offline Mode (queue file)
+
 ```bash
 # Basic usage with a queue file
 echo -e "Gunnery 3\nNavigation 5" > my_queue.txt
@@ -16,9 +18,23 @@ echo "Gunnery 3" | cargo run --release -- optimize -q - --attributes 27:22:17:17
 cargo run --release -- optimize -q my_queue.txt --queue-out -
 ```
 
-### Example Output
+### ESI Mode (live character data)
 
-Running the optimizer produces a phased plan showing attribute allocations, training durations, SP summaries, and completed skills per epoch. Here's what output looks like:
+```bash
+# Authenticate once
+cargo run --release -- login
+
+# Fetch queue and attributes from EVE, then optimize
+cargo run --release -- optimize --character "Your Character Name"
+
+# Override specific attributes while keeping ESI queue
+cargo run --release -- optimize --character "Your Character Name" \
+  --implant-bonuses 5:0:0:0:0
+```
+
+## Example Output
+
+Running the optimizer produces a phased plan showing attribute allocations, training durations, SP summaries, and completed skills per epoch:
 
 ```text
 ========================================================================
@@ -43,7 +59,7 @@ Epochs: 2
 
 ## Installation
 
-Requires Rust 1.75+ (edition 2021). Zero system dependencies — no OpenSSL, pkg-config, or other C libraries needed.
+Requires Rust 1.75+ (edition 2021). No system dependencies — uses rustls for TLS without OpenSSL.
 
 ```bash
 git clone <repo-url>
@@ -51,9 +67,7 @@ cd eve-remap
 cargo build --release
 ```
 
-The binary ends up at `target/release/eve-remap`.
-
-Alternatively, install it locally with cargo:
+The binary ends up at `target/release/eve-remap`. Or install locally:
 
 ```bash
 cargo install --path .
@@ -65,17 +79,33 @@ This installs the `eve-remap` binary to `$CARGO_HOME/bin` (typically `~/.cargo/b
 
 ### optimize
 
-Single command. Outputs a phased plan showing which allocation to set at each epoch, which skills complete, and projected finish times.
+Outputs a phased plan showing which allocation to set at each epoch, which skills complete, and projected finish times. Accepts input from a queue file (`--queue`) or live ESI data (`--character`).
 
 | Flag | Description |
 |---|---|
-| `-q FILE`, `--queue FILE` | Path to queue file (required). Use `-` to read from stdin |
-| `--attributes PER:MEM:WIL:INT:CHA` | Base remapped attribute values excluding implants (default: `17:17:17:17:17`) |
-| `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses that persist across remaps (default: `0:0:0:0:0`) |
-| `--bonus-remaps N` | Number of bonus neural interface remaps available (optional) |
+| `-q FILE`, `--queue FILE` | Path to queue file (optional if `--character` used). Use `-` for stdin |
+| `--character NAME` | Fetch queue/attributes from ESI for the named character (requires `login`) |
+| `--attributes PER:MEM:WIL:INT:CHA` | Base remapped attribute values excluding implants (default: `17:17:17:17:17`). Overridden by ESI when `--character` is set unless explicitly provided |
+| `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses persisting across remaps (default: `0:0:0:0:0`). Overrides ESI implant lookup |
+| `--bonus-remaps N` | Number of bonus neural interface remaps available (optional — unlimited timed epochs if omitted) |
 | `--remap-available Dd` | When the normal remap cooldown expires (e.g., `0d` = now, `30d` = in 30 days; default: `0d`) |
 | `--json` | Output results as JSON instead of table |
 | `--queue-out FILE` | Write optimized skill order to a file. Use `-` for stdout |
+
+### login / logout / accounts
+
+Manage EVE Online SSO authentication tokens stored locally:
+
+```bash
+# Authenticate with EVE SSO (opens browser for PKCE flow)
+cargo run --release -- login
+
+# List saved characters and token status
+cargo run --release -- accounts
+
+# Remove a saved character
+cargo run --release -- logout "Character Name"
+```
 
 ## Queue File Format
 
@@ -92,25 +122,27 @@ Lines starting with `#` are comments. Blank lines are ignored. Skill names match
 
 **Level semantics:** `N` means "train from level N−1 to N". A value of `1` trains from nothing to level 1.
 
-## Attribute Input
+### Partial Progress
 
-The `--attributes` flag takes your **base** attribute values — what you set on the neural interface, excluding implants:
+For skills already being trained, include remaining time or SP earned:
 
-```
---attributes PER:MEM:WIL:INT:CHA
-```
+| Syntax | Meaning |
+|---|---|
+| `"SkillName 3 @7d"` | Target L3, 7 days of training already completed |
+| `"SkillName 3 @12345 SP"` | Target L3, 12345 SP already earned |
 
-Implant bonuses are separate. Use `--implant-bonuses` so the optimizer can preserve them across remap epochs:
+ESI-fetched queues use the SP-trained format automatically, preserving exact partial progress from the API.
 
-```bash
-# Neural interface sets PER=22, MEM=17; implants give +5 PER, +2 MEM
-# Effective = base + implants → PER=27, MEM=19
-cargo run --release -- optimize -q queue.txt \
-  --attributes 22:17:17:17:17 \
-  --implant-bonuses 5:2:0:0:0
-```
+## Attribute Resolution
 
-Without `--implant-bonuses`, every post-remap epoch resets to base=17 and loses your implant delta.
+Attributes and implant bonuses follow a single priority chain via `resolve_attributes()`:
+
+| Source | Priority |
+|---|---|
+| Base attributes | CLI `--attributes` → ESI `/characters/me/attributes/` (back-calculated) → default `17:17:17:17:17` |
+| Implant bonuses | CLI `--implant-bonuses` → ESI active implant IDs → local SDE lookup → `0:0:0:0:0` |
+
+The optimizer receives only resolved effective values — raw implant IDs never pass downstream, preventing double-counting bugs.
 
 ### Bonus Remaps and Cooldown Delay
 

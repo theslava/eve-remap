@@ -73,7 +73,6 @@ impl EffectiveAttributes {
         }
     }
 
-
     /// Build from raw base values plus implant bonuses using a pre-built index.
     pub fn from_base_and_implants_with_index(
         base: &BaseAttributes,
@@ -96,7 +95,6 @@ impl EffectiveAttributes {
         }
         attrs
     }
-
 }
 impl From<BaseAttributes> for EffectiveAttributes {
     fn from(base: BaseAttributes) -> Self {
@@ -130,6 +128,16 @@ impl BaseAttributes {
             willpower: self.willpower + other.willpower,
         }
     }
+    /// Saturating subtraction (clamps at 0).
+    pub fn sub(&self, other: &Self) -> Self {
+        BaseAttributes {
+            intelligence: self.intelligence.saturating_sub(other.intelligence),
+            charisma: self.charisma.saturating_sub(other.charisma),
+            perception: self.perception.saturating_sub(other.perception),
+            memory: self.memory.saturating_sub(other.memory),
+            willpower: self.willpower.saturating_sub(other.willpower),
+        }
+    }
 }
 
 /// A skill entry from a user-provided queue file.
@@ -147,11 +155,13 @@ pub struct QueuedSkill {
 #[derive(Debug, Clone, Copy)]
 pub enum QueuedSkillRemaining {
     /// Time-left input: seconds remaining out of total duration (seconds).
-    Duration { remaining_sec: f64, total_duration_secs: f64 },
+    Duration {
+        remaining_sec: f64,
+        total_duration_secs: f64,
+    },
     /// SP already earned toward this level transition.
     SpTrained { sp_trained: f64 },
 }
-
 
 /// Full character state snapshot built from CLI arguments and local asset lookups.
 /// This is the single source of truth consumed by the optimizer.
@@ -184,13 +194,13 @@ pub struct AttributeSpSummary {
 
 #[derive(Debug, Clone, Serialize)]
 pub struct EpochPlan {
-    pub start_offset_secs: f64,  // seconds from now when this epoch starts
+    pub start_offset_secs: f64, // seconds from now when this epoch starts
     pub attributes: BaseAttributes,
     pub effective_attributes: EffectiveAttributes,
     pub completed_skills: Vec<(u32, String, u8, f64)>, // (skill_id, skill_name, target_level, train_seconds)
     /// Total SP per (role × attribute) pair for skills completed this epoch.
     pub sp_summary: AttributeSpSummary,
-    pub projected_finish_secs: f64,  // seconds from now when this epoch ends
+    pub projected_finish_secs: f64, // seconds from now when this epoch ends
     /// Number of bonus neural interface remaps consumed for this epoch.
     pub bonus_remaps_used: u32,
 }

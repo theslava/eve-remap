@@ -12,7 +12,7 @@ Output: phased plan telling the user what allocation to set at each epoch, which
 
 ## Current State
 
-Offline-only CLI tool. No authentication, no ESI integration. Users supply their skill queue via `--queue FILE` with explicit attributes and implant bonuses. The optimizer runs entirely locally against pre-parsed SDE assets shipped in the repo.
+CLI tool with optional ESI integration. Users supply their skill queue via `--queue FILE` (offline) or fetch it from EVE Online SSO using `--character NAME` (ESI mode). In ESI mode, base attributes, implant bonuses, and SP-trained progress are resolved from the API; offline mode uses explicit CLI flags (`--attributes`, `--implant-bonuses`). The optimizer runs entirely against pre-parsed SDE assets shipped in the repo.
 
 ### Planned Work
 
@@ -29,14 +29,36 @@ Offline-only CLI tool. No authentication, no ESI integration. Users supply their
 | Data | Flat JSON assets (`assets/skills.json`, `assets/implants.json`) |
 | Testing | `cargo test` — unit tests across calculator, optimizer |
 
-No async runtime, no HTTP client, no system dependencies. Four crates: `serde`, `serde_json`, `clap`, `anyhow`.
+Async runtime (tokio) for ESI HTTP client. Rustls for TLS without OpenSSL. Core crates: `serde`, `serde_json`, `clap`, `anyhow`; plus `reqwest`, `tokio`, `rustls`, `chrono`.
 
 ## Architecture
 
 ```
 ┌──────────────────────────────┐
 │         CLI (clap)           │
-│   optimize --queue FILE      │
+│   optimize [-q FILE|stdin]   │
+│   login / logout / accounts  │
+└──────────┬───────────────────┘
+           │
+     ┌─────┴─────┐
+     │  Dual path │
+     └─────┬─────┘
+     ┌─────┼──────┐
+     ▼     ▼      ▼
+┌──────────┐  ┌──────────────────┐
+│ File/    │  │ ESI auth + HTTP   │
+│ Stdin    │  │ (/skillqueue,     │
+│ parser   │  │  /attributes,     │
+│          │  │  /characters/me/) │
+└────┬─────┘  └────────┬─────────┘
+     │                 │
+     └────────┬────────┘
+              ▼
+┌──────────────────────────────┐
+│    resolve_attributes()      │
+│  CLI → ESI → defaults        │
+│  Single source of truth for  │
+│  base_attrs & implant_bonus  │
 └──────────┬───────────────────┘
            │
 ┌──────────▼───────────────────┐
@@ -69,11 +91,13 @@ No async runtime, no HTTP client, no system dependencies. Four crates: `serde`, 
 eve-remap/
 ├── Cargo.toml
 ├── src/
-│   ├── main.rs         — CLI entrypoint, command dispatch, output formatters
+│   ├── main.rs         — CLI entrypoint, command dispatch, output formatters, resolve_attributes()
 │   ├── cli.rs          — clap derive argument definitions (--queue, --attributes, --implant-bonuses, etc.)
 │   ├── calculator.rs   — SP formula, rate computation, duration helpers, format_duration
 │   ├── parser.rs       — queue file parser, attribute/implant string parsers (pure functions, tested)
 │   ├── optimizer.rs    — multi-epoch allocation search with simulation engine
+│   ├── auth.rs         — EVE SSO PKCE flow, token persistence, account store
+│   ├── esi.rs          — ESI HTTP client models (/skillqueue, /attributes, /characters/me)
 │   └── data/
 │       ├── mod.rs      — load_skills(), load_implants() facades
 │       └── models.rs   — SkillRecord, QueuedSkill, CharacterState, EffectiveAttributes, etc.
@@ -115,9 +139,16 @@ Where per skill:
 
 ### Effective Attributes
 
-For offline mode (`--queue FILE`), effective attributes default to the base values provided via `--attributes`. Implant bonuses supplied via `--implant-bonuses` are preserved across post-remap epochs.
-
 Effective value used in duration formula = base + total implant bonus per attribute.
+
+Resolution is unified through `resolve_attributes()` (`src/main.rs`), which returns `(base_attrs, source_label, implant_bonus)` from a single priority chain:
+
+| Priority | Source | Fallback |
+|---|---|---|
+| Base attrs | `--attributes` CLI override | ESI `/characters/{id}/attributes/` (back-calculated to exclude implants) | default 17:17:17:17:17 |
+| Implant bonus | `--implant-bonuses` CLI override | ESI active implant IDs → local SDE lookup | 0:0:0:0:0 |
+
+The optimizer receives only the resolved values — raw implant IDs are never passed downstream, preventing double-counting bugs.
 
 ### Multi-Epoch Optimization (no rollback model)
 
@@ -135,13 +166,12 @@ Precomputed time caches store training durations for every skill-allocation pair
 
 A remap distributes **14** free points above a hard floor of **17** across 5 attributes. Per-attribute cap is **+10** (max value = 27). This yields **2,885 valid distributions**. No single-attribute dump is possible since 14 > 10, so every allocation touches at least 2 attributes. Distribution by boosted attribute count: 2 attrs (70), 3 attrs (690), 4 attrs (1,410), 5 attrs (715).
 
-## Input Parameters (CLI)
-
 | Flag | Description |
 |---|---|
-| `-q FILE`, `--queue FILE` | Path to queue file (required). Use `-` to read from stdin |
-| `--attributes PER:MEM:WIL:INT:CHA` | Base remapped attribute values excluding implants (default: 17:17:17:17:17) |
-| `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses persisting across remaps (default: 0:0:0:0:0) |
+| `-q FILE`, `--queue FILE` | Path to queue file (optional if `--character` used). Use `-` for stdin |
+| `--character NAME` | Fetch queue/attributes from ESI for the named character (requires `eve-remap login`) |
+| `--attributes PER:MEM:WIL:INT:CHA` | Base remapped attribute values excluding implants (default: 17:17:17:17:17). Overridden by ESI when `--character` is set unless explicitly provided |
+| `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses persisting across remaps (default: 0:0:0:0:0). Overrides ESI implant lookup |
 | `--bonus-remaps N` | Number of bonus neural interface remaps (optional — unlimited timed epochs if omitted) |
 | `--remap-available Dd` | When normal remap cooldown expires, e.g. `0d` = now, `30d` = in 30 days (default: 0d) |
 | `--json` | Output results as JSON instead of human-readable table |
@@ -149,22 +179,40 @@ A remap distributes **14** free points above a hard floor of **17** across 5 att
 
 ### Queue File Format
 
-One skill per line in the format `"Skill Name <level>"`. Lines starting with `#` are comments; blank lines are ignored. Skill names must match entries in `assets/skills.json` (case-insensitive). Level must be 1–5 — it represents the target level, training from (level-1) to level. For example, `"Gunnery 5"` trains Gunnery from level 4 to level 5.
+One skill per line. Lines starting with `#` are comments; blank lines are ignored. Skill names match case-insensitively against `assets/skills.json`. Level must be 1–5 (skills at level 5 are skipped).
+
+**Basic format:** `"Skill Name <level>"` — trains from (level-1) to level.
+
+**Progress formats** (for partially trained skills):
+| Syntax | Meaning |
+|---|---|
+| `"SkillName 3 @7d"` | Target L3, 7 days of training already completed |
+| `"SkillName 3 @12345 SP"` | Target L3, 12345 SP already earned |
+
+ESI-fetched queues use the SP-trained format automatically, preserving exact partial progress from the API.
 
 Example:
 ```
 # My training targets
 Gunnery 3
 Navigation 5
-Drone Navigation 2
+Drone Navigation 2 @3d
 ```
 
 ## Data Flow
 
+**Offline mode** (`--queue FILE`):
 1. Parse queue file into target skills and levels.
-2. Look up each skill in `assets/skills.json` to get time constant and attributes.
-3. Compute SP needed per transition using cumulative table lookup × skillTimeConstant.
-4. Build character state from `--attributes` values. If `--implant-bonuses` is provided, those deltas are preserved across post-remap epochs.
+2. Resolve attributes via CLI flags → `resolve_attributes()`.
+3. Look up each skill in `assets/skills.json` for time constant and attributes.
+4. Compute SP needed per transition using cumulative table lookup × skillTimeConstant.
+5. Run multi-epoch optimizer — output phased plan.
+
+**ESI mode** (`--character NAME`):
+1. Authenticate with saved tokens from `eve-remap login`.
+2. Fetch `/skillqueue`, `/characters/me/attributes/`, active implant IDs from ESI.
+3. Convert ESI entries to parser text format (`"SkillName L@sp_trained"`) and delegate to `parse_queue()` — same code path as offline.
+4. Resolve base attributes and implant bonuses via `resolve_attributes()` (back-calculates neural interface values from ESI effective attributes).
 5. Run multi-epoch optimizer — output phased plan.
 
 ## Implementation Status
@@ -199,8 +247,15 @@ Drone Navigation 2
 - [x] Edge-case optimizer tests: L5-only queues, remap-available-exceeds-completion, zero-bonus-single-switch, duration-no-progress
 - [x] Property test: optimizer result never exceeds baseline wall-clock time
 
+### Phase 6 — ESI Integration ✅
+- [x] SSO PKCE auth flow with token persistence (`auth.rs`, `login/logout/accounts` commands)
+- [x] ESI HTTP client fetching `/skillqueue`, `/characters/me/attributes/`, active implants (`esi.rs`)
+- [x] Unified attribute resolution via `resolve_attributes()`: CLI override → ESI data → defaults
+- [x] ESI queue entries converted to parser text format for identical SP math as offline mode
+- [x] Single source of truth for implant bonuses prevents double-counting bugs
+- [x] First-skill pinning fix preserves optimizer ordering in epoch-0 output
+
 ### Removed (deferred to later)
-- ~~Auth & ESI integration~~ — PKCE/implicit grant SSO flows, JWT introspection, account store, ESI client (`eve_esi` crate), token persistence, `/skillqueue`, `/attributes`, `/implants` endpoints, token refresh, multi-select character prompt. Deferred to a future phase.
 - ~~SDE download~~ — fetch and parse latest CCP SDE JSONL into `assets/`. Assets shipped statically in repo.
 
 ## Key Decisions
@@ -213,8 +268,8 @@ Drone Navigation 2
 
 4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count; user provides `--bonus-remaps N` and `--remap-available Dd`. Optional — if omitted, optimizer runs unlimited timed epochs until queue empties.
 
-5. **Queue from file only (for now)**: Target skills come from `--queue FILE` (offline). ESI fetch deferred to a future phase when auth is re-added.
+5. **Dual input paths converge at parser**: ESI-fetched queues render as `"SkillName L@sp_trained"` text and flow through `parser::parse_queue()`, ensuring offline and ESI modes share identical duration/SP computation logic.
 
 6. **Cumulative SP table over multiplier formula**: Authoritative values from EVE Online forums archive: L1=250, L2=1414, L3=8000, L4=45255, L5=256000. SP for transition = `(CUMULATIVE[to] - CUMULATIVE[from]) * STC`. This replaced the incorrect LEVEL_MULTIPLIERS*BASE_SP approach.
 
-7. **Zero system dependencies**: No OpenSSL, no pkg-config, no vcpkg. Pure Rust dependency tree (`serde`, `serde_json`, `clap`, `anyhow`). Builds on any platform with Rust installed.
+7. **Single source of truth for attributes**: `resolve_attributes()` consolidates CLI overrides, ESI data, and defaults into one function returning `(base_attrs, source_label, implant_bonus)`. The optimizer receives only resolved values — raw implant IDs never pass downstream, preventing double-counting bugs.

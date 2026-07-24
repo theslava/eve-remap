@@ -7,7 +7,11 @@ use crate::data::models::*;
 pub fn parse_attributes(input: &str) -> Result<BaseAttributes> {
     let parts: Vec<u32> = input
         .split(':')
-        .map(|s| s.trim().parse::<u32>().with_context(|| format!("Invalid attribute value: {}", s)))
+        .map(|s| {
+            s.trim()
+                .parse::<u32>()
+                .with_context(|| format!("Invalid attribute value: {}", s))
+        })
         .collect::<Result<Vec<_>>>()?;
     if parts.len() != 5 {
         bail!(
@@ -34,7 +38,11 @@ pub fn parse_attributes(input: &str) -> Result<BaseAttributes> {
 pub fn parse_implant_bonuses(input: &str) -> Result<BaseAttributes> {
     let parts: Vec<u32> = input
         .split(':')
-        .map(|s| s.trim().parse::<u32>().with_context(|| format!("Invalid implant bonus value: {}", s)))
+        .map(|s| {
+            s.trim()
+                .parse::<u32>()
+                .with_context(|| format!("Invalid implant bonus value: {}", s))
+        })
         .collect::<Result<Vec<_>>>()?;
     if parts.len() != 5 {
         bail!(
@@ -101,10 +109,13 @@ pub fn parse_queue(
         }
 
         let level_str = tokens[0];
-        let level: u8 =
-            level_str
-                .parse::<u8>()
-                .with_context(|| format!("Line {}: invalid level '{}', must be 1-5", line_num + 1, level_str))?;
+        let level: u8 = level_str.parse::<u8>().with_context(|| {
+            format!(
+                "Line {}: invalid level '{}', must be 1-5",
+                line_num + 1,
+                level_str
+            )
+        })?;
         if !(1..=5).contains(&level) {
             bail!(
                 "Line {}: level {} out of range (must be 1-5)",
@@ -127,7 +138,8 @@ pub fn parse_queue(
 
         // Compute total SP and duration for this level transition.
         let from_level = level.saturating_sub(1);
-        let duration_secs = calculator::duration_seconds(record, from_level, level, effective_attrs);
+        let duration_secs =
+            calculator::duration_seconds(record, from_level, level, effective_attrs);
 
         // Disambiguate progress info: time-unit suffix → duration, else → SP amount.
         let queued_skill_remaining = match remaining_info {
@@ -136,10 +148,13 @@ pub fn parse_queue(
                 total_duration_secs: duration_secs,
             },
             Some(info) if matches!(info.chars().next_back(), Some('d' | 'h' | 'm' | 's')) => {
-                let remaining_sec =
-                    calculator::parse_duration(info).with_context(|| {
-                        format!("Line {}: invalid time-left duration '{}'", line_num + 1, info)
-                    })?;
+                let remaining_sec = calculator::parse_duration(info).with_context(|| {
+                    format!(
+                        "Line {}: invalid time-left duration '{}'",
+                        line_num + 1,
+                        info
+                    )
+                })?;
                 // Clamp: user-provided time-left may exceed our computed total (e.g.,
                 // they were training under different attributes/implants). Without the
                 // cap, earned_fraction goes negative and remaining SP inflates past total.
@@ -150,14 +165,12 @@ pub fn parse_queue(
                 }
             }
             Some(info) => {
-                let sp_trained =
-                    calculator::parse_sp_value(info).with_context(|| {
-                        format!("Line {}: invalid SP value '{}'", line_num + 1, info)
-                    })?;
+                let sp_trained = calculator::parse_sp_value(info).with_context(|| {
+                    format!("Line {}: invalid SP value '{}'", line_num + 1, info)
+                })?;
                 let cum_from =
                     calculator::CUMULATIVE_SP[from_level as usize] * record.skill_time_constant;
-                let cum_to =
-                    calculator::CUMULATIVE_SP[level as usize] * record.skill_time_constant;
+                let cum_to = calculator::CUMULATIVE_SP[level as usize] * record.skill_time_constant;
                 if (sp_trained - cum_to).abs() < f64::EPSILON || sp_trained > cum_to {
                     bail!(
                         "Line {}: '{}' has {} SP trained but '{}' at level {} requires less than {:.0} SP — skill is already complete",
@@ -207,7 +220,13 @@ mod tests {
 
     // ── Helpers ────────────────────────────────────────────────────────────
 
-    fn make_skill(id: u32, name: &str, primary: Attribute, secondary: Attribute, stc: f64) -> SkillRecord {
+    fn make_skill(
+        id: u32,
+        name: &str,
+        primary: Attribute,
+        secondary: Attribute,
+        stc: f64,
+    ) -> SkillRecord {
         SkillRecord {
             id,
             name: name.to_string(),
@@ -220,12 +239,48 @@ mod tests {
 
     fn skills_db() -> Vec<SkillRecord> {
         vec![
-            make_skill(1, "Gunnery", Attribute::Intelligence, Attribute::Memory, 1.0),
-            make_skill(2, "Navigation", Attribute::Willpower, Attribute::Perception, 2.0),
-            make_skill(3, "Shield Operation", Attribute::Charisma, Attribute::Intelligence, 1.5),
-            make_skill(4, "Drone Navigation", Attribute::Memory, Attribute::Willpower, 2.5),
-            make_skill(5, "Cargo Hold Loader II", Attribute::Perception, Attribute::Memory, 1.0),
-            make_skill(6, "Targeting", Attribute::Perception, Attribute::Intelligence, 3.0),
+            make_skill(
+                1,
+                "Gunnery",
+                Attribute::Intelligence,
+                Attribute::Memory,
+                1.0,
+            ),
+            make_skill(
+                2,
+                "Navigation",
+                Attribute::Willpower,
+                Attribute::Perception,
+                2.0,
+            ),
+            make_skill(
+                3,
+                "Shield Operation",
+                Attribute::Charisma,
+                Attribute::Intelligence,
+                1.5,
+            ),
+            make_skill(
+                4,
+                "Drone Navigation",
+                Attribute::Memory,
+                Attribute::Willpower,
+                2.5,
+            ),
+            make_skill(
+                5,
+                "Cargo Hold Loader II",
+                Attribute::Perception,
+                Attribute::Memory,
+                1.0,
+            ),
+            make_skill(
+                6,
+                "Targeting",
+                Attribute::Perception,
+                Attribute::Intelligence,
+                3.0,
+            ),
         ]
     }
 
@@ -402,7 +457,10 @@ mod tests {
         let attrs = uniform_attrs();
         let skills = parse_queue("Gunnery 3@0s", &db, &attrs, "test").unwrap();
         match &skills[0].remaining {
-            QueuedSkillRemaining::Duration { remaining_sec, total_duration_secs } => {
+            QueuedSkillRemaining::Duration {
+                remaining_sec,
+                total_duration_secs,
+            } => {
                 assert!((remaining_sec - 0.0).abs() < f64::EPSILON);
                 assert!(*total_duration_secs > 0.0);
             }
@@ -422,7 +480,10 @@ mod tests {
         let input = "Gunnery 3@2h42m";
         let skills = parse_queue(input, &db, &attrs, "test").unwrap();
         match &skills[0].remaining {
-            QueuedSkillRemaining::Duration { remaining_sec, total_duration_secs } => {
+            QueuedSkillRemaining::Duration {
+                remaining_sec,
+                total_duration_secs,
+            } => {
                 // Should be approximately equal — within a few seconds of rounding.
                 assert!((remaining_sec - total_duration_secs).abs() < 120.0);
             }
@@ -585,7 +646,10 @@ mod tests {
         let attrs = uniform_attrs();
         use std::error::Error;
         let err = parse_queue("Gunnery 2@-100", &db, &attrs, "test").unwrap_err();
-        assert!(err.root_cause().to_string().contains("must not be negative"));
+        assert!(err
+            .root_cause()
+            .to_string()
+            .contains("must not be negative"));
     }
 
     #[test]
