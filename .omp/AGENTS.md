@@ -4,11 +4,9 @@
 
 Optimize **EVE Online** character attribute remaps across multiple epochs to minimize total wall-clock time for training target skills. Users provide their skill queue via `--queue FILE` along with base attributes and bonus remap count. The optimizer outputs a phased plan: what allocation to set at each epoch, which skills complete, and projected finish dates.
 
-Offline-only CLI tool. No authentication, no ESI integration, no network dependencies. All data comes from pre-parsed SDE assets shipped in the repo.
+The tool supports **dual-path input**: offline via `--queue FILE` (or stdin `-`) and live ESI mode via `--character NAME`. CLI subcommands include `optimize`, `login`, `logout`, `accounts`.
 
-## Current Phase
-
-Post-cleanup. Auth, ESI, and SDE download removed. Core optimizer and CLI working. Remaining work: stdin/stdout pipe mode, export modified queue for EVE import, colored output, save/load plans, eventually re-add auth & live data fetch.
+Auth flow uses PKCE with local TLS certificate generation (`rcgen`) for HTTPS callbacks, and persists tokens in `~/.config/eve-remap/accounts.json`. In ESI mode, the tool fetches `/skillqueue`, `/characters/me/attributes/`, and active implant IDs from CCP's API. The optimizer runs entirely offline against pre-parsed SDE assets shipped in the repo. Remaining planned work: colored terminal output, save/load plans.
 
 ## Tech Stack
 
@@ -19,7 +17,7 @@ Post-cleanup. Auth, ESI, and SDE download removed. Core optimizer and CLI workin
 |Data|Flat JSON assets (`assets/skills.json`, `assets/implants.json`)|
 |Testing|`cargo test` — unit tests across calculator, optimizer|
 
-Zero system dependencies. Four crates: `serde`, `serde_json`, `clap`, `anyhow`. No async runtime, no HTTP client, no OpenSSL.
+Core crates: `serde`, `serde_json`, `clap`, `anyhow`. ESI/Auth: `rfesi` (EVE SDK), `tokio` (async runtime), `rustls` + `tokio-rustls` (TLS), `rcgen` (self-signed certs). Utilities: `chrono` (date parsing), `dirs` (config dir resolution). Dev: `tempfile`.
 
 ## Build Commands
 

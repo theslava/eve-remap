@@ -112,7 +112,7 @@ eve-remap/
 
 - **Timed remap**: available every 365 days after last use. Consumed first if both timed and bonus are available.
 - **No SP rollback**: actively training skills keep their accumulated SP and immediately switch to the new rate. Only future SP generation is affected.
-- **Bonus remaps**: Optional — if `--bonus-remaps N` is not specified, the optimizer runs unlimited timed epochs until the queue empties. Configurable via `--bonus-remaps N`.
+- **Bonus remaps**: Optional — omitting `--bonus-remaps N` yields zero bonus remaps but allows unlimited **timed** normal remap epochs at 365-day cooldown intervals. The greedy loop continues searching for beneficial switches whenever a normal remap becomes available (every 365 days from last use). Long queues (>1 year) still benefit from periodic re-optimization even without bonus remaps. Explicitly set via `--bonus-remaps N`.
 
 ### Skill Duration Formula
 
@@ -172,7 +172,7 @@ A remap distributes **14** free points above a hard floor of **17** across 5 att
 | `--character NAME` | Fetch queue/attributes from ESI for the named character (requires `eve-remap login`) |
 | `--attributes PER:MEM:WIL:INT:CHA` | Base remapped attribute values excluding implants (default: 17:17:17:17:17). Overridden by ESI when `--character` is set unless explicitly provided |
 | `--implant-bonuses PER:MEM:WIL:INT:CHA` | Implant bonuses persisting across remaps (default: 0:0:0:0:0). Overrides ESI implant lookup |
-| `--bonus-remaps N` | Number of bonus neural interface remaps (optional — unlimited timed epochs if omitted) |
+| `--bonus-remaps N` | Number of bonus neural interface remaps (optional; omitting yields zero bonus remaps but allows unlimited timed normal remap epochs at 365-day intervals) |
 | `--remap-available Dd` | When normal remap cooldown expires, e.g. `0d` = now, `30d` = in 30 days (default: 0d) |
 | `--json` | Output results as JSON instead of human-readable table |
 | `--queue-out FILE` | Write optimized skill order to a file. Use `-` for stdout |
@@ -266,7 +266,7 @@ Drone Navigation 2 @3d
 
 3. **Greedy epoch optimization over exhaustive search**: With N~4 max epochs and up to 2,885 allocations per epoch, exhaustive `allocations^epochs` is impossible. Greedy best-response per epoch runs instantly and produces near-optimal results because each epoch independently accelerates all remaining skills.
 
-4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count; user provides `--bonus-remaps N` and `--remap-available Dd`. Optional — if omitted, optimizer runs unlimited timed epochs until queue empties.
+4. **Remap info via CLI args**: ESI doesn't expose neural interface cooldown or bonus remap count; user provides `--bonus-remaps N` and `--remap-available Dd`. Omitting `--bonus-remaps` yields zero bonus remaps but still allows unlimited timed normal remap epochs at 365-day cooldown intervals, so long queues (>1 year) benefit from periodic re-optimization.
 
 5. **Dual input paths converge at parser**: ESI-fetched queues render as `"SkillName L@sp_trained"` text and flow through `parser::parse_queue()`, ensuring offline and ESI modes share identical duration/SP computation logic.
 

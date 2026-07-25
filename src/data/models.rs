@@ -73,28 +73,6 @@ impl EffectiveAttributes {
         }
     }
 
-    /// Build from raw base values plus implant bonuses using a pre-built index.
-    pub fn from_base_and_implants_with_index(
-        base: &BaseAttributes,
-        active_implant_ids: &[u32],
-        implant_map: &std::collections::HashMap<u32, &ImplantRecord>,
-    ) -> Self {
-        let mut attrs = EffectiveAttributes::from(*base);
-        for impl_id in active_implant_ids {
-            if let Some(implant) = implant_map.get(impl_id) {
-                for (attr, bonus) in &implant.bonuses {
-                    match attr {
-                        Attribute::Intelligence => attrs.intelligence += *bonus as f64,
-                        Attribute::Charisma => attrs.charisma += *bonus as f64,
-                        Attribute::Perception => attrs.perception += *bonus as f64,
-                        Attribute::Memory => attrs.memory += *bonus as f64,
-                        Attribute::Willpower => attrs.willpower += *bonus as f64,
-                    }
-                }
-            }
-        }
-        attrs
-    }
 }
 impl From<BaseAttributes> for EffectiveAttributes {
     fn from(base: BaseAttributes) -> Self {
@@ -169,10 +147,7 @@ pub enum QueuedSkillRemaining {
 pub struct CharacterState {
     /// Current base remapped attribute values from neural interface.
     pub base_attributes: BaseAttributes,
-    /// IDs of currently active implants providing attribute bonuses.
-    pub active_implant_ids: Vec<u32>,
-    /// Direct implant bonus values (for offline mode when --implant-bonuses is used).
-    /// When non-zero, these are added back after each remap regardless of active_implant_ids.
+    /// Direct implant bonus values (added back after each remap).
     pub implant_bonus: BaseAttributes,
     /// Skills queued for training, ordered by position (first is active).
     pub queued_skills: Vec<QueuedSkill>,

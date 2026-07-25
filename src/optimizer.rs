@@ -50,6 +50,8 @@ impl CharacterState {
     /// Build an initial `SimulationState` from the character's queue and SDE db.
     fn build_simulation_state(&self, skills_db: &[SkillRecord]) -> SimulationState {
         let mut entries = Vec::with_capacity(self.queued_skills.len());
+        // Collect unknown IDs so we can report them all at once.
+        let mut unknown_ids: Vec<u32> = Vec::new();
 
         for qs in &self.queued_skills {
             if qs.current_level >= 5 {
@@ -57,7 +59,8 @@ impl CharacterState {
             }
 
             let Some(record) = skills_db.iter().find(|r| r.id == qs.id) else {
-                continue; // unknown skill — skip
+                unknown_ids.push(qs.id);
+                continue;
             };
 
             let target_level = qs.current_level + 1;
@@ -95,6 +98,14 @@ impl CharacterState {
                 remaining_sp,
                 record: record.clone(),
             });
+        }
+
+        if !unknown_ids.is_empty() {
+            panic!(
+                "The following queued skill IDs were not found in the SDE database and cannot be optimized: {}.\n\
+                 Ensure your skills JSON contains up-to-date records for these IDs.",
+                unknown_ids.iter().map(|id| id.to_string()).collect::<Vec<_>>().join(", ")
+            );
         }
 
         SimulationState { entries }
@@ -239,7 +250,7 @@ fn reorder_queue(
                 let (p, s) = attr_map
                     .get(&entries[idx].skill_id)
                     .copied()
-                    .unwrap_or((Attribute::Intelligence, Attribute::Memory));
+                    .expect("validated skill not in attribute map");
 
                 // Axis 1: effective SP rate under current attrs (higher = faster training now).
                 let eff_primary = initial_effective.get(p);
@@ -256,7 +267,7 @@ fn reorder_queue(
                     let (jp, js) = attr_map
                         .get(&entries[*k].skill_id)
                         .copied()
-                        .unwrap_or((Attribute::Intelligence, Attribute::Memory));
+                        .expect("validated skill not in attribute map");
                     if jp == p || js == s {
                         cluster_score += 1;
                     }
@@ -266,7 +277,7 @@ fn reorder_queue(
                     let (lp, ls) = attr_map
                         .get(&entries[last_idx].skill_id)
                         .copied()
-                        .unwrap_or((Attribute::Intelligence, Attribute::Memory));
+                        .expect("validated skill not in attribute map");
                     if lp == p || ls == s {
                         cluster_score += total_unscheduled as u32;
                     }
@@ -569,24 +580,46 @@ pub fn optimize(char_state: &CharacterState, skills_db: &[SkillRecord]) -> Optim
     // Restore original first skill to position 0 within its epoch so that
     // "replace queue from clipboard" keeps the actively-trained skill at top.
     // Only applies when the skill ends up in epoch 0 (no remap used for it).
-    // Reorder costs nothing under identical attributes (sum of durations invariant).
+    //
+    // Single-epoch: always pin — all skills train under identical attributes,
+    // reordering costs nothing (sum of durations is invariant). This preserves
+    // UX: user copies from EVE clipboard expecting active skill at position 0.
+    //
+    // Multi-epoch: only pin if the original first skill trains as fast or faster
+    // than the attribute-optimal choice under current effective attributes.
+    // Reordering across attribute boundaries has real cost.
     let original_first_key = sim_state
         .entries
         .first()
         .map(|e| (e.skill_id, e.target_level));
     if let Some((orig_id, orig_level)) = original_first_key {
+        let epoch_count = result_epochs.len();
         let epoch = &mut result_epochs[0];
         let first = &epoch.completed_skills[0];
         if first.0 != orig_id || first.2 != orig_level {
-            if let Some(pos) = epoch
-                .completed_skills
-                .iter()
-                .skip(1)
-                .position(|s| s.0 == orig_id && s.2 == orig_level)
-            {
-                let actual_pos = pos + 1;
-                let skill = epoch.completed_skills.remove(actual_pos);
-                epoch.completed_skills.insert(0, skill);
+            let current_first_time = first.3;
+            // Determine whether to gate on training time comparison.
+            // In single-epoch mode, pin unconditionally.
+            let should_pin = if epoch_count == 1 {
+                true
+            } else {
+                // Multi-epoch: compare training times under initial effective attrs.
+                let orig_entry = &sim_state.entries[0];
+                let orig_time = train_one_skill(orig_entry, &initial_effective);
+                orig_time <= current_first_time
+            };
+
+            if should_pin {
+                if let Some(pos) = epoch
+                    .completed_skills
+                    .iter()
+                    .skip(1)
+                    .position(|s| s.0 == orig_id && s.2 == orig_level)
+                {
+                    let actual_pos = pos + 1;
+                    let skill = epoch.completed_skills.remove(actual_pos);
+                    epoch.completed_skills.insert(0, skill);
+                }
             }
         }
     }
@@ -704,7 +737,6 @@ mod tests {
         CharacterState {
             base_attributes: attrs,
             queued_skills: skills,
-            active_implant_ids: Vec::new(),
             implant_bonus: BaseAttributes {
                 intelligence: 0,
                 charisma: 0,
@@ -1255,7 +1287,6 @@ mod tests {
         let char_st = CharacterState {
             base_attributes: base_attrs(27, 17, 17, 20, 17),
             queued_skills: vec![qe(skill_cha.id, 1, sp_cha), qe(skill_int.id, 1, sp_int)],
-            active_implant_ids: Vec::new(),
             implant_bonus: BaseAttributes {
                 intelligence: 0,
                 charisma: 0,

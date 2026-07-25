@@ -40,7 +40,7 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
     };
 
     // ── Resolve base + implant bonuses ────────────────────────────────
-    let (base_attrs, source_label, implant_bonus) =
+    let (base_attrs, _source_label, implant_bonus) =
         resolve_attributes(&args, &esi_data, &implants)?;
 
     let effective_attrs = data::models::EffectiveAttributes::from(base_attrs.add(&implant_bonus));
@@ -83,10 +83,15 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
         )
     };
 
-    // ── Bonus remaps: CLI > ESI > None ─────────────────────────────────
+    // ── Bonus remaps: CLI > ESI > None ────────────────────────────────
     let bonus_remaps = args
         .bonus_remaps
         .or_else(|| esi_data.as_ref().and_then(|d| d.bonus_remaps));
+    let bonus_source_label = if args.bonus_remaps.is_some() {
+        "CLI --bonus-remaps"
+    } else {
+        "ESI /attributes/"
+    };
 
     // ── Normal remap available: CLI duration > ESI cooldown date > 0 ───
     let remap_available_secs = match (&args.remap_available, &esi_data) {
@@ -106,17 +111,13 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
         eprintln!(
             "Bonus remaps: {} (from {})",
             bonus_remaps.unwrap(),
-            source_label
+            bonus_source_label
         );
     }
     eprintln!("Queue from {}: {} skills", queue_label, queued_skills.len());
 
     let char_state = data::models::CharacterState {
         base_attributes: base_attrs,
-        active_implant_ids: esi_data
-            .as_ref()
-            .map(|d| d.active_implant_ids.clone())
-            .unwrap_or_default(),
         implant_bonus,
         queued_skills,
         bonus_remaps,
@@ -305,11 +306,9 @@ fn resolve_character(query: &str) -> Result<auth::StoredAccount> {
     let account = if let Ok(id) = query.parse::<u64>() {
         store.get(id)
     } else {
-        // Case-insensitive name match — first partial hit wins
+        // Case-insensitive name match — exact match required
         store.accounts.iter().find(|a| {
-            a.character_name
-                .to_lowercase()
-                .contains(&query.to_lowercase())
+            a.character_name.eq_ignore_ascii_case(query)
         })
     };
 
