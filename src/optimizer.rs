@@ -314,6 +314,7 @@ fn reorder_queue(
         for &idx in &ordered {
             seen[idx] = true;
         }
+        #[allow(clippy::needless_range_loop)]
         for i in 0..n {
             if !seen[i] {
                 ordered.push(i);
@@ -481,7 +482,7 @@ pub fn optimize(char_state: &CharacterState, skills_db: &[SkillRecord]) -> Optim
             }
 
             let mut best_a = 0usize;
-            let mut best_after = suffix_sum[0 * (n + 1) + cut];
+            let mut best_after = suffix_sum[cut];
             for a in 1..alloc_count {
                 let val = suffix_sum[a * (n + 1) + cut];
                 if val < best_after {
@@ -866,7 +867,7 @@ mod tests {
         let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
         let mut bonuses = std::collections::HashMap::new();
         bonuses.insert(Attribute::Intelligence, 4);
-        let implants = vec![ImplantRecord {
+        let _implants = [ImplantRecord {
             type_id: 5001,
             name: "Talisman Delta".to_string(),
             bonuses,
@@ -938,8 +939,7 @@ mod tests {
         let skill_a = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
         let sp_a = sp_for_level(&skill_a, 1, 2);
 
-        let mut bonuses_prereqs = Vec::new();
-        bonuses_prereqs.push((skill_a.id, 1));
+        let bonuses_prereqs = vec![(skill_a.id, 1)];
         let skill_b = SkillRecord {
             id: 2002,
             name: "SkillB".to_string(),
@@ -1043,13 +1043,11 @@ mod tests {
         );
 
         // Remaining two must both be Willpower.
-        for i in int_end..primaries.len() {
+        for attr in primaries.iter().skip(int_end) {
             assert_eq!(
-                primaries[i],
-                Attribute::Willpower,
-                "expected WIL after INT block but found {:?} at position {}",
-                primaries[i],
-                i
+                attr,
+                &Attribute::Willpower,
+                "expected WIL after INT block"
             );
         }
     }
@@ -1177,7 +1175,7 @@ mod tests {
         // When remaining_secs == total_duration_secs, earned_fraction = 0 → full SP remains.
         let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
         let sp_needed = sp_for_level(&skill, 1, 2);
-        let dur = (sp_needed / 0.5) as f64;
+        let dur = sp_needed / 0.5;
         let char_st = char_state(
             base_attrs(17, 17, 17, 17, 17),
             vec![QueuedSkill {

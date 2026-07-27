@@ -41,7 +41,7 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
 
     // ── Resolve base + implant bonuses ────────────────────────────────
     let (base_attrs, _source_label, implant_bonus) =
-        resolve_attributes(&args, &esi_data, &implants)?;
+        resolve_attributes(args, &esi_data, &implants)?;
 
     let effective_attrs = data::models::EffectiveAttributes::from(base_attrs.add(&implant_bonus));
 
@@ -107,10 +107,10 @@ fn cmd_optimize(args: &cli::OptimizeArgs) -> Result<()> {
         _ => 0.0,
     };
 
-    if bonus_remaps.is_some() {
+    if let Some(n) = bonus_remaps {
         eprintln!(
             "Bonus remaps: {} (from {})",
-            bonus_remaps.unwrap(),
+            n,
             bonus_source_label
         );
     }
@@ -205,12 +205,12 @@ fn cmd_accounts() -> Result<()> {
         .as_secs_f64();
 
     // Header
-    println!("{:<24} {:<12} {}", "Character", "ID", "Token");
+    println!("{:<24} {:<12} Token", "Character", "ID");
     println!("{}", "-".repeat(60));
 
     for acc in &store.accounts {
         let status = if acc.is_expired() {
-            format!("expired")
+            String::from("expired")
         } else {
             let remaining_min = ((acc.expires_at - now) / 60.0).ceil() as u64;
             if remaining_min > 60 {
@@ -220,10 +220,10 @@ fn cmd_accounts() -> Result<()> {
             }
         };
         println!(
-            "{:<24} {:<12} {}",
+            "{:<24} {:<12} valid {} left",
             acc.character_name,
             acc.character_id,
-            format!("valid {} left", status)
+            status
         );
     }
     Ok(())
@@ -325,11 +325,8 @@ fn resolve_character(query: &str) -> Result<auth::StoredAccount> {
 fn parse_cooldown_to_offset(cooldown_date: &Option<String>) -> Option<f64> {
     let s = cooldown_date.as_ref()?;
     // Parse RFC3339 — try chrono first, fall back to manual parsing for common formats.
-    let dt = chrono::DateTime::parse_from_rfc3339(s).ok();
-    let secs = match dt {
-        Some(d) => d.signed_duration_since(chrono::Utc::now()).num_seconds() as f64,
-        None => return None,
-    };
+    let dt = chrono::DateTime::parse_from_rfc3339(s).ok()?;
+    let secs = dt.signed_duration_since(chrono::Utc::now()).num_seconds() as f64;
     if secs <= 0.0 {
         return Some(0.0); // Already available
     }

@@ -646,7 +646,6 @@ mod tests {
     fn test_parse_queue_negative_sp_rejected() {
         let db = skills_db();
         let attrs = uniform_attrs();
-        use std::error::Error;
         let err = parse_queue("Gunnery 2@-100", &db, &attrs, "test").unwrap_err();
         assert!(err
             .root_cause()

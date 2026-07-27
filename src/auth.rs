@@ -133,8 +133,7 @@ fn load_or_generate_tls_config() -> Result<rustls::ServerConfig> {
         .with_no_client_auth()
         .with_single_cert(
             vec![CertificateDer::from(server_cert_der)],
-            PrivateKeyDer::try_from(PrivatePkcs8KeyDer::from(server_key_der))
-                .context("failed to convert server key for rustls")?,
+            PrivateKeyDer::from(PrivatePkcs8KeyDer::from(server_key_der)),
         )
         .context("failed to build TLS server config")?;
 
@@ -301,7 +300,7 @@ pub async fn login(
     let character_id: u64 = token_claims
         .sub
         .split(':')
-        .last()
+        .next_back()
         .unwrap_or(&token_claims.sub)
         .parse()
         .context("failed to parse character ID from JWT sub claim")?;
@@ -344,7 +343,7 @@ async fn listen_for_code(
 
         let mut reader = BufReader::new(readable);
         let mut request_line = String::new();
-        if let Ok(_) = reader.read_line(&mut request_line).await {
+        if reader.read_line(&mut request_line).await.is_ok() {
             eprintln!("[listener] request line: {}", request_line.trim());
             let url_start = request_line.find('/');
             if let Some(start) = url_start {
@@ -405,7 +404,7 @@ async fn listen_for_code_tls(
 
         let mut reader = BufReader::new(&mut stream);
         let mut request_line = String::new();
-        if let Ok(_) = reader.read_line(&mut request_line).await {
+        if reader.read_line(&mut request_line).await.is_ok() {
             eprintln!("[listener] request line: {}", request_line.trim());
             let url_start = request_line.find('/');
             if let Some(start) = url_start {

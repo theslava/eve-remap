@@ -64,7 +64,7 @@ fn build_esi_client(account: &StoredAccount) -> Result<rfesi::prelude::Esi> {
     // access_expiration is in milliseconds (Unix epoch); our expires_at is seconds.
     let exp_ms = Some((account.expires_at * 1000.0) as i64);
 
-    Ok(EsiBuilder::new()
+    EsiBuilder::new()
         .user_agent("eve-remap")
         .client_id(&account.client_id)
         .callback_url("http://localhost/callback")
@@ -73,7 +73,7 @@ fn build_esi_client(account: &StoredAccount) -> Result<rfesi::prelude::Esi> {
         .refresh_token(Some(&account.refresh_token))
         .access_expiration(exp_ms)
         .build()
-        .context("failed to build ESI client")?)
+        .context("failed to build ESI client")
 }
 
 // ── Token Refresh ─────────────────────────────────────────────────────────
