@@ -81,8 +81,7 @@ pub struct LoginArgs {
     )]
     pub scopes: Vec<String>,
 
-    /// Port for the local OAuth callback listener.
-    /// If omitted, an available ephemeral port will be selected automatically.
+    /// Port for the local OAuth callback listener. Defaults to 9090 if omitted.
     #[arg(long)]
     pub port: Option<u16>,
 

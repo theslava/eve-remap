@@ -313,7 +313,12 @@ pub async fn login(
         .clone()
         .ok_or_else(|| anyhow!("no access token after authentication"))?;
     let refresh_token = esi.refresh_token.clone().unwrap_or_default();
-
+    if esi.refresh_token.is_none() {
+        eprintln!(
+            "Warning: No refresh token received for '{}'. The session will expire and cannot be refreshed automatically.",
+            character_name
+        );
+    }
     Ok(StoredAccount {
         character_id,
         character_name,
@@ -455,8 +460,8 @@ fn parse_callback(uri: &str) -> (Option<String>, String) {
         for param in query.split('&') {
             if let Some((key, value)) = param.split_once('=') {
                 match key {
-                    "code" => code = Some(value.to_string()),
-                    "state" => state = value.to_string(),
+                    "code" => code = Some(percent_decode(value)),
+                    "state" => state = percent_decode(value),
                     _ => {}
                 }
             }
@@ -465,6 +470,27 @@ fn parse_callback(uri: &str) -> (Option<String>, String) {
     (code, state)
 }
 
+/// Percent-decode a URL-encoded string (e.g., "%20" → " ").
+fn percent_decode(s: &str) -> String {
+    let bytes = s.as_bytes();
+    let mut out = Vec::with_capacity(bytes.len());
+    let mut i = 0;
+    while i < bytes.len() {
+        if bytes[i] == b'%' && i + 2 < bytes.len() {
+            if let Ok(byte) = u8::from_str_radix(
+                std::str::from_utf8(&bytes[i + 1..i + 3]).unwrap_or("00"),
+                16,
+            ) {
+                out.push(byte);
+                i += 3;
+                continue;
+            }
+        }
+        out.push(bytes[i]);
+        i += 1;
+    }
+    String::from_utf8_lossy(&out).into_owned()
+}
 /// Try to open a URL in the system browser.
 fn open_browser(url: &str) -> std::io::Result<()> {
     // Strategy 1: wslview (WSL → Windows interop, handles URLs properly)
@@ -485,14 +511,7 @@ fn open_browser(url: &str) -> std::io::Result<()> {
         return Ok(());
     }
 
-    // Strategy 3: gnome-open (GNOME fallback)
-    if let Ok(status) = std::process::Command::new("gnome-open").arg(url).status() {
-        if status.success() {
-            return Ok(());
-        }
-    }
-
-    // Strategy 4: open (macOS)
+    // Strategy 3: open (macOS)
     if let Ok(status) = std::process::Command::new("open").arg(url).status() {
         if status.success() {
             return Ok(());
@@ -507,9 +526,11 @@ fn open_browser(url: &str) -> std::io::Result<()> {
 
 /// Pick the callback port. Defaults to 9090 (EVE SSO requires exact URI match).
 fn find_available_port(hint: Option<u16>) -> Result<u16> {
-    if let Some(port) = hint {
-        Ok(port)
-    } else {
-        Ok(9090)
+    match hint {
+        Some(0) => Err(anyhow::anyhow!(
+            "Port 0 is not allowed. EVE SSO requires exact callback URI matching, so OS-assigned ephemeral ports won't work. Use a specific port (e.g., --port 9090)."
+        )),
+        Some(port) => Ok(port),
+        None => Ok(9090),
     }
 }

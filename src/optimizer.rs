@@ -69,7 +69,7 @@ impl CharacterState {
             // Resolve remaining SP based on input type.
             let remaining_sp = match &qs.remaining {
                 QueuedSkillRemaining::Duration {
-                    remaining_sec,
+                    remaining_secs,
                     total_duration_secs,
                 } => {
                     if *total_duration_secs == 0.0 {
@@ -79,7 +79,7 @@ impl CharacterState {
                         );
                         continue;
                     }
-                    let earned_fraction = 1.0 - (remaining_sec / total_duration_secs);
+                    let earned_fraction = 1.0 - (remaining_secs / total_duration_secs);
                     (total_sp - earned_fraction * total_sp).max(0.0)
                 }
                 QueuedSkillRemaining::SpTrained { sp_trained } => {
@@ -466,7 +466,7 @@ pub fn optimize(char_state: &CharacterState, skills_db: &[SkillRecord]) -> Optim
         //   Check if a remap is available at epoch_end (normal or bonus).
         //   after  = best suffix_sum[a][cut] across all allocations a
         // Pick whichever minimizes total finish time.
-        let mut best_cut_info: Option<(usize, f64, usize)> = None; // (cut, total_finish, chosen_alloc_col)
+        let mut best_cut_info: Option<(usize, f64, usize, f64)> = None; // (cut, total_finish, chosen_alloc_col, cum_before)
         let mut cum_before = 0.0;
 
         for (offset, stay_time) in stay_times.iter().enumerate().take(n - remaining_start - 1) {
@@ -494,18 +494,18 @@ pub fn optimize(char_state: &CharacterState, skills_db: &[SkillRecord]) -> Optim
 
             match &best_cut_info {
                 None if total_finish < stay_finish - 1.0 => {
-                    best_cut_info = Some((cut, total_finish, best_a));
+                    best_cut_info = Some((cut, total_finish, best_a, cum_before));
                 }
-                Some((_, best_total, _)) if total_finish < *best_total - 1.0 => {
-                    best_cut_info = Some((cut, total_finish, best_a));
+                Some((_, best_total, _, _)) if total_finish < *best_total - 1.0 => {
+                    best_cut_info = Some((cut, total_finish, best_a, cum_before));
                 }
                 _ => {}
             }
         }
 
-        if let Some((cut, total_finish, chosen_a)) = best_cut_info {
-            // Recompute exact before time for the winning cut.
-            let epoch_end = wall_clock + cum_before_for(&stay_times, cut - remaining_start);
+        if let Some((cut, total_finish, chosen_a, epoch_cum_before)) = best_cut_info {
+            // Use cached cum_before to avoid redundant O(k) pass.
+            let epoch_end = wall_clock + epoch_cum_before;
 
             // Determine which remap type to use: normal first (self-replenishing), then bonus.
             let normal_at_end = epoch_end >= normal_available_at;
@@ -637,10 +637,6 @@ pub fn optimize(char_state: &CharacterState, skills_db: &[SkillRecord]) -> Optim
     }
 }
 
-/// Sum the first `count` elements of a slice.
-fn cum_before_for(slice: &[f64], count: usize) -> f64 {
-    slice[..count].iter().sum()
-}
 
 /// Build an `EpochPlan` for entries[start..end) using precomputed training times.
 #[allow(clippy::too_many_arguments)]
@@ -757,7 +753,7 @@ mod tests {
             id,
             current_level: level,
             remaining: QueuedSkillRemaining::Duration {
-                remaining_sec: dur,
+                remaining_secs: dur,
                 total_duration_secs: dur,
             },
         }
@@ -854,7 +850,7 @@ mod tests {
                 id: skill.id,
                 current_level: 1,
                 remaining: QueuedSkillRemaining::Duration {
-                    remaining_sec: dur,
+                    remaining_secs: dur,
                     total_duration_secs: dur,
                 },
             });
@@ -1128,7 +1124,7 @@ mod tests {
                 id: skill.id,
                 current_level: 5,
                 remaining: QueuedSkillRemaining::Duration {
-                    remaining_sec: 0.,
+                    remaining_secs: 0.,
                     total_duration_secs: 0.,
                 },
             }],
@@ -1178,7 +1174,7 @@ mod tests {
 
     #[test]
     fn test_optimize_duration_remaining_equals_total_no_progress() {
-        // When remaining_sec == total_duration_secs, earned_fraction = 0 → full SP remains.
+        // When remaining_secs == total_duration_secs, earned_fraction = 0 → full SP remains.
         let skill = make_skill(Attribute::Intelligence, Attribute::Memory, 1.0);
         let sp_needed = sp_for_level(&skill, 1, 2);
         let dur = (sp_needed / 0.5) as f64;
@@ -1188,7 +1184,7 @@ mod tests {
                 id: skill.id,
                 current_level: 1,
                 remaining: QueuedSkillRemaining::Duration {
-                    remaining_sec: dur,
+                    remaining_secs: dur,
                     total_duration_secs: dur,
                 },
             }],

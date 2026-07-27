@@ -32,8 +32,9 @@ pub struct EsSkillQueueEntry {
     pub queue_position: i32,
     /// Cumulative SP at the start of this level transition (blank→level_start_sp).
     pub level_start_sp: f64,
-    /// Cumulative SP where training actually started for this entry.
-    /// Equals level_start_sp if no progress; higher if partially trained.
+    /// Cumulative SP at the start of this level transition (blank→level_start_sp).
+    /// Tracks current progress during active training (not an immutable snapshot).
+    /// For queued-but-not-yet-started entries, equals level_start_sp.
     pub training_start_sp: f64,
     /// Cumulative SP at the end of this level transition (= level_start_sp + level SP).
     pub level_end_sp: f64,
@@ -175,7 +176,7 @@ pub async fn fetch_trained_skills_map(
 /// All ESI data needed by the optimizer for a single character.
 #[derive(Debug)]
 pub struct CharacterData {
-    /// Base attributes from neural interface (not including implants).
+    /// Raw effective attributes from ESI `/characters/me/attributes/`. Includes active implant bonuses; subtracted later by resolve_attributes().
     pub base_attributes: Option<BaseAttributes>,
     /// Bonus remaps remaining.
     pub bonus_remaps: Option<u32>,

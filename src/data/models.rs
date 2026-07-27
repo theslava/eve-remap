@@ -134,7 +134,7 @@ pub struct QueuedSkill {
 pub enum QueuedSkillRemaining {
     /// Time-left input: seconds remaining out of total duration (seconds).
     Duration {
-        remaining_sec: f64,
+        remaining_secs: f64,
         total_duration_secs: f64,
     },
     /// SP already earned toward this level transition.

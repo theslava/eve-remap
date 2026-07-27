@@ -144,11 +144,11 @@ pub fn parse_queue(
         // Disambiguate progress info: time-unit suffix → duration, else → SP amount.
         let queued_skill_remaining = match remaining_info {
             None => QueuedSkillRemaining::Duration {
-                remaining_sec: duration_secs,
+                remaining_secs: duration_secs,
                 total_duration_secs: duration_secs,
             },
             Some(info) if matches!(info.chars().next_back(), Some('d' | 'h' | 'm' | 's')) => {
-                let remaining_sec = calculator::parse_duration(info).with_context(|| {
+                let remaining_secs = calculator::parse_duration(info).with_context(|| {
                     format!(
                         "Line {}: invalid time-left duration '{}'",
                         line_num + 1,
@@ -158,9 +158,9 @@ pub fn parse_queue(
                 // Clamp: user-provided time-left may exceed our computed total (e.g.,
                 // they were training under different attributes/implants). Without the
                 // cap, earned_fraction goes negative and remaining SP inflates past total.
-                let capped = remaining_sec.min(duration_secs);
+                let capped = remaining_secs.min(duration_secs);
                 QueuedSkillRemaining::Duration {
-                    remaining_sec: capped.max(0.0),
+                    remaining_secs: capped.max(0.0),
                     total_duration_secs: duration_secs,
                 }
             }
@@ -171,7 +171,9 @@ pub fn parse_queue(
                 let cum_from =
                     calculator::CUMULATIVE_SP[from_level as usize] * record.skill_time_constant;
                 let cum_to = calculator::CUMULATIVE_SP[level as usize] * record.skill_time_constant;
-                if (sp_trained - cum_to).abs() < f64::EPSILON || sp_trained > cum_to {
+                let sp_int = sp_trained.floor();
+                let to_int = cum_to.floor();
+                if sp_int == to_int || sp_trained > cum_to {
                     bail!(
                         "Line {}: '{}' has {} SP trained but '{}' at level {} requires less than {:.0} SP — skill is already complete",
                         line_num + 1,
@@ -372,7 +374,7 @@ mod tests {
         assert_eq!(skills.len(), 1);
         assert_eq!(skills[0].id, 1);
         assert_eq!(skills[0].current_level, 2); // from_level for target 3
-        matches!(&skills[0].remaining, QueuedSkillRemaining::Duration { remaining_sec, total_duration_secs } if (remaining_sec - total_duration_secs).abs() < f64::EPSILON);
+        matches!(&skills[0].remaining, QueuedSkillRemaining::Duration { remaining_secs, total_duration_secs } if (remaining_secs - total_duration_secs).abs() < f64::EPSILON);
     }
 
     #[test]
@@ -430,8 +432,8 @@ mod tests {
         let skills = parse_queue("Gunnery 3@2h", &db, &attrs, "test").unwrap();
         assert_eq!(skills.len(), 1);
         match &skills[0].remaining {
-            QueuedSkillRemaining::Duration { remaining_sec, .. } => {
-                assert!((remaining_sec - (2.0 * 3_600.0)).abs() < 1.0);
+            QueuedSkillRemaining::Duration { remaining_secs, .. } => {
+                assert!((remaining_secs - (2.0 * 3_600.0)).abs() < 1.0);
             }
             _ => panic!("expected Duration variant"),
         }
@@ -443,8 +445,8 @@ mod tests {
         let attrs = uniform_attrs();
         let skills = parse_queue("Navigation 5@5h 30m", &db, &attrs, "test").unwrap();
         match &skills[0].remaining {
-            QueuedSkillRemaining::Duration { remaining_sec, .. } => {
-                assert!((remaining_sec - (5.0 * 3_600.0 + 30.0 * 60.0)).abs() < 1.0);
+            QueuedSkillRemaining::Duration { remaining_secs, .. } => {
+                assert!((remaining_secs - (5.0 * 3_600.0 + 30.0 * 60.0)).abs() < 1.0);
             }
             _ => panic!("expected Duration variant"),
         }
@@ -458,10 +460,10 @@ mod tests {
         let skills = parse_queue("Gunnery 3@0s", &db, &attrs, "test").unwrap();
         match &skills[0].remaining {
             QueuedSkillRemaining::Duration {
-                remaining_sec,
+                remaining_secs,
                 total_duration_secs,
             } => {
-                assert!((remaining_sec - 0.0).abs() < f64::EPSILON);
+                assert!((remaining_secs - 0.0).abs() < f64::EPSILON);
                 assert!(*total_duration_secs > 0.0);
             }
             _ => panic!("expected Duration variant"),
@@ -481,11 +483,11 @@ mod tests {
         let skills = parse_queue(input, &db, &attrs, "test").unwrap();
         match &skills[0].remaining {
             QueuedSkillRemaining::Duration {
-                remaining_sec,
+                remaining_secs,
                 total_duration_secs,
             } => {
                 // Should be approximately equal — within a few seconds of rounding.
-                assert!((remaining_sec - total_duration_secs).abs() < 120.0);
+                assert!((remaining_secs - total_duration_secs).abs() < 120.0);
             }
             _ => panic!("expected Duration variant"),
         }
@@ -497,8 +499,8 @@ mod tests {
         let attrs = uniform_attrs();
         let skills = parse_queue("Gunnery 1@1m30s", &db, &attrs, "test").unwrap();
         match &skills[0].remaining {
-            QueuedSkillRemaining::Duration { remaining_sec, .. } => {
-                assert!((remaining_sec - 90.0).abs() < 1.0);
+            QueuedSkillRemaining::Duration { remaining_secs, .. } => {
+                assert!((remaining_secs - 90.0).abs() < 1.0);
             }
             _ => panic!("expected Duration variant"),
         }
@@ -670,8 +672,8 @@ mod tests {
         let attrs = uniform_attrs();
         let skills = parse_queue("Gunnery 2@90s", &db, &attrs, "test").unwrap();
         match &skills[0].remaining {
-            QueuedSkillRemaining::Duration { remaining_sec, .. } => {
-                assert!((remaining_sec - 90.0).abs() < 1.0);
+            QueuedSkillRemaining::Duration { remaining_secs, .. } => {
+                assert!((remaining_secs - 90.0).abs() < 1.0);
             }
             _ => panic!("expected Duration — bare numbers ending in 's' are durations"),
         }

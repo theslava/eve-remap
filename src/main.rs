@@ -306,9 +306,8 @@ fn resolve_character(query: &str) -> Result<auth::StoredAccount> {
     let account = if let Ok(id) = query.parse::<u64>() {
         store.get(id)
     } else {
-        // Case-insensitive name match — exact match required
         store.accounts.iter().find(|a| {
-            a.character_name.eq_ignore_ascii_case(query)
+            a.character_name == query
         })
     };
 
@@ -450,6 +449,17 @@ fn print_table_output(result: &data::models::OptimizationResult) {
             _ => "Remap",
         };
         println!("Epoch {}: {}", i + 1, epoch_type);
+        if i > 0 {
+            // The remap that brought us into this epoch was consumed at the
+            // end of the previous epoch, so read its bonus_remaps_used.
+            let prev = &result.epochs[i - 1];
+            let remap_type = if prev.bonus_remaps_used > 0 {
+                "bonus"
+            } else {
+                "normal"
+            };
+            println!("  Remap type: {}", remap_type);
+        }
         println!(
             "  Attributes: PER={} MEM={} WIL={} INT={} CHA={}",
             epoch.effective_attributes.perception,
