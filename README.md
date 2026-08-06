@@ -128,7 +128,7 @@ For skills already being trained, include remaining time or SP earned:
 
 | Syntax | Meaning |
 |---|---|
-| `"SkillName 3 @7d"` | Target L3, 7 days of training already completed |
+| `"SkillName 3 @7d"` | Target L3, 7 days of training remaining |
 | `"SkillName 3 @12345 SP"` | Target L3, 12345 SP already earned |
 
 ESI-fetched queues use the SP-trained format automatically, preserving exact partial progress from the API.
